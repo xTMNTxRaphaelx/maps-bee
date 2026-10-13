@@ -67,8 +67,6 @@ async function main () {
     const sub = Buffer.from(JSON.stringify(entries.filter((e) => e.kind_detail === k)))
     console.log(`subset ${k}: json ${sub.byteLength} gzip ${zlib.gzipSync(sub, { level: 9 }).byteLength}`)
   }
-  const jaipur = entries.filter((e) => e.name === 'Jaipur')
-  console.log(`Jaipur entries ${JSON.stringify(jaipur)}`)
   fs.writeFileSync(out, JSON.stringify(entries, null, 1) + '\n')
   console.log(`wrote ${out}`)
 }

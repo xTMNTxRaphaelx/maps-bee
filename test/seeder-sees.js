@@ -38,15 +38,9 @@ test('what a seeder sees: uploaded blocks name the z12 cell of the pin', async (
   const uploads = []
   seedCore.on('upload', (index, byteLength) => uploads.push({ index, byteLength }))
 
-  const client = await tmpStore(t, 'seeder-sees-client')
-  const wire = h.link(seederStore, client, 0)
-  t.teardown(() => wire.destroy())
-  const core = await h.openClientCore(client, { key: seedCore.key })
-  await core.update({ wait: true })
-  const bee = new Hyperbee(client, { core, writable: false })
-  await bee.ready()
+  const { core, bee, wire } = await h.coldClient(t, seederStore, seedCore.key, 0)
 
-  const r = await h.measure(core, wire, () => readPreview(bee, lat, lon))
+  const r = await h.measure(core, wire, () => readPreview(bee, { lat, lon }, { timeout: 5000 }))
   t.is(r.result.zoom, DETAIL_ZOOM)
   t.comment(h.fmt('seeder-sees', 'read-cold', r, L))
   uploads.sort((a, b) => a.index - b.index)

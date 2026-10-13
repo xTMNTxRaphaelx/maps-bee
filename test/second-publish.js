@@ -12,6 +12,8 @@ const { fillAtlas } = require('./atlas')
 const h = require('./sparse-harness')
 
 const { lon, lat } = JAIPUR_CENTRE
+const POINT = { lat, lon }
+const OPTS = { timeout: 5000 }
 
 function cellKeys () {
   const c = lonLatToTile(lon, lat, DETAIL_ZOOM - 2)
@@ -20,17 +22,6 @@ function cellKeys () {
     for (let x = c.x << 2; x < (c.x << 2) + 4; x++) keys.push(tileKey(DETAIL_ZOOM, x, y))
   }
   return keys
-}
-
-async function coldClient (t, seederStore, key, name) {
-  const client = await tmpStore(t, name)
-  const wire = h.link(seederStore, client, 0)
-  t.teardown(() => wire.destroy())
-  const core = await h.openClientCore(client, { key })
-  await core.update({ wait: true })
-  const bee = new Hyperbee(client, { core, writable: false })
-  await bee.ready()
-  return { core, bee, wire }
 }
 
 // value blocks hold tile bytes; every other block is keys and tree nodes
@@ -68,9 +59,9 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.comment(`first publish length ${L1}`)
 
   // a warm client that has already shown the Jaipur preview
-  const warm = await coldClient(t, store, key, 'second-publish-warm')
+  const warm = await h.coldClient(t, store, key, 0)
   t.is(warm.core.length, L1)
-  const first = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, lat, lon))
+  const first = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, POINT, OPTS))
   t.is(first.result.zoom, DETAIL_ZOOM)
   t.comment(h.fmt('warm', 'read-cold-v1', first, L1))
 
@@ -111,7 +102,7 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.comment(`second publish length ${L2} (+${L2 - L1})`)
 
   // a cold client reads the changed value under the same key
-  const cold = await coldClient(t, store, key, 'second-publish-cold')
+  const cold = await h.coldClient(t, store, key, 0)
   t.is(cold.core.length, L2)
   const got = await cold.bee.get(changed[0])
   t.is(got.value.byteLength, before[0].byteLength + 1, 'cold client reads the rewritten tile')
@@ -120,7 +111,7 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   const upd = await h.measure(warm.core, warm.wire, () => warm.core.update({ wait: true }))
   t.is(warm.core.length, L2)
   t.comment(h.fmt('warm', 'update-v2', upd, L2))
-  const again = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, lat, lon))
+  const again = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, POINT, OPTS))
   t.is(again.result.zoom, DETAIL_ZOOM)
   t.is(again.result.tiles[0].byteLength, before[0].byteLength + 1, 'warm client sees the rewritten tile')
   t.ok(again.indices.every((i) => i >= L1), 'nothing below the first publish is fetched again')

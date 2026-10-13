@@ -12,7 +12,7 @@ const P12 = { x: C14.x >> 2, y: C14.y >> 2 }
 const SCENARIOS = [
   { name: 'a-3x3-z14-gets', read: (bee) => h.readNine(bee, 14, C14.x, C14.y), n: 9, blocks: 14 },
   { name: 'b-block16-z14-stream', read: (bee) => h.readRange(bee, h.subtreeRange(14, h.quadkey(P12.x, P12.y, 12))), n: 16, blocks: 18 },
-  { name: 'b2-block16-z14-gets', read: (bee) => h.readSubtreeGets(bee, 14, P12.x, P12.y), n: 16, blocks: 18 }
+  { name: 'b2-block16-z14-gets', read: (bee) => h.readCell(bee, 14, P12.x, P12.y), n: 16, blocks: 18 }
 ]
 
 test('sparse reads over hyperswarm on a localhost testnet', async (t) => {
@@ -31,6 +31,7 @@ test('sparse reads over hyperswarm on a localhost testnet', async (t) => {
   for (const sc of SCENARIOS) {
     const client = await h.tmpStore(t, 'swarm-client')
     const swarm = new Hyperswarm({ bootstrap: testnet.bootstrap })
+    t.teardown(() => swarm.destroy())
     let raw = null
     let tConn = 0
     const t0 = h.perf.now()

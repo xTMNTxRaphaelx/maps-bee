@@ -13,7 +13,8 @@ function haversineKm (a, b) {
   return 2 * R * Math.asin(Math.sqrt(s))
 }
 
-// g/10/<quadkey of the point at z10>/<n>; n separates places that share a z10 tile
+// g/10/<quadkey of the point at z10>/<n>; n separates places that share a z10 tile.
+// The value holds only what readLabel reads.
 function gazKeys (entries) {
   const counters = new Map()
   return entries.map((e) => {
@@ -21,7 +22,8 @@ function gazKeys (entries) {
     const base = 'g/' + String(GAZ_ZOOM).padStart(2, '0') + '/' + quadkey(x, y, GAZ_ZOOM)
     const n = counters.get(base) || 0
     counters.set(base, n + 1)
-    return { key: b4a.from(base + '/' + n), value: b4a.from(JSON.stringify(e)) }
+    const value = { name: e.name, kind_detail: e.kind_detail, lat: e.lat, lon: e.lon }
+    return { key: b4a.from(base + '/' + n), value: b4a.from(JSON.stringify(value)) }
   })
 }
 

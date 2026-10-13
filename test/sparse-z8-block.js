@@ -12,14 +12,8 @@ for (const delayMs of [0, 50]) {
   test(`statewide preview block: 16 z10 tiles of one z8 cell, one-way delay ${delayMs} ms`, async (t) => {
     const seeder = await h.openSeeder(t)
     const L = seeder.core.length
-    const client = await h.tmpStore(t, 'client-z8')
-    const wire = h.link(seeder.store, client, delayMs)
-    t.teardown(() => wire.destroy())
-    const core = await h.openClientCore(client, seeder.ref)
-    const upd = await h.measure(core, wire, () => core.update({ wait: true }))
-    const bee = new h.Hyperbee(client, { core, writable: false })
-    await bee.ready()
-    const rd = await h.measure(core, wire, () => h.readSubtreeGets(bee, 10, P8.x, P8.y))
+    const { core, bee, wire, upd } = await h.coldClient(t, seeder.store, seeder.ref.key, delayMs)
+    const rd = await h.measure(core, wire, () => h.readCell(bee, 10, P8.x, P8.y))
     h.assertTiles(t, rd.result, 16)
     t.is(rd.blocks, 20)
     t.comment(h.fmt(NAME, 'update', upd, L))

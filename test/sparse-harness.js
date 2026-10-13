@@ -7,6 +7,7 @@ const HypercoreId = require('hypercore-id-encoding')
 const { Transform } = require('streamx')
 const { decodeGzip } = require('../scripts/mvt')
 const { tileKey, quadkey, subtreeRange } = require('../scripts/tiles')
+const { readCell } = require('../scripts/preview')
 const { tmpStore, SIGNED_STORE, PUBLISH_OUT } = require('./helpers')
 
 function publishedRef () {
@@ -128,13 +129,17 @@ async function readRange (bee, range, opts = {}) {
   return out
 }
 
-// the 16 z(p+2) children of parent (px, py), as parallel gets instead of a range stream
-function readSubtreeGets (bee, z, px, py) {
-  const gets = []
-  for (let y = py << 2; y < (py << 2) + 4; y++) {
-    for (let x = px << 2; x < (px << 2) + 4; x++) gets.push(bee.get(tileKey(z, x, y)))
-  }
-  return Promise.all(gets)
+// a fresh client store piped to the seeder with a one-way delay, updated to the seeder's length;
+// upd is the measured cost of that update
+async function coldClient (t, seederStore, key, delayMs) {
+  const client = await tmpStore(t, 'client')
+  const wire = link(seederStore, client, delayMs)
+  t.teardown(() => wire.destroy())
+  const core = await openClientCore(client, { key })
+  const upd = await measure(core, wire, () => core.update({ wait: true }))
+  const bee = new Hyperbee(client, { core, writable: false })
+  await bee.ready()
+  return { client, core, bee, wire, upd }
 }
 
 function assertTiles (t, entries, n) {
@@ -166,7 +171,8 @@ module.exports = {
   measure,
   readNine,
   readRange,
-  readSubtreeGets,
+  readCell,
+  coldClient,
   assertTiles,
   openClientCore,
   fmt,

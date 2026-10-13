@@ -1,7 +1,17 @@
 "use strict";
 const b4a = require("b4a");
 
+const MAX_LAT = 85.0511;
+
+// NaN masks to tile column 0 and 200 clamps to the last column, both real keys for the wrong place
 function lonLatToTile(lon, lat, z) {
+  if (
+    !(Number.isFinite(lon) && Number.isFinite(lat)) ||
+    Math.abs(lon) > 180 ||
+    Math.abs(lat) > MAX_LAT
+  ) {
+    throw new RangeError(`lon/lat out of range: ${lon}, ${lat}`);
+  }
   const n = 2 ** z;
   const rad = (lat * Math.PI) / 180;
   const x = Math.floor(((lon + 180) / 360) * n);
@@ -12,14 +22,6 @@ function lonLatToTile(lon, lat, z) {
     x: Math.min(Math.max(x, 0), n - 1),
     y: Math.min(Math.max(y, 0), n - 1),
   };
-}
-
-function tileToLonLat(x, y, z) {
-  const n = 2 ** z;
-  const lon = (x / n) * 360 - 180;
-  const lat =
-    (Math.atan(Math.sinh(Math.PI * (1 - (2 * y) / n))) * 180) / Math.PI;
-  return { lon, lat };
 }
 
 function quadkey(x, y, z) {
@@ -73,7 +75,6 @@ function parseBbox(s) {
 
 module.exports = {
   lonLatToTile,
-  tileToLonLat,
   quadkey,
   zz,
   tileKey,

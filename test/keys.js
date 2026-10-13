@@ -35,6 +35,13 @@ test('lonLatToTile clamps at the mercator edges', (t) => {
   t.alike(lonLatToTile(-180, -85.0511, 3), { x: 0, y: 7 })
 })
 
+test('lonLatToTile rejects input that would key the wrong place', (t) => {
+  t.exception.all(() => lonLatToTile(NaN, lat, 14), /out of range/)
+  t.exception.all(() => lonLatToTile(200, lat, 14), /out of range/)
+  t.exception.all(() => lonLatToTile(lon, 90, 14), /out of range/)
+  t.alike(lonLatToTile(lon, lat, 14), { x: 11641, y: 6920 }, 'valid input is unchanged')
+})
+
 test('a 3x3 of z14 tiles around the centre spans two z12 subtrees', (t) => {
   const c = lonLatToTile(lon, lat, 14)
   const parents = new Set()

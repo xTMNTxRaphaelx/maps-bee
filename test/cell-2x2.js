@@ -20,17 +20,6 @@ function pick2x2 (lon, lat, z) {
   return { tiles: [[x, y], [x2, y], [x, y2], [x2, y2]], frac: { x: xf - x, y: yf - y } }
 }
 
-async function coldClient (t, seederStore, ref, delayMs) {
-  const client = await h.tmpStore(t, 'cell-2x2-client')
-  const wire = h.link(seederStore, client, delayMs)
-  t.teardown(() => wire.destroy())
-  const core = await h.openClientCore(client, ref)
-  await core.update({ wait: true })
-  const bee = new h.Hyperbee(client, { core, writable: false })
-  await bee.ready()
-  return { core, bee, wire }
-}
-
 test('2x2 around the pin against the 16-tile cell, both cold', async (t) => {
   const { store, core: seederCore, ref } = await h.openSeeder(t)
   const L = seederCore.length
@@ -41,12 +30,12 @@ test('2x2 around the pin against the 16-tile cell, both cold', async (t) => {
 
   for (const delayMs of [0, 50]) {
     const tag = `rtt${2 * delayMs}`
-    const a = await coldClient(t, store, ref, delayMs)
+    const a = await h.coldClient(t, store, ref.key, delayMs)
     const four = await h.measure(a.core, a.wire, () => Promise.all(tiles.map(([x, y]) => a.bee.get(tileKey(DETAIL_ZOOM, x, y)))))
     h.assertTiles(t, four.result, 4)
     t.comment(h.fmt(tag + '-2x2', 'read-cold', four, L))
 
-    const b = await coldClient(t, store, ref, delayMs)
+    const b = await h.coldClient(t, store, ref.key, delayMs)
     const sixteen = await h.measure(b.core, b.wire, () => readCell(b.bee, DETAIL_ZOOM, cell.x, cell.y))
     h.assertTiles(t, sixteen.result, 16)
     t.comment(h.fmt(tag + '-cell16', 'read-cold', sixteen, L))

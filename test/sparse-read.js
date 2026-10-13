@@ -11,18 +11,12 @@ const P12 = { x: C14.x >> 2, y: C14.y >> 2 }
 const SCENARIOS = [
   { name: 'a-3x3-z14-gets', read: (bee) => h.readNine(bee, 14, C14.x, C14.y), n: 9, blocks: 14 },
   { name: 'b-block16-z14-stream', read: (bee) => h.readRange(bee, h.subtreeRange(14, h.quadkey(P12.x, P12.y, 12))), n: 16, blocks: 18 },
-  { name: 'b2-block16-z14-gets', read: (bee) => h.readSubtreeGets(bee, 14, P12.x, P12.y), n: 16 },
+  { name: 'b2-block16-z14-gets', read: (bee) => h.readCell(bee, 14, P12.x, P12.y), n: 16 },
   { name: 'd-3x3-z10-gets', read: (bee) => h.readNine(bee, 10, C10.x, C10.y), n: 9 }
 ]
 
 async function cold (t, seeder, sc, delayMs) {
-  const client = await h.tmpStore(t, 'client')
-  const wire = h.link(seeder.store, client, delayMs)
-  t.teardown(() => wire.destroy())
-  const core = await h.openClientCore(client, seeder.ref)
-  const upd = await h.measure(core, wire, () => core.update({ wait: true }))
-  const bee = new h.Hyperbee(client, { core, writable: false })
-  await bee.ready()
+  const { core, bee, wire, upd } = await h.coldClient(t, seeder.store, seeder.ref.key, delayMs)
   const rd = await h.measure(core, wire, () => sc.read(bee))
   h.assertTiles(t, rd.result, sc.n)
   t.ok(rd.blocks < seeder.core.length, 'sparse: fewer blocks than the core')
