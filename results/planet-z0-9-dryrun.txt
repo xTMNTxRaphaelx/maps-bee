@@ -1,0 +1,7 @@
+pmtiles extract https://build.protomaps.com/20261012.pmtiles /dev/null --maxzoom=9 --dry-run
+2026/10/13 15:13:47 extract.go:401: fetching 3 dirs, 3 chunks, 1 requests
+2026/10/13 15:13:48 extract.go:441: Region tiles 349525, result tile entries 179090
+2026/10/13 15:13:48 extract.go:450: fetching 179090 tiles, 1 chunks, 1 requests
+2026/10/13 15:13:48 extract.go:606: Completed in 2.502862375s with 4 download threads (71554.07416278732 tiles/s).
+2026/10/13 15:13:48 extract.go:611: Extract required 5 total requests.
+2026/10/13 15:13:48 extract.go:612: Extract transferred 1.6 GB (overfetch 0.05) for an archive size of 1.6 GB

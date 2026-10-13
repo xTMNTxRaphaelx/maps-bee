@@ -1,0 +1,52 @@
+pmtiles show https://build.protomaps.com/20261012.pmtiles
+pmtiles spec version: 3
+tile type: mvt
+bounds: (long: -180.000000, lat: -85.051129) (long: 180.000000, lat: 85.051129)
+min zoom: 0
+max zoom: 15
+center: (long: 0.000000, lat: 0.000000)
+center zoom: 0
+addressed tiles count: 1431655765
+tile entries count: 178204798
+tile contents count: 136317102
+clustered: true
+internal compression: gzip
+tile compression: gzip
+vector_layers <object, use --metadata to view full JSON metadata>
+planetiler:githash 0e5588c4a6e8c29a270a33afe8df62027d889604
+planetiler:osm:osmosisreplicationtime 2026-10-12T04:00:00Z
+planetiler:version 0.10.2
+type baselayer
+version 4.15.2
+attribution <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap</a>
+description Basemap layers derived from OpenStreetMap and Natural Earth
+name Protomaps Basemap
+pgf:devanagari:name NotoSansDevanagari-Regular
+pgf:devanagari:version 1
+planetiler:buildtime 2026-03-28T14:41:39.524Z
+planetiler:osm:osmosisreplicationseq 123429
+planetiler:osm:osmosisreplicationurl https://planet.osm.org/replication/hour/
+web viewer: https://pmtiles.io/#url=https%3A%2F%2Fbuild.protomaps.com%2F20261012.pmtiles
+
+pmtiles extract https://build.protomaps.com/20261012.pmtiles ocean-z14.pmtiles --bbox=-30.0,30.0,-29.9,30.1 --minzoom=14 --maxzoom=14
+2026/10/13 15:14:09 extract.go:401: fetching 1 dirs, 1 chunks, 1 requests
+2026/10/13 15:14:10 extract.go:441: Region tiles 36, result tile entries 2
+2026/10/13 15:14:10 extract.go:450: fetching 2 tiles, 1 chunks, 1 requests
+fetching chunks   0% |                                      | ( 0/95 B) [0s:0s]                                                                               fetching chunks 100% |█████████████████████████████| (95/95 B, 139 B/s)
+2026/10/13 15:14:11 extract.go:606: Completed in 3.529110291s with 4 download threads (0.5667150673353571 tiles/s).
+2026/10/13 15:14:11 extract.go:611: Extract required 5 total requests.
+2026/10/13 15:14:11 extract.go:612: Extract transferred 95 B (overfetch 0.05) for an archive size of 95 B
+archive bytes 1437
+
+pmtiles show ocean-z14.pmtiles
+bounds: (long: -30.000000, lat: 30.000000) (long: -29.900000, lat: 30.100000)
+min zoom: 14
+max zoom: 14
+center zoom: 14
+addressed tiles count: 36
+tile entries count: 2
+tile contents count: 1
+
+bare review-probes/decode-layers.js ocean-z14.pmtiles 14 -29.95 30.05
+z14 tile 6828,6757 raw 75 B gz 95 B, width 2.12 km, 4.1 m/px at 512px
+  water: 1 features {"ocean":1}

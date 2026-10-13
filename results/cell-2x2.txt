@@ -1,0 +1,30 @@
+TAP version 13
+
+# 2x2 around the pin against the 16-tile cell, both cold
+    ok 1 - seeder holds the published length
+    ok 2 - should deep equal
+    # pin z14 tile 11641,6920 frac x 0.74 y 0.13; 2x2 [[11641,6920],[11642,6920],[11641,6919],[11642,6919]]
+    ok 3 - 4 entries
+    ok 4 - every value decodes as MVT with layers
+    # rtt0-2x2	read-cold	ms 5.9	blocks 9 (0.8% of 1076)	blockBytes 114462	wireRequestTx 9	wireDataRx 9	wireBytesRx 116864	wireBytesTx 298
+    ok 5 - 16 entries
+    ok 6 - every value decodes as MVT with layers
+    # rtt0-cell16	read-cold	ms 4.7	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257904	wireBytesTx 568
+    ok 7 - 2x2 fetches fewer blocks
+    # rtt0: 2x2 is 45% of the cell bytes, 126% of the cell time
+    ok 8 - 4 entries
+    ok 9 - every value decodes as MVT with layers
+    # rtt100-2x2	read-cold	ms 524.8	blocks 9 (0.8% of 1076)	blockBytes 114462	wireRequestTx 9	wireDataRx 9	wireBytesRx 116892	wireBytesTx 356
+    ok 10 - 16 entries
+    ok 11 - every value decodes as MVT with layers
+    # rtt100-cell16	read-cold	ms 425.6	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257932	wireBytesTx 626
+    ok 12 - 2x2 fetches fewer blocks
+    # rtt100: 2x2 is 45% of the cell bytes, 123% of the cell time
+ok 1 - 2x2 around the pin against the 16-tile cell, both cold # time = 1937ms
+
+1..1
+# tests = 1/1 pass
+# asserts = 12/12 pass
+# time = 1983ms
+
+# ok

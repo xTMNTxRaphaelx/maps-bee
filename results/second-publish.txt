@@ -1,0 +1,47 @@
+TAP version 13
+
+# second 2-of-3 publish on the same core: same key, one signature rejected, warm client fetches only new blocks
+    ok 1 - first publish
+    ok 2 - should be equal
+    # first publish length 1082
+    ok 3 - should be equal
+    ok 4 - should be equal
+    # warm	read-cold-v1	ms 10.7	blocks 23 (2.1% of 1082)	blockBytes 333826	wireRequestTx 23	wireDataRx 23	wireBytesRx 338898	wireBytesTx 690
+    ok 5 - new draft resumes at the published length
+    ok 6 - cell tile present in draft2
+    ok 7 - cell tile present in draft2
+    ok 8 - cell tile present in draft2
+    ok 9 - cell tile present in draft2
+    ok 10 - cell tile present in draft2
+    ok 11 - cell tile present in draft2
+    ok 12 - cell tile present in draft2
+    ok 13 - cell tile present in draft2
+    ok 14 - cell tile present in draft2
+    ok 15 - cell tile present in draft2
+    ok 16 - rewrites append
+    # draft2 length 1092 (10 new blocks for 10 rewritten tiles)
+    ok 17 - one signature rejected on the second commit
+    ok 18 - should be equal
+    ok 19 - second publish with signers b and c
+    ok 20 - core key unchanged
+    ok 21 - expected truthy value
+    ok 22 - should be equal
+    # second publish length 1092 (+10)
+    ok 23 - should be equal
+    ok 24 - cold client reads the rewritten tile
+    ok 25 - should be equal
+    # warm	update-v2	ms 0	blocks 0 (0.0% of 1092)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 26 - should be equal
+    ok 27 - warm client sees the rewritten tile
+    ok 28 - nothing below the first publish is fetched again
+    # warm	read-v2	ms 4.5	blocks 10 (0.9% of 1092)	blockBytes 157499	wireRequestTx 10	wireDataRx 10	wireBytesRx 158351	wireBytesTx 300
+    ok 29 - every rewritten tile value is in a new value block
+    # warm read-v2: value blocks 9 holding 10 values (157076 B) for 10 changed tiles, keys+tree blocks 1 (423 B), unchanged tiles 6 fetched 0
+ok 1 - second 2-of-3 publish on the same core: same key, one signature rejected, warm client fetches only new blocks # time = 860ms
+
+1..1
+# tests = 1/1 pass
+# asserts = 29/29 pass
+# time = 911ms
+
+# ok

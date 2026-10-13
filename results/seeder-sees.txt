@@ -1,0 +1,40 @@
+TAP version 13
+
+# what a seeder sees: uploaded blocks name the z12 cell of the pin
+    ok 1 - should be equal
+    # seeder-sees	read-cold	ms 11.1	blocks 23 (2.1% of 1082)	blockBytes 333826	wireRequestTx 23	wireDataRx 23	wireBytesRx 338898	wireBytesTx 720
+    ok 2 - seeder upload events match the client downloads
+    # block 259	keys+tree	2775 B	keys 130	nodes 2	09/123121200 .. 09/123123331
+    # block 820	keys+tree	4651 B	keys 191	nodes 2	10/1231210320 .. 10/1231233310
+    # block 908	keys+tree	3098 B	keys 64	nodes 3	13/1231230111001 .. 13/1231231000222
+    # block 1023	value	11345 B	14/12312301113033
+    # block 1024	value	19293 B	14/12312301113031 14/12312301113032
+    # block 1025	value	18549 B	14/12312301113030
+    # block 1026	value	10099 B	14/12312301113023
+    # block 1027	value	20487 B	14/12312301113022
+    # block 1028	value	11639 B	14/12312301113021
+    # block 1029	value	33561 B	14/12312301113013 14/12312301113020
+    # block 1030	value	9799 B	14/12312301113012
+    # block 1031	value	11461 B	14/12312301113011
+    # block 1032	value	17501 B	14/12312301113010
+    # block 1033	value	15185 B	14/12312301113003
+    # block 1034	value	18264 B	14/12312301113002
+    # block 1035	value	19459 B	14/12312301113001
+    # block 1036	value	20197 B	14/12312301113000
+    # block 1075	keys+tree	5773 B	keys 135	nodes 2	14/12312301111321 .. 14/12312310002222
+    # block 1076	keys+tree	775 B	keys 0	nodes 1	(none)
+    # block 1078	keys+tree	15963 B	keys 139	nodes 1	g/10/1231211223/1 .. g/10/1231213001/2
+    # block 1079	keys+tree	14573 B	keys 127	nodes 1	g/10/1231213002/1 .. g/10/1231213302/1
+    # block 1080	keys+tree	20503 B	keys 179	nodes 1	g/10/1231213303/1 .. g/10/1231230133/1
+    # block 1081	keys+tree	28876 B	keys 252	nodes 2	g/10/1231211223/0 .. g/10/1231233310/1
+    ok 3 - the 16 cell tile values are what was uploaded
+    ok 4 - every uploaded value block belongs to 14/123123011130
+    # seeder sees 14 value blocks holding the 16 tiles under 14/123123011130, plus 9 keys+tree blocks whose key spans are listed above
+ok 1 - what a seeder sees: uploaded blocks name the z12 cell of the pin # time = 797ms
+
+1..1
+# tests = 1/1 pass
+# asserts = 4/4 pass
+# time = 849ms
+
+# ok
