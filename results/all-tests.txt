@@ -1,0 +1,244 @@
+
+> maps-bee@1.0.0 test
+> PATH=node_modules/bare-runtime/bin:$PATH brittle-bare test/index.js
+
+TAP version 13
+
+# quadkey digits at z1
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - should be equal
+    ok 4 - should be equal
+ok 1 - quadkey digits at z1 # time = 1ms
+
+# Jaipur centre tile at z14, z12, z10
+    ok 1 - should deep equal
+    ok 2 - should deep equal
+    ok 3 - should deep equal
+ok 2 - Jaipur centre tile at z14, z12, z10 # time = 0ms
+
+# parent quadkey is a prefix of the child
+    ok 1 - should be equal
+    ok 2 - should be equal
+ok 3 - parent quadkey is a prefix of the child # time = 0ms
+
+# tileKey round-trips through parseTileKey
+    ok 1 - should deep equal
+    ok 2 - should be equal
+ok 4 - tileKey round-trips through parseTileKey # time = 0ms
+
+# lonLatToTile clamps at the mercator edges
+    ok 1 - should deep equal
+    ok 2 - should deep equal
+ok 5 - lonLatToTile clamps at the mercator edges # time = 0ms
+
+# a 3x3 of z14 tiles around the centre spans two z12 subtrees
+    ok 1 - should deep equal
+ok 6 - a 3x3 of z14 tiles around the centre spans two z12 subtrees # time = 0ms
+
+# subtreeRange brackets every key in the subtree
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - expected truthy value
+    ok 5 - expected truthy value
+ok 7 - subtreeRange brackets every key in the subtree # time = 0ms
+
+# bboxTiles yields a full rectangle of unique tiles
+    ok 1 - should be equal
+ok 8 - bboxTiles yields a full rectangle of unique tiles # time = 0ms
+
+# Jaipur extract header covers z11-14 and the bbox
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - expected truthy value
+ok 9 - Jaipur extract header covers z11-14 and the bbox # time = 2ms
+
+# state extract header covers z0-10
+    ok 1 - should be equal
+    ok 2 - should be equal
+ok 10 - state extract header covers z0-10 # time = 0ms
+
+# centre z14 tile decodes to MVT with roads and places
+    ok 1 - tile present
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - should deep equal
+    ok 5 - expected truthy value
+    ok 6 - expected truthy value
+    ok 7 - should deep equal
+ok 11 - centre z14 tile decodes to MVT with roads and places # time = 4ms
+
+# a tile outside the extract is absent
+    ok 1 - should be equal
+ok 12 - a tile outside the extract is absent # time = 0ms
+
+# values up to 14 MiB round-trip; over 1 KiB costs a second block; 16 MiB rejects
+    ok 1 - 100B round-trips
+    ok 2 - 100B block count
+    ok 3 - 4KiB round-trips
+    ok 4 - 4KiB block count
+    ok 5 - 2MiB round-trips
+    ok 6 - 2MiB block count
+    ok 7 - 14MiB round-trips
+    ok 8 - 14MiB block count
+    ok 9 - 16 MiB put rejected
+    ok 10 - should be equal
+    ok 11 - expected truthy value
+    ok 12 - should be equal
+ok 13 - values up to 14 MiB round-trip; over 1 KiB costs a second block; 16 MiB rejects # time = 78ms
+
+# 2-of-3 multisig publish from a named draft session
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - should be equal
+    ok 4 - expected truthy value
+    ok 5 - should be equal
+    ok 6 - expected truthy value
+    ok 7 - should be equal
+    ok 8 - should be equal
+    ok 9 - should be equal
+    ok 10 - expected truthy value
+ok 14 - 2-of-3 multisig publish from a named draft session # time = 97ms
+
+# commit with one of two required signatures throws INVALID_SIGNATURE
+    ok 1 - single-signer commit rejected
+    ok 2 - should be equal
+    ok 3 - should be equal
+ok 15 - commit with one of two required signatures throws INVALID_SIGNATURE # time = 42ms
+
+# sparse reads over a piped stream, one-way delay 0 ms
+    ok 1 - seeder holds the published length
+    # seeder key q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076 RTT 0 ms
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - sparse: fewer blocks than the core
+    ok 5 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	update	ms 0.5	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # a-3x3-z14-gets	read-cold	ms 5.4	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 197080	wireBytesTx 448
+    # a-3x3-z14-gets	indices 259,820,908,916,919,920,1030,1032,1033,1034,1035,1036,1074,1075
+    ok 6 - 9 entries
+    ok 7 - every value decodes as MVT with layers
+    ok 8 - repeat read is served locally
+    # a-3x3-z14-gets-repeat	read-local	ms 0.1	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 9 - 16 entries
+    ok 10 - every value decodes as MVT with layers
+    ok 11 - sparse: fewer blocks than the core
+    ok 12 - b-block16-z14-stream block count
+    # b-block16-z14-stream	update	ms 0.4	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # b-block16-z14-stream	read-cold	ms 5.1	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 255942	wireBytesTx 568
+    # b-block16-z14-stream	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 13 - 16 entries
+    ok 14 - every value decodes as MVT with layers
+    ok 15 - sparse: fewer blocks than the core
+    # b2-block16-z14-gets	update	ms 0.4	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # b2-block16-z14-gets	read-cold	ms 5.3	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257904	wireBytesTx 568
+    # b2-block16-z14-gets	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 16 - 9 entries
+    ok 17 - every value decodes as MVT with layers
+    ok 18 - sparse: fewer blocks than the core
+    # d-3x3-z10-gets	update	ms 0.4	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # d-3x3-z10-gets	read-cold	ms 8.2	blocks 15 (1.4% of 1076)	blockBytes 226770	wireRequestTx 15	wireDataRx 15	wireBytesRx 231100	wireBytesTx 478
+    # d-3x3-z10-gets	indices 259,389,390,622,753,755,796,797,798,799,818,819,820,908,1075
+ok 16 - sparse reads over a piped stream, one-way delay 0 ms # time = 217ms
+
+# sparse reads over a piped stream, one-way delay 50 ms
+    ok 1 - seeder holds the published length
+    # seeder key q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076 RTT 100 ms
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - sparse: fewer blocks than the core
+    ok 5 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	update	ms 356.8	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # a-3x3-z14-gets	read-cold	ms 514.7	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 197108	wireBytesTx 506
+    # a-3x3-z14-gets	indices 259,820,908,916,919,920,1030,1032,1033,1034,1035,1036,1074,1075
+    ok 6 - 9 entries
+    ok 7 - every value decodes as MVT with layers
+    ok 8 - repeat read is served locally
+    # a-3x3-z14-gets-repeat	read-local	ms 0.1	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 9 - 16 entries
+    ok 10 - every value decodes as MVT with layers
+    ok 11 - sparse: fewer blocks than the core
+    ok 12 - b-block16-z14-stream block count
+    # b-block16-z14-stream	update	ms 356.7	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # b-block16-z14-stream	read-cold	ms 1741.7	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 255970	wireBytesTx 626
+    # b-block16-z14-stream	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 13 - 16 entries
+    ok 14 - every value decodes as MVT with layers
+    ok 15 - sparse: fewer blocks than the core
+    # b2-block16-z14-gets	update	ms 356.8	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # b2-block16-z14-gets	read-cold	ms 411	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257932	wireBytesTx 626
+    # b2-block16-z14-gets	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 16 - 9 entries
+    ok 17 - every value decodes as MVT with layers
+    ok 18 - sparse: fewer blocks than the core
+    # d-3x3-z10-gets	update	ms 356.8	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # d-3x3-z10-gets	read-cold	ms 516.6	blocks 15 (1.4% of 1076)	blockBytes 226770	wireRequestTx 15	wireDataRx 15	wireBytesRx 231088	wireBytesTx 536
+    # d-3x3-z10-gets	indices 259,389,390,622,753,755,796,797,798,799,818,819,820,908,1075
+    ok 19 - parallel gets beat the range stream by 3x or more under latency
+ok 17 - sparse reads over a piped stream, one-way delay 50 ms # time = 4825ms
+
+# statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 0 ms
+    ok 1 - seeder holds the published length
+    ok 2 - 16 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - should be equal
+    # e-z8-block16-z10-gets	update	ms 0.3	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # e-z8-block16-z10-gets	read-cold	ms 6.7	blocks 20 (1.9% of 1076)	blockBytes 338384	wireRequestTx 20	wireDataRx 20	wireBytesRx 343418	wireBytesTx 628
+    # e-z8-block16-z10-gets	indices 259,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,820,908,1075
+ok 18 - statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 0 ms # time = 71ms
+
+# statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 50 ms
+    ok 1 - seeder holds the published length
+    ok 2 - 16 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - should be equal
+    # e-z8-block16-z10-gets	update	ms 356.9	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # e-z8-block16-z10-gets	read-cold	ms 415.4	blocks 20 (1.9% of 1076)	blockBytes 338384	wireRequestTx 20	wireDataRx 20	wireBytesRx 343446	wireBytesTx 686
+    # e-z8-block16-z10-gets	indices 259,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,820,908,1075
+ok 19 - statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 50 ms # time = 835ms
+
+# sparse reads over hyperswarm on a localhost testnet
+    ok 1 - seeder holds the published length
+    # seeder announced q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	connect ms 4.3	total cold ms (join to last value) 12.6
+    # a-3x3-z14-gets	update	ms 1.1	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 850	wireBytesTx 373
+    # a-3x3-z14-gets	read-cold	ms 7.1	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 200844	wireBytesTx 3938
+    ok 5 - 16 entries
+    ok 6 - every value decodes as MVT with layers
+    ok 7 - b-block16-z14-stream block count
+    # b-block16-z14-stream	connect ms 1.8	total cold ms (join to last value) 19.4
+    # b-block16-z14-stream	update	ms 0.7	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 830	wireBytesTx 353
+    # b-block16-z14-stream	read-cold	ms 16.8	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 260998	wireBytesTx 5018
+    ok 8 - 16 entries
+    ok 9 - every value decodes as MVT with layers
+    ok 10 - b2-block16-z14-gets block count
+    # b2-block16-z14-gets	connect ms 2.1	total cold ms (join to last value) 11.1
+    # b2-block16-z14-gets	update	ms 0.6	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 830	wireBytesTx 353
+    # b2-block16-z14-gets	read-cold	ms 8.3	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 262644	wireBytesTx 4938
+    # ...teardown still running after 250ms
+    # ...teardown time 5009ms
+ok 20 - sparse reads over hyperswarm on a localhost testnet # time = 5215ms
+
+# city+town gazetteer: nearest entry to the Jaipur centre is Jaipur
+    # gazetteer entries 25096 core.length 155 core.byteLength 2906238
+    # city+town only entries 825 core.length 5 core.byteLength 93390
+    ok 1 - should be equal
+    # city+town range g/10/12312301..g/10/123123014 returned 32 entries; nearest 3 [["Jaipur","city","2.55"],["Renwal Manji","town","25.74"],["Bagru","town","27.50"]]
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    # nearest Jaipur (city) 2.55 km; next nearest Renwal Manji (town) 25.74 km
+    ok 4 - should be equal
+    # full scan of city+town: nearest Jaipur 2.55 km; next nearest Jamwa Ramgarh (town) 24.90 km (inside the z8 range: false)
+ok 21 - city+town gazetteer: nearest entry to the Jaipur centre is Jaipur # time = 170ms
+
+1..21
+# tests = 21/21 pass
+# asserts = 118/118 pass
+# time = 11645ms
+
+# ok

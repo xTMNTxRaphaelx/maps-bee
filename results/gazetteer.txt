@@ -1,0 +1,10 @@
+data/extract/rajasthan-z10.pmtiles bbox 69.5,23.0,78.3,30.2 z0-10: +25022 localities
+data/extract/jaipur-z11-14.pmtiles bbox 75.65,26.75,75.95,27.05 z11-14: +74 localities
+region features seen (not deduped, all zooms) 61
+localities 25096 by kind_detail {"village":24209,"town":706,"city":119,"hamlet":11,"locality":51}
+raw key+value bytes 2728330
+json bytes 2306464 gzip bytes 340090
+subset city: json 10934 gzip 2664
+subset town: json 63544 gzip 12288
+Jaipur entries [{"name":"Jaipur","kind_detail":"city","population":3073400,"lon":75.81897,"lat":26.91549}]
+wrote data/gazetteer.json
