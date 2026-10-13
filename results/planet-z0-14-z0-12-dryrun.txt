@@ -1,0 +1,8 @@
+== maxzoom 14
+2026/10/13 13:35:11 extract.go:441: Region tiles 357913941, result tile entries 58774034
+2026/10/13 13:36:04 extract.go:606: Completed in 1m1.447065708s with 4 download threads (956498.6266248197 tiles/s).
+2026/10/13 13:36:04 extract.go:612: Extract transferred 69 GB (overfetch 0.05) for an archive size of 69 GB
+== maxzoom 12
+2026/10/13 13:36:08 extract.go:441: Region tiles 22369621, result tile entries 6315070
+2026/10/13 13:36:09 extract.go:606: Completed in 5.6191525s with 4 download threads (1.123847404532696e+06 tiles/s).
+2026/10/13 13:36:09 extract.go:612: Extract transferred 18 GB (overfetch 0.05) for an archive size of 18 GB

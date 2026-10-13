@@ -1,0 +1,16 @@
+z10 tile 727,432 raw 55220 B, width 34.90 km, 68.2 m/px at 512px
+  boundaries: 2 features {"locality":1,"county":1}
+  earth: 1 features {"earth":1}
+  landuse: 124 features {"aerodrome":1,"residential":44,"scrub":9,"wood":7,"industrial":32,"cemetery":2,"park":6,"golf_course":2,"railway":1,"farmland":5,"meadow":2,"commercial":2,"nature_reserve":1,"college":1,"pitch":1,"forest":2,"garden":1,"military":2,"wetland":1,"zoo":1,"school":1}
+  places: 154 features {"locality":149,"macrohood":5}
+  pois: 4 features {"military":1,"nature_reserve":1,"station":1,"aerodrome":1}
+  roads: 31 features {"highway":7,"major_road":22,"aeroway":2}
+  water: 10 features {"river":3,"canal":3,"water":3,"lake":1}
+z14 tile 11641,6920 raw 26036 B, width 2.18 km, 4.3 m/px at 512px
+  buildings: 5 features {"building":5}
+  earth: 1 features {"earth":1}
+  landuse: 63 features {"farmland":1,"park":5,"garden":11,"pitch":13,"hospital":1,"scrub":1,"grass":18,"residential":3,"golf_course":1,"recreation_ground":1,"commercial":3,"industrial":3,"railway":1,"playground":1}
+  places: 20 features {"macrohood":3,"locality":2,"neighbourhood":15}
+  pois: 46 features {"local_authority":2,"administrative":1,"hospital":15,"industrial":1,"sports_centre":1,"post_office":1,"hotel":2,"park":1,"residential":2,"fuel":4,"commercial":3,"grass":2,"supermarket":2,"garden":3,"police":1,"hostel":1,"pitch":3,"water":1}
+  roads: 102 features {"major_road":47,"rail":6,"minor_road":43,"path":4,"other":2}
+  water: 4 features {"canal":1,"water":1,"swimming_pool":1,"fountain":1}
