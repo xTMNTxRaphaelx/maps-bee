@@ -1,0 +1,22 @@
+# sorted publisher build hardening, 2026-10-14: bare scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 --inline-value-size=0 store/tmp/harden-N keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles
+# with stallWatch: a 'stall 60 s in <phase>' line when the sorted chunk loop sits 60 s on one await; each store removed after its run
+
+## run 1 (store/tmp/harden-1)
+draft atlas length 0 resume false sorted true inlineValueSize 0 flushPuts 200000 flushBytes 536870912 progress store/tmp/harden-1/planet-build.progress
+archive 1/2	collect entries 478575 tiles 1048576 dirs 118 fillerRuns 0 fillerTiles 0	sort ms 14	ms 188
+archive 2/2	collect entries 39501064 tiles 31839637 dirs 3502 fillerRuns 7661427 fillerTiles 236595819	sort ms 484	ms 8715
+done puts 32888213 bytes 35221625742 flushes 173 fillerRuns 7661427 fillerTiles 236595819 elapsed 400.1 s
+draft.length 5760198 byteLength 36435914199 lastKey 14/33333333333333 readable true
+stall lines: none
+wall 13:55:05 to 14:01:46
+build exit 0
+
+## run 2 (store/tmp/harden-2)
+draft atlas length 0 resume false sorted true inlineValueSize 0 flushPuts 200000 flushBytes 536870912 progress store/tmp/harden-2/planet-build.progress
+archive 1/2	collect entries 478575 tiles 1048576 dirs 118 fillerRuns 0 fillerTiles 0	sort ms 14	ms 185
+archive 2/2	collect entries 39501064 tiles 31839637 dirs 3502 fillerRuns 7661427 fillerTiles 236595819	sort ms 477	ms 8256
+done puts 32888213 bytes 35221625742 flushes 173 fillerRuns 7661427 fillerTiles 236595819 elapsed 400.9 s
+draft.length 5760198 byteLength 36435914199 lastKey 14/33333333333333 readable true
+stall lines: none
+wall 14:05:46 to 14:12:27
+build exit 0

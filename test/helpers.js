@@ -2,6 +2,7 @@
 const fs = require('bare-fs')
 const path = require('bare-path')
 const Corestore = require('corestore')
+const { decodeBlock } = require('hyperbee2/lib/encoding.js')
 
 const DATA = path.join(__dirname, '..', 'data')
 const STATE_ARCHIVE = path.join(DATA, 'extract', 'rajasthan-z10.pmtiles')
@@ -45,7 +46,18 @@ function spyPuts (bee) {
   return keys
 }
 
+// key records across the whole core that carry their value inline
+async function inlinedValues (core) {
+  let n = 0
+  for (let i = 0; i < core.length; i++) {
+    const blk = decodeBlock(await core.get(i), i)
+    if (blk.keys) n += blk.keys.filter((k) => k.value).length
+  }
+  return n
+}
+
 module.exports = {
+  inlinedValues,
   JAIPUR_CENTRE,
   JAIPUR_BBOX,
   RAJASTHAN_BBOX,

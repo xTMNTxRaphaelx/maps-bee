@@ -6,13 +6,12 @@ const zlib = require('bare-zlib')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { tileIdToZxy } = require('pmtiles')
-const { decodeBlock } = require('hyperbee2/lib/encoding.js')
-const { buildPlanet, directories } = require('../scripts/planet-build')
+const { buildPlanet, directories, stallWatch } = require('../scripts/planet-build')
 const { buildBee } = require('../scripts/bee-build')
 const { openArchive } = require('../scripts/pmtiles-file')
 const { tileKey, parseTileKey } = require('../scripts/tiles')
 const { decodeGzip } = require('../scripts/mvt')
-const { tmpStore, spyPuts, STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
+const { tmpStore, spyPuts, inlinedValues, STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
 
 // z10 only, 550 tiles in 239 entries, mostly open Atlantic: extracted from the planet z10 file (README)
 const ATLANTIC = path.join(__dirname, '..', 'data', 'extract', 'atlantic-z10.pmtiles')
@@ -174,15 +173,6 @@ test('sorted build puts keys in ascending order and the same set as the director
   t.is(equal, walkKeys.length, 'every key readable with the same bytes')
 })
 
-async function inlinedValues (core) {
-  let n = 0
-  for (let i = 0; i < core.length; i++) {
-    const blk = decodeBlock(await core.get(i), i)
-    if (blk.keys) n += blk.keys.filter((k) => k.value).length
-  }
-  return n
-}
-
 test('inlineValueSize 0 leaves no value inlined in a key record', async (t) => {
   const inl = await newBee(t, 'atlantic-inline')
   const out = await newBee(t, 'atlantic-noinline')
@@ -207,4 +197,24 @@ test('sorted build rejects --resume and archives out of zoom order', async (t) =
   await t.exception(buildPlanet(bee, [JAIPUR_ARCHIVE, STATE_ARCHIVE], { expandRunsUpToZoom: EXPAND, sorted: true, log: () => {} }), /zoom order/)
   await t.exception(buildPlanet(bee, ARCHIVES, { expandRunsUpToZoom: EXPAND, sorted: true, resume: true, log: () => {} }), /resume/)
   t.is(bee.core.length, 0, 'nothing written')
+})
+
+test('stallWatch logs a phase that has not changed since the last tick', async (t) => {
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+  const still = []
+  const stop = stallWatch(() => 'put 12', 20, (msg) => still.push(msg))
+  await wait(70)
+  stop()
+  t.ok(still.length > 0, `logged ${still.length} times`)
+  t.ok(still.every((msg) => msg.includes('put 12')), 'names the phase')
+  const n = still.length
+  await wait(70)
+  t.is(still.length, n, 'stop clears the interval')
+
+  let tick = 0
+  const moving = []
+  const stopMoving = stallWatch(() => `put ${tick++}`, 20, (msg) => moving.push(msg))
+  await wait(70)
+  stopMoving()
+  t.is(moving.length, 0, 'no log while the phase changes')
 })

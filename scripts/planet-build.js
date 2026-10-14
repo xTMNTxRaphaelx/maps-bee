@@ -8,9 +8,11 @@ const { openArchive } = require('./pmtiles-file')
 const { tileKey, mortonCode, mortonToXY } = require('./tiles')
 const { load } = require('./keys')
 const { openDraft } = require('./publish')
+const { parseFlags, intFlag } = require('./flags')
 
 const FLUSH_PUTS = 20000
 const FLUSH_BYTES = 64 * 1024 * 1024
+const STALL_MS = 60000
 
 // one BigUint64 per tile: zoom in bits 58-63, the quadkey as a number in bits 26-57 (z <= 16) and
 // the directory entry index in bits 0-25, so a numeric sort is key order (keys are zz/quadkey)
@@ -108,6 +110,18 @@ function unpack (v) {
   return { z, x, y, entry: Number(v & ENTRY_MASK) }
 }
 
+// logs the phase each tick it has not changed since the last, to name the await a hung build is
+// stuck on (results/planet-c1-sorted.txt run 1 went idle with no error); returns the stop function
+function stallWatch (phase, ms, log) {
+  let last = phase()
+  const timer = setInterval(() => {
+    const now = phase()
+    if (now === last) log(`stall ${ms / 1000} s in ${now}`)
+    last = now
+  }, ms)
+  return () => clearInterval(timer)
+}
+
 function readProgress (file) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'))
@@ -149,6 +163,7 @@ async function buildPlanet (bee, archives, opts = {}) {
   let batchPuts = 0
   let batchBytes = 0
   let completed = null
+  let phase = null
 
   const checkpoint = () => {
     if (progressFile && completed) fs.writeFileSync(progressFile, JSON.stringify(completed) + '\n')
@@ -182,23 +197,23 @@ async function buildPlanet (bee, archives, opts = {}) {
     totals.fillerTiles += stats.fillerTiles
     log(`archive ${a + 1}/${archives.length}\tcollect entries ${stats.entries} tiles ${stats.tiles} dirs ${stats.dirs} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles}\tsort ms ${stats.sortMs}\tms ${Math.round(perf.now() - tc)}`)
     let j = 0
+    let chunk = 0
     while (j < packed.length) {
-      let end = j
-      let puts = 0
-      let bytes = 0
-      while (end < packed.length && puts < flushPuts && bytes < flushBytes) {
-        bytes += lengths[unpack(packed[end]).entry]
-        puts++
-        end++
-      }
       const tiles = []
-      for (let i = j; i < end; i++) tiles.push(unpack(packed[i]))
+      let bytes = 0
+      while (j < packed.length && tiles.length < flushPuts && bytes < flushBytes) {
+        const t = unpack(packed[j++])
+        bytes += lengths[t.entry]
+        tiles.push(t)
+      }
       const entries = [...new Set(tiles.map((t) => t.entry))].sort((p, q) => offsets[p] - offsets[q])
+      phase = `read chunk ${chunk} (${entries.length} entries, ${tiles.length} tiles)`
       const values = await readValues(archive, header, entries.map((e) => ({ offset: offsets[e], length: lengths[e] })))
       const byEntry = new Map(entries.map((e, i) => [e, values[i]]))
       for (const t of tiles) put(tileKey(t.z, t.x, t.y), byEntry.get(t.entry))
-      await flush(a, `tile ${end}/${packed.length}`)
-      j = end
+      phase = `flush ${chunk}`
+      await flush(a, `tile ${j}/${packed.length}`)
+      chunk++
     }
   }
 
@@ -210,7 +225,13 @@ async function buildPlanet (bee, archives, opts = {}) {
       throw new Error(`${archives[a]}: tileCompression ${header.tileCompression} is not gzip`)
     }
     if (sorted) {
-      await putSorted(archive, header, a)
+      phase = `collect archive ${a + 1}`
+      const stop = stallWatch(() => phase, STALL_MS, log)
+      try {
+        await putSorted(archive, header, a)
+      } finally {
+        stop()
+      }
       await archive.close()
       continue
     }
@@ -270,19 +291,7 @@ async function checkZoomOrder (archives) {
 const FLAGS = ['--resume', '--sorted', '--inline-value-size', '--flush-puts', '--flush-bytes']
 
 function parseArgs (argv) {
-  const flags = new Map()
-  for (const a of argv.filter((s) => s.startsWith('--'))) {
-    const i = a.indexOf('=')
-    const name = i === -1 ? a : a.slice(0, i)
-    if (!FLAGS.includes(name)) throw new Error(`unknown flag ${name}`)
-    flags.set(name, i === -1 ? null : a.slice(i + 1))
-  }
-  const int = (name, min) => {
-    if (!flags.has(name)) return undefined
-    const n = Number(flags.get(name))
-    if (!(Number.isInteger(n) && n >= min)) throw new Error(`${name} must be an integer >= ${min}`)
-    return n
-  }
+  const flags = parseFlags(argv, FLAGS)
   const [storeDir, keysDir, name, zoom, ...archives] = argv.filter((a) => !a.startsWith('--'))
   if (!storeDir || !keysDir || !name || !zoom || archives.length === 0) {
     throw new Error('usage: planet-build.js [--resume] [--sorted] [--inline-value-size=N] [--flush-puts=N] [--flush-bytes=N] <storeDir> <keysDir> <draftName> <expandRunsUpToZoom> <archive.pmtiles>...')
@@ -295,9 +304,9 @@ function parseArgs (argv) {
     archives,
     resume: flags.has('--resume'),
     sorted: flags.has('--sorted'),
-    inlineValueSize: int('--inline-value-size', 0),
-    flushPuts: int('--flush-puts', 1),
-    flushBytes: int('--flush-bytes', 1)
+    inlineValueSize: intFlag(flags, '--inline-value-size', 0),
+    flushPuts: intFlag(flags, '--flush-puts', 1),
+    flushBytes: intFlag(flags, '--flush-bytes', 1)
   }
 }
 
@@ -315,7 +324,7 @@ async function main () {
   await store.close()
 }
 
-module.exports = { buildPlanet, directories, FLUSH_PUTS, FLUSH_BYTES }
+module.exports = { buildPlanet, directories, stallWatch, FLUSH_PUTS, FLUSH_BYTES }
 
 if (require.main === module) {
   main().catch((err) => {
