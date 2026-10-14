@@ -164,6 +164,7 @@ function fmt (name, phase, m, seederLength) {
 
 module.exports = {
   Hyperbee,
+  publishedRef,
   perf,
   tmpStore,
   openSeeder,

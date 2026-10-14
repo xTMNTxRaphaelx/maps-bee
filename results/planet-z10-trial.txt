@@ -1,0 +1,19 @@
+# bare scripts/planet-build.js store/planet-z10-trial keys atlas 10 data/planet-z10.pmtiles (2026-10-13; z10 extract 2,205,317,952 B, 1,048,576 tiles in 478,575 entries, 118 directories)
+draft atlas length 0 resume false progress store/planet-z10-trial/planet-build.progress
+archive 1/1	dir 2/118	puts 20005	fillerRuns 0	fillerTiles 0	bytes 1883940	core.length 106	elapsed 0.1 s	puts/s 386445
+...
+archive 1/1	dir 53/118	puts 504221	fillerRuns 0	fillerTiles 0	bytes 804798320	core.length 46281	elapsed 3.9 s	puts/s 129747
+archive 1/1	dir 92/118	puts 867892	fillerRuns 0	fillerTiles 0	bytes 1312648266	core.length 80360	elapsed 6.6 s	puts/s 130645
+archive 1/1	dir 116/118	puts 1032829	fillerRuns 0	fillerTiles 0	bytes 2278729771	core.length 113631	elapsed 9.9 s	puts/s 104093
+archive 1/1	dir 118/118	puts 1048576	fillerRuns 0	fillerTiles 0	bytes 2280212116	core.length 113708	elapsed 10.0 s	puts/s 104826
+done puts 1048576 bytes 2280212116 flushes 69 fillerRuns 0 fillerTiles 0 elapsed 10.0 s
+
+# fresh read-only open of the draft and five bee.get calls (scratchpad trial-check.js)
+m.length 0 draft.length 113708 byteLength 2306410418
+jaipur 727,432 gz 38984 B layers boundaries,earth,landuse,places,pois,roads,water ocean 0
+atlantic 440,428 gz 93 B layers water ocean 1
+london 511,340 gz 175102 B layers boundaries,earth,landuse,places,pois,roads,water ocean 0
+pacific 85,601 gz 95 B layers water ocean 1
+antarctica-edge 540,992 gz 70 B layers earth ocean 0
+
+# store/planet-z10-trial on disk: 2.2 GB (du -sh)

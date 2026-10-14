@@ -10,9 +10,10 @@ function manifestFor(publicKeys, quorum = 2) {
   };
 }
 
-// signers: [{ index, keyPair }]; each signs the draft's tree at its current length
-function signDraft(m, draft, signers) {
+// signers: [{ index, keyPair }]; each signs the draft's tree at length, by default the whole draft
+async function signDraft(m, draft, signers, length = draft.length) {
   const batch = draft.state.createTreeBatch();
+  if (length !== batch.length) await batch.restore(length);
   const verifier = m.core.verifier;
   const partials = signers.map(({ index, keyPair }) => ({
     signer: index,
@@ -23,9 +24,9 @@ function signDraft(m, draft, signers) {
   return verifier.assemble(partials);
 }
 
-async function publishDraft(m, draft, signers) {
-  const signature = signDraft(m, draft, signers);
-  return m.commit(draft, { length: draft.length, signature });
+async function publishDraft(m, draft, signers, length = draft.length) {
+  const signature = await signDraft(m, draft, signers, length);
+  return m.commit(draft, { length, signature });
 }
 
 module.exports = { manifestFor, signDraft, publishDraft };

@@ -1,7 +1,7 @@
 'use strict'
 const fs = require('bare-fs')
 const zlib = require('bare-zlib')
-const { PMTiles } = require('pmtiles')
+const { PMTiles, ResolvedValueCache } = require('pmtiles')
 
 // pmtiles reads through a Source with getKey() and getBytes(offset, length)
 class FileSource {
@@ -27,9 +27,11 @@ class FileSource {
   }
 }
 
+// ResolvedValueCache, because the default SharedPromiseCache builds an AbortController per leaf
+// directory read and bare has none; small extracts never reach a leaf, the planet files do
 function openArchive (path) {
   const source = new FileSource(path)
-  const archive = new PMTiles(source)
+  const archive = new PMTiles(source, new ResolvedValueCache())
   archive.close = () => source.close()
   return archive
 }

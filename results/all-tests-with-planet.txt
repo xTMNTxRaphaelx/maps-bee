@@ -1,0 +1,611 @@
+TAP version 13
+
+# quadkey digits at z1
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - should be equal
+    ok 4 - should be equal
+ok 1 - quadkey digits at z1 # time = 0ms
+
+# Jaipur centre tile at z14, z12, z10
+    ok 1 - should deep equal
+    ok 2 - should deep equal
+    ok 3 - should deep equal
+ok 2 - Jaipur centre tile at z14, z12, z10 # time = 1ms
+
+# parent quadkey is a prefix of the child
+    ok 1 - should be equal
+    ok 2 - should be equal
+ok 3 - parent quadkey is a prefix of the child # time = 0ms
+
+# tileKey round-trips through parseTileKey
+    ok 1 - should deep equal
+    ok 2 - should be equal
+ok 4 - tileKey round-trips through parseTileKey # time = 0ms
+
+# lonLatToTile clamps at the mercator edges
+    ok 1 - should deep equal
+    ok 2 - should deep equal
+ok 5 - lonLatToTile clamps at the mercator edges # time = 0ms
+
+# lonLatToTile rejects input that would key the wrong place
+    ok 1 - should throw
+    ok 2 - should throw
+    ok 3 - should throw
+    ok 4 - valid input is unchanged
+ok 6 - lonLatToTile rejects input that would key the wrong place # time = 0ms
+
+# a 3x3 of z14 tiles around the centre spans two z12 subtrees
+    ok 1 - should deep equal
+ok 7 - a 3x3 of z14 tiles around the centre spans two z12 subtrees # time = 0ms
+
+# subtreeRange brackets every key in the subtree
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - expected truthy value
+    ok 5 - expected truthy value
+ok 8 - subtreeRange brackets every key in the subtree # time = 0ms
+
+# bboxTiles yields a full rectangle of unique tiles
+    ok 1 - should be equal
+ok 9 - bboxTiles yields a full rectangle of unique tiles # time = 0ms
+
+# Jaipur extract header covers z11-14 and the bbox
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - expected truthy value
+ok 10 - Jaipur extract header covers z11-14 and the bbox # time = 2ms
+
+# state extract header covers z0-10
+    ok 1 - should be equal
+    ok 2 - should be equal
+ok 11 - state extract header covers z0-10 # time = 0ms
+
+# centre z14 tile decodes to MVT with roads and places
+    ok 1 - tile present
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    ok 4 - should deep equal
+    ok 5 - expected truthy value
+    ok 6 - expected truthy value
+    ok 7 - should deep equal
+ok 12 - centre z14 tile decodes to MVT with roads and places # time = 4ms
+
+# a tile outside the extract is absent
+    ok 1 - should be equal
+ok 13 - a tile outside the extract is absent # time = 0ms
+
+# values up to 14 MiB round-trip; over 1 KiB costs a second block; 16 MiB rejects
+    ok 1 - 100B round-trips
+    ok 2 - 100B block count
+    ok 3 - 4KiB round-trips
+    ok 4 - 4KiB block count
+    ok 5 - 2MiB round-trips
+    ok 6 - 2MiB block count
+    ok 7 - 14MiB round-trips
+    ok 8 - 14MiB block count
+    ok 9 - 16 MiB put rejected
+    ok 10 - should be equal
+    ok 11 - expected truthy value
+    ok 12 - should be equal
+ok 14 - values up to 14 MiB round-trip; over 1 KiB costs a second block; 16 MiB rejects # time = 84ms
+
+# 2-of-3 multisig publish from a named draft session
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - should be equal
+    ok 4 - expected truthy value
+    ok 5 - should be equal
+    ok 6 - expected truthy value
+    ok 7 - should be equal
+    ok 8 - should be equal
+    ok 9 - should be equal
+    ok 10 - expected truthy value
+ok 15 - 2-of-3 multisig publish from a named draft session # time = 114ms
+
+# commit with one of two required signatures throws INVALID_SIGNATURE
+    ok 1 - single-signer commit rejected
+    ok 2 - should be equal
+    ok 3 - should be equal
+ok 16 - commit with one of two required signatures throws INVALID_SIGNATURE # time = 48ms
+
+# sparse reads over a piped stream, one-way delay 0 ms
+    ok 1 - seeder holds the published length
+    # seeder key q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076 RTT 0 ms
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - sparse: fewer blocks than the core
+    ok 5 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	update	ms 0.7	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # a-3x3-z14-gets	read-cold	ms 7.4	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 197080	wireBytesTx 448
+    # a-3x3-z14-gets	indices 259,820,908,916,919,920,1030,1032,1033,1034,1035,1036,1074,1075
+    ok 6 - 9 entries
+    ok 7 - every value decodes as MVT with layers
+    ok 8 - repeat read is served locally
+    # a-3x3-z14-gets-repeat	read-local	ms 0.1	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 9 - 16 entries
+    ok 10 - every value decodes as MVT with layers
+    ok 11 - sparse: fewer blocks than the core
+    ok 12 - b-block16-z14-stream block count
+    # b-block16-z14-stream	update	ms 0.6	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # b-block16-z14-stream	read-cold	ms 7.4	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 255942	wireBytesTx 568
+    # b-block16-z14-stream	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 13 - 16 entries
+    ok 14 - every value decodes as MVT with layers
+    ok 15 - sparse: fewer blocks than the core
+    # b2-block16-z14-gets	update	ms 0.5	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # b2-block16-z14-gets	read-cold	ms 6.8	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257904	wireBytesTx 568
+    # b2-block16-z14-gets	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 16 - 9 entries
+    ok 17 - every value decodes as MVT with layers
+    ok 18 - sparse: fewer blocks than the core
+    # d-3x3-z10-gets	update	ms 0.5	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # d-3x3-z10-gets	read-cold	ms 12.3	blocks 15 (1.4% of 1076)	blockBytes 226770	wireRequestTx 15	wireDataRx 15	wireBytesRx 231060	wireBytesTx 478
+    # d-3x3-z10-gets	indices 259,389,390,622,753,755,796,797,798,799,818,819,820,908,1075
+ok 17 - sparse reads over a piped stream, one-way delay 0 ms # time = 273ms
+
+# sparse reads over a piped stream, one-way delay 50 ms
+    ok 1 - seeder holds the published length
+    # seeder key q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076 RTT 100 ms
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - sparse: fewer blocks than the core
+    ok 5 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	update	ms 362.9	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # a-3x3-z14-gets	read-cold	ms 530	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 197108	wireBytesTx 506
+    # a-3x3-z14-gets	indices 259,820,908,916,919,920,1030,1032,1033,1034,1035,1036,1074,1075
+    ok 6 - 9 entries
+    ok 7 - every value decodes as MVT with layers
+    ok 8 - repeat read is served locally
+    # a-3x3-z14-gets-repeat	read-local	ms 0.4	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 9 - 16 entries
+    ok 10 - every value decodes as MVT with layers
+    ok 11 - sparse: fewer blocks than the core
+    ok 12 - b-block16-z14-stream block count
+    # b-block16-z14-stream	update	ms 363.9	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # b-block16-z14-stream	read-cold	ms 1789.4	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 255970	wireBytesTx 626
+    # b-block16-z14-stream	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 13 - 16 entries
+    ok 14 - every value decodes as MVT with layers
+    ok 15 - sparse: fewer blocks than the core
+    # b2-block16-z14-gets	update	ms 363.7	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # b2-block16-z14-gets	read-cold	ms 429.7	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257932	wireBytesTx 626
+    # b2-block16-z14-gets	indices 259,820,908,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1075
+    ok 16 - 9 entries
+    ok 17 - every value decodes as MVT with layers
+    ok 18 - sparse: fewer blocks than the core
+    # d-3x3-z10-gets	update	ms 361.5	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # d-3x3-z10-gets	read-cold	ms 539.4	blocks 15 (1.4% of 1076)	blockBytes 226770	wireRequestTx 15	wireDataRx 15	wireBytesRx 231088	wireBytesTx 536
+    # d-3x3-z10-gets	indices 259,389,390,622,753,755,796,797,798,799,818,819,820,908,1075
+    ok 19 - parallel gets beat the range stream by 3x or more under latency
+ok 18 - sparse reads over a piped stream, one-way delay 50 ms # time = 5038ms
+
+# statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 0 ms
+    ok 1 - seeder holds the published length
+    ok 2 - 16 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - should be equal
+    # e-z8-block16-z10-gets	update	ms 0.8	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 716	wireBytesTx 191
+    # e-z8-block16-z10-gets	read-cold	ms 12.9	blocks 20 (1.9% of 1076)	blockBytes 338384	wireRequestTx 20	wireDataRx 20	wireBytesRx 343418	wireBytesTx 628
+    # e-z8-block16-z10-gets	indices 259,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,820,908,1075
+ok 19 - statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 0 ms # time = 105ms
+
+# statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 50 ms
+    ok 1 - seeder holds the published length
+    ok 2 - 16 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - should be equal
+    # e-z8-block16-z10-gets	update	ms 363.6	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 852	wireBytesTx 321
+    # e-z8-block16-z10-gets	read-cold	ms 432.7	blocks 20 (1.9% of 1076)	blockBytes 338384	wireRequestTx 20	wireDataRx 20	wireBytesRx 343446	wireBytesTx 686
+    # e-z8-block16-z10-gets	indices 259,788,789,790,791,792,793,794,795,796,797,798,799,800,801,802,803,820,908,1075
+ok 20 - statewide preview block: 16 z10 tiles of one z8 cell, one-way delay 50 ms # time = 873ms
+
+# sparse reads over hyperswarm on a localhost testnet
+    ok 1 - seeder holds the published length
+    # seeder announced q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 1076
+    ok 2 - 9 entries
+    ok 3 - every value decodes as MVT with layers
+    ok 4 - a-3x3-z14-gets block count
+    # a-3x3-z14-gets	connect ms 8.1	total cold ms (join to last value) 23
+    # a-3x3-z14-gets	update	ms 1.8	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 850	wireBytesTx 373
+    # a-3x3-z14-gets	read-cold	ms 12.7	blocks 14 (1.3% of 1076)	blockBytes 193584	wireRequestTx 14	wireDataRx 14	wireBytesRx 200940	wireBytesTx 3938
+    ok 5 - 16 entries
+    ok 6 - every value decodes as MVT with layers
+    ok 7 - b-block16-z14-stream block count
+    # b-block16-z14-stream	connect ms 3.3	total cold ms (join to last value) 27.2
+    # b-block16-z14-stream	update	ms 1.1	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 830	wireBytesTx 353
+    # b-block16-z14-stream	read-cold	ms 22.7	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 261111	wireBytesTx 5038
+    ok 8 - 16 entries
+    ok 9 - every value decodes as MVT with layers
+    ok 10 - b2-block16-z14-gets block count
+    # b2-block16-z14-gets	connect ms 3.2	total cold ms (join to last value) 19.6
+    # b2-block16-z14-gets	update	ms 0.9	blocks 0 (0.0% of 1076)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 830	wireBytesTx 353
+    # b2-block16-z14-gets	read-cold	ms 15.4	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 262664	wireBytesTx 4958
+    # ...teardown still running after 250ms
+    # ...teardown time 5021ms
+ok 21 - sparse reads over hyperswarm on a localhost testnet # time = 5292ms
+
+# city+town gazetteer: nearest entry to the Jaipur centre is Jaipur
+    # gazetteer entries 25096 core.length 155 core.byteLength 2453748
+    # city+town only entries 825 core.length 5 core.byteLength 77731
+    ok 1 - should be equal
+    # city+town range g/10/12312301..g/10/123123014 returned 32 entries; nearest 3 [["Jaipur","city","2.55"],["Renwal Manji","town","25.74"],["Bagru","town","27.50"]]
+    ok 2 - should be equal
+    ok 3 - expected truthy value
+    # nearest Jaipur (city) 2.55 km; next nearest Renwal Manji (town) 25.74 km
+    ok 4 - should be equal
+    # full scan of city+town: nearest Jaipur 2.55 km; next nearest Jamwa Ramgarh (town) 24.90 km (inside the z8 range: false)
+ok 22 - city+town gazetteer: nearest entry to the Jaipur centre is Jaipur # time = 213ms
+
+# readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, outside the atlas
+    # atlas core.length 1082
+    ok 1 - should be equal
+    ok 2 - should deep equal
+    ok 3 - should be equal
+    ok 4 - all 16 tiles decode as MVT
+    ok 5 - should be equal
+    ok 6 - should be equal
+    ok 7 - distance matches a full scan
+    # label Jaipur (city) 2.55 km
+    ok 8 - the extract holds 8 of the 16 tiles of this cell
+    ok 9 - a partly published cell stays at z14, no fallback
+    ok 10 - missing tiles are null, present ones in place
+    ok 11 - present tiles decode as MVT
+    ok 12 - should be equal
+    ok 13 - should deep equal
+    ok 14 - should be equal
+    ok 15 - all 16 tiles decode as MVT
+    ok 16 - should be equal
+    ok 17 - should be equal
+    ok 18 - distance matches a full scan
+    # label Jodhpur (city) 1.69 km
+    ok 19 - nearest place is in another z8 cell
+    ok 20 - should be equal
+    ok 21 - should be equal
+    ok 22 - distance matches a full scan
+    # label Jodhpur (city) 9.49 km
+    ok 23 - should be equal
+    ok 24 - should be equal
+    ok 25 - should be equal
+ok 23 - readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, outside the atlas # time = 793ms
+
+# readPreview rejects bad opts and bad points before any read
+    ok 1 - should reject
+    ok 2 - should reject
+    ok 3 - should reject
+    ok 4 - should reject
+    ok 5 - should reject
+ok 24 - readPreview rejects bad opts and bad points before any read # time = 674ms
+
+# readPreview over a piped link: one call per message, then served locally
+    # preview-rtt0	update	ms 0.5	blocks 0 (0.0% of 1082)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 565	wireBytesTx 194
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - sparse: fewer blocks than the core
+    # preview-rtt0-jaipur	read-cold	ms 7.6	blocks 23 (2.1% of 1082)	blockBytes 320613	wireRequestTx 23	wireDataRx 23	wireBytesRx 325685	wireBytesTx 690
+    ok 4 - repeat preview is served locally
+    # preview-rtt0-jaipur	read-local	ms 0.8	blocks 0 (0.0% of 1082)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 5 - should be equal
+    ok 6 - should be equal
+    # preview-rtt0-jodhpur-fallback	read-cold	ms 3	blocks 16 (1.5% of 1082)	blockBytes 143158	wireRequestTx 16	wireDataRx 16	wireBytesRx 147802	wireBytesTx 480
+    # preview-rtt100	update	ms 364.5	blocks 0 (0.0% of 1082)	blockBytes 0	wireRequestTx 1	wireDataRx 1	wireBytesRx 701	wireBytesTx 324
+    ok 7 - should be equal
+    ok 8 - should be equal
+    ok 9 - sparse: fewer blocks than the core
+    # preview-rtt100-jaipur	read-cold	ms 439.8	blocks 23 (2.1% of 1082)	blockBytes 320613	wireRequestTx 23	wireDataRx 23	wireBytesRx 325713	wireBytesTx 748
+    ok 10 - repeat preview is served locally
+    # preview-rtt100-jaipur	read-local	ms 3.4	blocks 0 (0.0% of 1082)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 11 - should be equal
+    ok 12 - should be equal
+    # preview-rtt100-jodhpur-fallback	read-cold	ms 325.1	blocks 16 (1.5% of 1082)	blockBytes 143158	wireRequestTx 16	wireDataRx 16	wireBytesRx 147802	wireBytesTx 480
+ok 25 - readPreview over a piped link: one call per message, then served locally # time = 1953ms
+
+# readPreview with no peer rejects after the per-block timeout
+    ok 1 - should reject
+ok 26 - readPreview with no peer rejects after the per-block timeout # time = 980ms
+
+# readPreview deadline: rejects early and sends no further requests
+    ok 1 - should be equal
+    ok 2 - rejected after 155 ms, well before the cold read completes at RTT 100
+    ok 3 - no requests sent after the rejection
+    # deadline: rejected at 155 ms; 0 in-flight blocks landed afterwards, 0 new requests
+ok 27 - readPreview deadline: rejects early and sends no further requests # time = 1699ms
+
+# planet builder matches the bbox builder tile for tile and skips only deep runs
+    ok 1 - chunked into 7 flushes
+    # new puts 1211 bytes 18207887 fillerRuns 0 fillerTiles 0 dirs 2
+    ok 2 - one key per put
+    ok 3 - every new key is in the old build with the same tile bytes
+    ok 4 - every old key at zoom <= 10 is in the new build
+    ok 5 - the 0 deep keys the new build lacks are exactly the run tiles
+    ok 6 - filler count matches
+ok 28 - planet builder matches the bbox builder tile for tile and skips only deep runs # time = 1055ms
+
+# planet builder resumes from its checkpoint across archives
+    ok 1 - first run stopped after one directory
+    ok 2 - should deep equal
+    # first puts 881 second puts 330
+    ok 3 - resumed run puts the same total
+    ok 4 - resumed bee has the same key count
+ok 29 - planet builder resumes from its checkpoint across archives # time = 187ms
+
+# run entries expand at or below the expand zoom and are skipped above it
+    ok 1 - addressed tiles as pmtiles show reports
+    ok 2 - 137 runs covering 448 tiles
+    ok 3 - every addressed tile present when runs expand
+    ok 4 - should be equal
+    ok 5 - last tile of each run is present
+    ok 6 - last tile of each run is present
+    ok 7 - last tile of each run is present
+    ok 8 - last tile of each run is present
+    ok 9 - last tile of each run is present
+    ok 10 - last tile of each run is present
+    ok 11 - last tile of each run is present
+    ok 12 - last tile of each run is present
+    ok 13 - last tile of each run is present
+    ok 14 - last tile of each run is present
+    ok 15 - last tile of each run is present
+    ok 16 - last tile of each run is present
+    ok 17 - last tile of each run is present
+    ok 18 - last tile of each run is present
+    ok 19 - last tile of each run is present
+    ok 20 - last tile of each run is present
+    ok 21 - last tile of each run is present
+    ok 22 - last tile of each run is present
+    ok 23 - last tile of each run is present
+    ok 24 - last tile of each run is present
+    ok 25 - last tile of each run is present
+    ok 26 - last tile of each run is present
+    ok 27 - last tile of each run is present
+    ok 28 - last tile of each run is present
+    ok 29 - last tile of each run is present
+    ok 30 - last tile of each run is present
+    ok 31 - last tile of each run is present
+    ok 32 - last tile of each run is present
+    ok 33 - last tile of each run is present
+    ok 34 - last tile of each run is present
+    ok 35 - last tile of each run is present
+    ok 36 - last tile of each run is present
+    ok 37 - last tile of each run is present
+    ok 38 - last tile of each run is present
+    ok 39 - last tile of each run is present
+    ok 40 - last tile of each run is present
+    ok 41 - last tile of each run is present
+    ok 42 - last tile of each run is present
+    ok 43 - last tile of each run is present
+    ok 44 - last tile of each run is present
+    ok 45 - last tile of each run is present
+    ok 46 - last tile of each run is present
+    ok 47 - last tile of each run is present
+    ok 48 - last tile of each run is present
+    ok 49 - last tile of each run is present
+    ok 50 - last tile of each run is present
+    ok 51 - last tile of each run is present
+    ok 52 - last tile of each run is present
+    ok 53 - last tile of each run is present
+    ok 54 - last tile of each run is present
+    ok 55 - last tile of each run is present
+    ok 56 - last tile of each run is present
+    ok 57 - last tile of each run is present
+    ok 58 - last tile of each run is present
+    ok 59 - last tile of each run is present
+    ok 60 - last tile of each run is present
+    ok 61 - last tile of each run is present
+    ok 62 - last tile of each run is present
+    ok 63 - last tile of each run is present
+    ok 64 - last tile of each run is present
+    ok 65 - last tile of each run is present
+    ok 66 - last tile of each run is present
+    ok 67 - last tile of each run is present
+    ok 68 - last tile of each run is present
+    ok 69 - last tile of each run is present
+    ok 70 - last tile of each run is present
+    ok 71 - last tile of each run is present
+    ok 72 - last tile of each run is present
+    ok 73 - last tile of each run is present
+    ok 74 - last tile of each run is present
+    ok 75 - last tile of each run is present
+    ok 76 - last tile of each run is present
+    ok 77 - last tile of each run is present
+    ok 78 - last tile of each run is present
+    ok 79 - last tile of each run is present
+    ok 80 - last tile of each run is present
+    ok 81 - last tile of each run is present
+    ok 82 - last tile of each run is present
+    ok 83 - last tile of each run is present
+    ok 84 - last tile of each run is present
+    ok 85 - last tile of each run is present
+    ok 86 - last tile of each run is present
+    ok 87 - last tile of each run is present
+    ok 88 - last tile of each run is present
+    ok 89 - last tile of each run is present
+    ok 90 - last tile of each run is present
+    ok 91 - last tile of each run is present
+    ok 92 - last tile of each run is present
+    ok 93 - last tile of each run is present
+    ok 94 - last tile of each run is present
+    ok 95 - last tile of each run is present
+    ok 96 - last tile of each run is present
+    ok 97 - last tile of each run is present
+    ok 98 - last tile of each run is present
+    ok 99 - last tile of each run is present
+    ok 100 - last tile of each run is present
+    ok 101 - last tile of each run is present
+    ok 102 - last tile of each run is present
+    ok 103 - last tile of each run is present
+    ok 104 - last tile of each run is present
+    ok 105 - last tile of each run is present
+    ok 106 - last tile of each run is present
+    ok 107 - last tile of each run is present
+    ok 108 - last tile of each run is present
+    ok 109 - last tile of each run is present
+    ok 110 - last tile of each run is present
+    ok 111 - last tile of each run is present
+    ok 112 - last tile of each run is present
+    ok 113 - last tile of each run is present
+    ok 114 - last tile of each run is present
+    ok 115 - last tile of each run is present
+    ok 116 - last tile of each run is present
+    ok 117 - last tile of each run is present
+    ok 118 - last tile of each run is present
+    ok 119 - last tile of each run is present
+    ok 120 - last tile of each run is present
+    ok 121 - last tile of each run is present
+    ok 122 - last tile of each run is present
+    ok 123 - last tile of each run is present
+    ok 124 - last tile of each run is present
+    ok 125 - last tile of each run is present
+    ok 126 - last tile of each run is present
+    ok 127 - last tile of each run is present
+    ok 128 - last tile of each run is present
+    ok 129 - last tile of each run is present
+    ok 130 - last tile of each run is present
+    ok 131 - last tile of each run is present
+    ok 132 - last tile of each run is present
+    ok 133 - last tile of each run is present
+    ok 134 - last tile of each run is present
+    ok 135 - last tile of each run is present
+    ok 136 - last tile of each run is present
+    ok 137 - last tile of each run is present
+    ok 138 - last tile of each run is present
+    ok 139 - last tile of each run is present
+    ok 140 - last tile of each run is present
+    ok 141 - last tile of each run is present
+    ok 142 - 137 of 137 runs are explicit ocean tiles
+    ok 143 - only unique tiles when runs are filler
+    ok 144 - should be equal
+    ok 145 - should be equal
+    ok 146 - a run tile is absent
+ok 30 - run entries expand at or below the expand zoom and are skipped above it # time = 106ms
+
+# seed.js serves the signed atlas and probe.js reads a preview over a testnet
+    ok 1 - seeder holds the published length
+    # connect ms 3.8	update ms 1.4 blocks 0 bytes 0	core.length 1076
+    # cold	26.9,75.8	ms 13.3	blocks 18	bytes 253136	zoom 14	tiles 16/16	label null
+    # repeat	26.9,75.8	ms 0.3	blocks 0	bytes 0	zoom 14	tiles 16/16	label null
+    ok 2 - client updated to the published length
+    ok 3 - cold and repeat
+    ok 4 - should be equal
+    ok 5 - all 16 z14 tiles
+    ok 6 - expected truthy value
+    ok 7 - repeat read fetches nothing
+    ok 8 - seeder uploads equal client downloads
+    ok 9 - seeder printed its key line
+    # ...teardown still running after 250ms
+    # ...teardown time 5014ms
+ok 31 - seed.js serves the signed atlas and probe.js reads a preview over a testnet # time = 5100ms
+
+# second 2-of-3 publish on the same core: same key, one signature rejected, warm client fetches only new blocks
+    ok 1 - first publish
+    ok 2 - should be equal
+    # first publish length 1082
+    ok 3 - should be equal
+    ok 4 - should be equal
+    # warm	read-cold-v1	ms 7.2	blocks 23 (2.1% of 1082)	blockBytes 320613	wireRequestTx 23	wireDataRx 23	wireBytesRx 325685	wireBytesTx 690
+    ok 5 - new draft resumes at the published length
+    ok 6 - cell tile present in draft2
+    ok 7 - cell tile present in draft2
+    ok 8 - cell tile present in draft2
+    ok 9 - cell tile present in draft2
+    ok 10 - cell tile present in draft2
+    ok 11 - cell tile present in draft2
+    ok 12 - cell tile present in draft2
+    ok 13 - cell tile present in draft2
+    ok 14 - cell tile present in draft2
+    ok 15 - cell tile present in draft2
+    ok 16 - rewrites append
+    # draft2 length 1092 (10 new blocks for 10 rewritten tiles)
+    ok 17 - one signature rejected on the second commit
+    ok 18 - should be equal
+    ok 19 - second publish with signers b and c
+    ok 20 - core key unchanged
+    ok 21 - expected truthy value
+    ok 22 - should be equal
+    # second publish length 1092 (+10)
+    ok 23 - should be equal
+    ok 24 - cold client reads the rewritten tile
+    ok 25 - should be equal
+    # warm	update-v2	ms 0	blocks 0 (0.0% of 1092)	blockBytes 0	wireRequestTx 0	wireDataRx 0	wireBytesRx 0	wireBytesTx 0
+    ok 26 - should be equal
+    ok 27 - warm client sees the rewritten tile
+    ok 28 - nothing below the first publish is fetched again
+    # warm	read-v2	ms 4.8	blocks 10 (0.9% of 1092)	blockBytes 157499	wireRequestTx 10	wireDataRx 10	wireBytesRx 158351	wireBytesTx 300
+    ok 29 - every rewritten tile value is in a new value block
+    # warm read-v2: value blocks 9 holding 10 values (157076 B) for 10 changed tiles, keys+tree blocks 1 (423 B), unchanged tiles 6 fetched 0
+ok 32 - second 2-of-3 publish on the same core: same key, one signature rejected, warm client fetches only new blocks # time = 871ms
+
+# a draft committed in chunks ends as the same signed tree as one commit
+    ok 1 - draft has 1082 blocks
+    ok 2 - draft holds the centre tile
+    ok 3 - should be equal
+    ok 4 - should be equal
+    ok 5 - should be equal
+    ok 6 - one commit per chunk
+    ok 7 - should deep equal
+    ok 8 - should be equal
+    ok 9 - tree hash unchanged by chunking
+    ok 10 - the committed core serves the tile
+ok 33 - a draft committed in chunks ends as the same signed tree as one commit # time = 709ms
+
+# what a seeder sees: uploaded blocks name the z12 cell of the pin
+    ok 1 - should be equal
+    # seeder-sees	read-cold	ms 9.5	blocks 23 (2.1% of 1082)	blockBytes 320613	wireRequestTx 23	wireDataRx 23	wireBytesRx 325685	wireBytesTx 690
+    ok 2 - seeder upload events match the client downloads
+    # block 259	keys+tree	2775 B	keys 130	nodes 2	09/123121200 .. 09/123123331
+    # block 820	keys+tree	4651 B	keys 191	nodes 2	10/1231210320 .. 10/1231233310
+    # block 908	keys+tree	3098 B	keys 64	nodes 3	13/1231230111001 .. 13/1231231000222
+    # block 1023	value	11345 B	14/12312301113033
+    # block 1024	value	19293 B	14/12312301113031 14/12312301113032
+    # block 1025	value	18549 B	14/12312301113030
+    # block 1026	value	10099 B	14/12312301113023
+    # block 1027	value	20487 B	14/12312301113022
+    # block 1028	value	11639 B	14/12312301113021
+    # block 1029	value	33561 B	14/12312301113013 14/12312301113020
+    # block 1030	value	9799 B	14/12312301113012
+    # block 1031	value	11461 B	14/12312301113011
+    # block 1032	value	17501 B	14/12312301113010
+    # block 1033	value	15185 B	14/12312301113003
+    # block 1034	value	18264 B	14/12312301113002
+    # block 1035	value	19459 B	14/12312301113001
+    # block 1036	value	20197 B	14/12312301113000
+    # block 1075	keys+tree	5773 B	keys 135	nodes 2	14/12312301111321 .. 14/12312310002222
+    # block 1076	keys+tree	775 B	keys 0	nodes 1	(none)
+    # block 1078	keys+tree	13323 B	keys 139	nodes 1	g/10/1231211223/1 .. g/10/1231213001/2
+    # block 1079	keys+tree	12151 B	keys 127	nodes 1	g/10/1231213002/1 .. g/10/1231213302/1
+    # block 1080	keys+tree	17108 B	keys 179	nodes 1	g/10/1231213303/1 .. g/10/1231230133/1
+    # block 1081	keys+tree	24120 B	keys 252	nodes 2	g/10/1231211223/0 .. g/10/1231233310/1
+    ok 3 - the 16 cell tile values are what was uploaded
+    ok 4 - every uploaded value block belongs to 14/123123011130
+    # seeder sees 14 value blocks holding the 16 tiles under 14/123123011130, plus 9 keys+tree blocks whose key spans are listed above
+ok 34 - what a seeder sees: uploaded blocks name the z12 cell of the pin # time = 751ms
+
+# 2x2 around the pin against the 16-tile cell, both cold
+    ok 1 - seeder holds the published length
+    ok 2 - should deep equal
+    # pin z14 tile 11641,6920 frac x 0.74 y 0.13; 2x2 [[11641,6920],[11642,6920],[11641,6919],[11642,6919]]
+    ok 3 - 4 entries
+    ok 4 - every value decodes as MVT with layers
+    # rtt0-2x2	read-cold	ms 2.8	blocks 9 (0.8% of 1076)	blockBytes 114462	wireRequestTx 9	wireDataRx 9	wireBytesRx 116864	wireBytesTx 298
+    ok 5 - 16 entries
+    ok 6 - every value decodes as MVT with layers
+    # rtt0-cell16	read-cold	ms 4.1	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257904	wireBytesTx 568
+    ok 7 - 2x2 fetches fewer blocks
+    # rtt0: 2x2 is 45% of the cell bytes, 68% of the cell time
+    ok 8 - 4 entries
+    ok 9 - every value decodes as MVT with layers
+    # rtt100-2x2	read-cold	ms 532.5	blocks 9 (0.8% of 1076)	blockBytes 114462	wireRequestTx 9	wireDataRx 9	wireBytesRx 116892	wireBytesTx 356
+    ok 10 - 16 entries
+    ok 11 - every value decodes as MVT with layers
+    # rtt100-cell16	read-cold	ms 429.1	blocks 18 (1.7% of 1076)	blockBytes 253136	wireRequestTx 18	wireDataRx 18	wireBytesRx 257932	wireBytesTx 626
+    ok 12 - 2x2 fetches fewer blocks
+    # rtt100: 2x2 is 45% of the cell bytes, 124% of the cell time
+ok 35 - 2x2 around the pin against the 16-tile cell, both cold # time = 1940ms
+
+1..35
+# tests = 35/35 pass
+# asserts = 388/388 pass
+# time = 28949ms
+
+# ok

@@ -14,6 +14,7 @@
     "b4a": "^1.9.0",
     "bare-fs": "^4.8.4",
     "bare-path": "^3.1.2",
+    "bare-signals": "^5.0.0",
     "bare-zlib": "^1.4.1",
     "corestore": "^7.13.0",
     "hyperbee2": "^2.18.0",

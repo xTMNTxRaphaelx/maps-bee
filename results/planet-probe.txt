@@ -1,0 +1,83 @@
+# Planet run, 2026-10-13: z10 complete + z14 without filler runs, one seeder on the public DHT, cold probe from a fresh store
+
+## build (scripts/planet-build.js, 20,000 puts per flush)
+done puts 32888213 bytes 35221625742 flushes 1713 fillerRuns 7661427 fillerTiles 236595819 elapsed 426.9 s
+draft.length 3488141 byteLength 36273853781 lastKey 14/11111111111111 readable true
+build exit 0 Tue Oct 13 23:34:24 IST 2026
+
+## commit (scripts/planet-commit.js, 20,000 blocks per signed commit; a single commit died at the 4 GB V8 heap: hypercore copies every block of a commit into memory, session-state.js:912-931)
+draft atlas length 3488141 byteLength 36273853781 signed 0 chunk 20000
+commit {"length":3488141,"byteLength":36273853781} m.length 3488141 m.signedLength 3488141
+maps: { "key": "q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo", "length": 3488141 }
+commit exit 0 Tue Oct 13 23:40:21 IST 2026
+
+## probe (scripts/probe.js: readPreview = 16-tile z14 cell, z10 fallback, label; the planet bee has no gazetteer so label is null)
+connect ms 3327.7	update ms 0.8 blocks 0 bytes 0	core.length 3488141
+cold	26.9,75.8	ms 270.8	blocks 266	bytes 10340441	zoom 14	tiles 16/16	label null
+cold	51.5,-0.12	ms 85.9	blocks 133	bytes 5000139	zoom 14	tiles 16/16	label null
+cold	40.7,-74	ms 19	blocks 22	bytes 1039570	zoom 14	tiles 16/16	label null
+cold	-33.9,151.2	ms 18.9	blocks 19	bytes 919633	zoom 14	tiles 16/16	label null
+cold	0,-30	ms 158.3	blocks 253	bytes 9198474	zoom 10	tiles 16/16	label null
+repeat	26.9,75.8	ms 0.9	blocks 0	bytes 0	zoom 14	tiles 16/16	label null
+
+## breakdown per phase (scratch breakdown.js: blocks decoded with hyperbee2/lib/encoding.js decodeBlock)
+core.length 3488141
+tiles z14 26.9,75.8	ms 186	zoom 14 tiles 16/16
+  {"blocks":151,"bytes":5564630,"valueBlocks":14,"values":16,"valueBytes":236895,"keyBlocks":137,"keys":14503,"keyBytes":5327735,"treeBlocks":137,"treeNodes":401,"treeBytes":5327735,"mixed":137}
+  top #2024707:171614B v0 k368 n2 #2024710:157375B v0 k378 n2 #2047091:97482B v0 k228 n4 #2020602:97355B v0 k256 n2 #1959794:86577B v0 k223 n4
+tiles z10 26.9,75.8	ms 72	zoom 10 tiles 16/16
+  {"blocks":133,"bytes":4205885,"valueBlocks":16,"values":16,"valueBytes":322124,"keyBlocks":116,"keys":13451,"keyBytes":3881921,"treeBlocks":117,"treeNodes":247,"treeBytes":3883761,"mixed":116}
+  top #116622:108706B v0 k268 n3 #125690:80590B v0 k133 n2 #128636:79101B v0 k131 n2 #122458:77659B v0 k253 n3 #132626:76348B v0 k297 n4
+label 26.9,75.8	ms 73	null
+  {"blocks":115,"bytes":4775811,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":114,"keys":14204,"keyBytes":4771807,"treeBlocks":115,"treeNodes":332,"treeBytes":4775811,"mixed":114}
+  top #1363052:107902B v0 k300 n4 #1399191:104523B v0 k314 n4 #1510627:93369B v0 k216 n2 #1468520:84142B v0 k267 n5 #1382207:79001B v0 k184 n4
+tiles z14 51.5,-0.12	ms 79	zoom 14 tiles 16/16
+  {"blocks":133,"bytes":5000139,"valueBlocks":16,"values":16,"valueBytes":1043557,"keyBlocks":115,"keys":13585,"keyBytes":3952668,"treeBlocks":117,"treeNodes":327,"treeBytes":3956582,"mixed":115}
+  top #361676:91709B v0 k246 n4 #337081:91287B v0 k198 n3 #459464:90461B v1 k0 n0 #459465:82154B v1 k0 n0 #338185:81121B v0 k135 n4
+tiles z10 51.5,-0.12	ms 31	zoom 10 tiles 16/16
+  {"blocks":23,"bytes":2165068,"valueBlocks":16,"values":16,"valueBytes":2072794,"keyBlocks":7,"keys":997,"keyBytes":92274,"treeBlocks":7,"treeNodes":16,"treeBytes":92274,"mixed":7}
+  top #17390:175115B v1 k0 n0 #17389:172222B v1 k0 n0 #17391:167036B v1 k0 n0 #17388:163798B v1 k0 n0 #17382:155333B v1 k0 n0
+label 51.5,-0.12	ms 1	null
+  {"blocks":0,"bytes":0,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":0,"keys":0,"keyBytes":0,"treeBlocks":0,"treeNodes":0,"treeBytes":0,"mixed":0}
+  top 
+tiles z14 40.7,-74	ms 18	zoom 14 tiles 16/16
+  {"blocks":22,"bytes":1039570,"valueBlocks":16,"values":17,"valueBytes":983284,"keyBlocks":6,"keys":528,"keyBytes":56286,"treeBlocks":6,"treeNodes":11,"treeBytes":56286,"mixed":6}
+  top #627695:76329B v2 k0 n0 #627693:75673B v1 k0 n0 #627691:70224B v1 k0 n0 #627692:70124B v1 k0 n0 #627686:66399B v1 k0 n0
+tiles z10 40.7,-74	ms 17	zoom 10 tiles 16/16
+  {"blocks":13,"bytes":1329336,"valueBlocks":12,"values":12,"valueBytes":1323255,"keyBlocks":1,"keys":128,"keyBytes":6081,"treeBlocks":1,"treeNodes":1,"treeBytes":6081,"mixed":1}
+  top #22175:169579B v1 k0 n0 #22185:161131B v1 k0 n0 #22177:157998B v1 k0 n0 #22184:140061B v1 k0 n0 #22183:139455B v1 k0 n0
+label 40.7,-74	ms 1	null
+  {"blocks":0,"bytes":0,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":0,"keys":0,"keyBytes":0,"treeBlocks":0,"treeNodes":0,"treeBytes":0,"mixed":0}
+  top 
+tiles z14 -33.9,151.2	ms 18	zoom 14 tiles 16/16
+  {"blocks":19,"bytes":919633,"valueBlocks":16,"values":16,"valueBytes":833135,"keyBlocks":3,"keys":374,"keyBytes":86498,"treeBlocks":3,"treeNodes":4,"treeBytes":86498,"mixed":3}
+  top #1527862:110007B v1 k0 n0 #1527859:79664B v1 k0 n0 #1527860:75191B v1 k0 n0 #1527861:70336B v1 k0 n0 #1527863:68293B v1 k0 n0
+tiles z10 -33.9,151.2	ms 14	zoom 10 tiles 16/16
+  {"blocks":18,"bytes":769706,"valueBlocks":13,"values":13,"valueBytes":659057,"keyBlocks":5,"keys":880,"keyBytes":110649,"treeBlocks":5,"treeNodes":10,"treeBytes":110649,"mixed":5}
+  top #59219:147203B v1 k0 n0 #59223:71191B v1 k0 n0 #59220:69851B v1 k0 n0 #59224:66281B v1 k0 n0 #59221:54519B v1 k0 n0
+label -33.9,151.2	ms 1	null
+  {"blocks":0,"bytes":0,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":0,"keys":0,"keyBytes":0,"treeBlocks":0,"treeNodes":0,"treeBytes":0,"mixed":0}
+  top 
+tiles z14 0,-30	ms 83	null
+  {"blocks":139,"bytes":5413231,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":139,"keys":15628,"keyBytes":5413231,"treeBlocks":139,"treeNodes":409,"treeBytes":5413231,"mixed":139}
+  top #1327832:115355B v0 k291 n2 #1277064:98349B v0 k221 n2 #1902282:85360B v0 k192 n4 #1849451:82399B v0 k203 n1 #1182731:75411B v0 k256 n4
+tiles z10 0,-30	ms 4	zoom 10 tiles 16/16
+  {"blocks":4,"bytes":70738,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":4,"keys":621,"keyBytes":70738,"treeBlocks":4,"treeNodes":7,"treeBytes":70738,"mixed":4}
+  top #40180:29756B v0 k256 n2 #49449:22272B v0 k191 n1 #46280:15644B v0 k135 n3 #49457:3066B v0 k39 n1
+label 0,-30	ms 1	null
+  {"blocks":0,"bytes":0,"valueBlocks":0,"values":0,"valueBytes":0,"keyBlocks":0,"keys":0,"keyBytes":0,"treeBlocks":0,"treeNodes":0,"treeBytes":0,"mixed":0}
+  top 
+
+## largest downloaded blocks
+block 2024707 bytes 171614 keys 368 keyBytes 166476 values 0 cohorts 2 tree 2
+  node 0: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 0 ops, 0 cohorts, 0 pointers into 0 blocks
+  node 1: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 0 ops, 0 cohorts, 0 pointers into 0 blocks
+block 2024710 bytes 157375 keys 378 keyBytes 152202 values 0 cohorts 2 tree 2
+  node 0: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 0 ops, 0 cohorts, 0 pointers into 0 blocks
+  node 1: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 0 ops, 0 cohorts, 0 pointers into 0 blocks
+block 2047091 bytes 97482 keys 228 keyBytes 91138 values 0 cohorts 3 tree 4
+  node 0: keys 6 ops, 0 cohorts, 6 pointers into 6 blocks; children 2 ops, 1 cohorts, 2 pointers into 2 blocks
+  node 1: keys 10 ops, 1 cohorts, 10 pointers into 10 blocks; children 8 ops, 1 cohorts, 8 pointers into 8 blocks
+  node 2: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 1 ops, 1 cohorts, 1 pointers into 1 blocks
+  node 3: keys 1 ops, 1 cohorts, 1 pointers into 1 blocks; children 0 ops, 0 cohorts, 0 pointers into 0 blocks
+block 627695 bytes 76329 keys 0 keyBytes 0 values 2 cohorts 0 tree 0
