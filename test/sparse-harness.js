@@ -7,7 +7,6 @@ const HypercoreId = require('hypercore-id-encoding')
 const { Transform } = require('streamx')
 const { decodeGzip } = require('../scripts/mvt')
 const { tileKey, quadkey, subtreeRange } = require('../scripts/tiles')
-const { readCell } = require('../scripts/preview')
 const { tmpStore, SIGNED_STORE, PUBLISH_OUT } = require('./helpers')
 
 function publishedRef () {
@@ -111,6 +110,15 @@ async function measure (core, wire, fn) {
     indices: idx.sort((x, y) => x - y),
     result
   }
+}
+
+// the 16 z tiles under the z-2 cell (px, py), row-major (y outer, x inner), as parallel gets
+function readCell (bee, z, px, py, opts) {
+  const gets = []
+  for (let y = py << 2; y < (py << 2) + 4; y++) {
+    for (let x = px << 2; x < (px << 2) + 4; x++) gets.push(bee.get(tileKey(z, x, y), opts))
+  }
+  return Promise.all(gets)
 }
 
 function grid3 (cx, cy) {

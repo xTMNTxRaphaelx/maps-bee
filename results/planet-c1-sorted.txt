@@ -1,0 +1,80 @@
+# C1 sorted build, 2026-10-14, run 2 (run 1 into store/planet-c1 stalled after tile 9000000, see the end of this file): bare scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 store/planet-c1-run2 keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles
+
+## build
+draft atlas length 0 resume false sorted true inlineValueSize default flushPuts 200000 flushBytes 536870912 progress store/planet-c1-run2/planet-build.progress
+archive 1/2	collect entries 478575 tiles 1048576 dirs 118 fillerRuns 0 fillerTiles 0	sort ms 17	ms 193
+archive 2/2	collect entries 39501064 tiles 31839637 dirs 3502 fillerRuns 7661427 fillerTiles 236595819	sort ms 496	ms 8755
+done puts 32888213 bytes 35221625742 flushes 173 fillerRuns 7661427 fillerTiles 236595819 elapsed 397.2 s
+draft.length 3560840 byteLength 36262159511 lastKey 14/33333333333333 readable true
+      397.88 real       323.18 user       179.20 sys
+          6845906944  maximum resident set size
+build exit 0 Wed Oct 14 11:43:35 IST 2026
+
+## build progress, every 20th flush
+archive 2/2	tile 2200000/31839637	puts 3248576	fillerRuns 7661427	fillerTiles 236595819	bytes 3014874956	core.length 143606	elapsed 39.6 s	puts/s 82084
+archive 2/2	tile 6200000/31839637	puts 7248576	fillerRuns 7661427	fillerTiles 236595819	bytes 5284762110	core.length 322722	elapsed 80.9 s	puts/s 89623
+archive 2/2	tile 10012273/31839637	puts 11060849	fillerRuns 7661427	fillerTiles 236595819	bytes 10662897038	core.length 907717	elapsed 126.5 s	puts/s 87443
+archive 2/2	tile 13916218/31839637	puts 14964794	fillerRuns 7661427	fillerTiles 236595819	bytes 14978110125	core.length 1401612	elapsed 175.0 s	puts/s 85530
+archive 2/2	tile 16886515/31839637	puts 17935091	fillerRuns 7661427	fillerTiles 236595819	bytes 23021880796	core.length 2311850	elapsed 225.5 s	puts/s 79527
+archive 2/2	tile 20886515/31839637	puts 21935091	fillerRuns 7661427	fillerTiles 236595819	bytes 26321592722	core.length 2657798	elapsed 269.9 s	puts/s 81272
+archive 2/2	tile 24886515/31839637	puts 25935091	fillerRuns 7661427	fillerTiles 236595819	bytes 28822566505	core.length 2897735	elapsed 313.2 s	puts/s 82816
+archive 2/2	tile 28886515/31839637	puts 29935091	fillerRuns 7661427	fillerTiles 236595819	bytes 33056595277	core.length 3352718	elapsed 362.3 s	puts/s 82629
+
+## gazetteer (scripts/gazetteer-put.js data/planet-gazetteer.json, then scripts/planet-commit.js)
+gazetteer puts 111548 draft.length 3561724 (+884) byteLength 36273478058
+gazetteer-put exit 0
+commit exit 0 Wed Oct 14 11:45:12 IST 2026
+draft atlas length 3561724 byteLength 36273478058 signed 0 chunk 20000
+commit {"length":3561724,"byteLength":36273478058} m.length 3561724 m.signedLength 3561724
+maps: { "key": "q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo", "length": 3561724 }
+signed commits: 179, last: commit length 3561724/3561724 byteLength 36273478058 elapsed 77.6 s
+
+## probe (2x2 unit, label; one seeder on the public DHT; seed line: seeding q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 3561724 byteLength 36273478058)
+connect ms 3519.1	update ms 0.8 blocks 0 bytes 0	core.length 3561724
+cold	26.9,75.8	ms 172.2	blocks 60	bytes 3126399	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 37.8	blocks 29	bytes 1018026	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 15.8	blocks 16	bytes 409456	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 10.4	blocks 9	bytes 343055	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 23	blocks 23	bytes 747139	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.9	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=1
+connect ms 3269.2	update ms 0.9 blocks 0 bytes 0	core.length 3561724
+prefetch levels 1 nodes 1	ms 104.5	blocks 16	bytes 1107819
+cold	26.9,75.8	ms 67.1	blocks 44	bytes 2018580	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 36	blocks 29	bytes 1018026	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 14.7	blocks 16	bytes 409456	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 9.5	blocks 9	bytes 343055	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 23	blocks 23	bytes 747139	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=2
+connect ms 3262.7	update ms 0.4 blocks 0 bytes 0	core.length 3561724
+prefetch levels 2 nodes 1/15	ms 378.9	blocks 194	bytes 11693370
+cold	26.9,75.8	ms 11.5	blocks 13	bytes 235677	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 19.7	blocks 18	bytes 476847	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 16.4	blocks 16	bytes 409456	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 8.7	blocks 9	bytes 343055	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 5.9	blocks 10	bytes 211581	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 1	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=3
+connect ms 3112.7	update ms 0.8 blocks 0 bytes 0	core.length 3561724
+prefetch levels 3 nodes 1/15/2014	ms 3053.8	blocks 2384	bytes 96952951
+cold	26.9,75.8	ms 6.8	blocks 10	bytes 155362	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 8.3	blocks 12	bytes 403453	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 11	blocks 15	bytes 406494	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 5.1	blocks 7	bytes 269399	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 2.6	blocks 6	bytes 100897	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## run 1 (store/planet-c1, same command): stalled, killed with SIGTERM after 10 min idle
+draft atlas length 0 resume false sorted true inlineValueSize default flushPuts 200000 flushBytes 536870912 progress store/planet-c1/planet-build.progress
+archive 1/2	collect entries 478575 tiles 1048576 dirs 118 fillerRuns 0 fillerTiles 0	sort ms 14	ms 185
+archive 2/2	collect entries 39501064 tiles 31839637 dirs 3502 fillerRuns 7661427 fillerTiles 236595819	sort ms 478	ms 8202
+archive 2/2	tile 9000000/31839637	puts 10048576	fillerRuns 7661427	fillerTiles 236595819	bytes 8250800970	core.length 626117	elapsed 117.6 s	puts/s 85415
+last log line at 11:15:55 (elapsed 117.6 s); at 11:24 the process was in state S with 0% CPU, main thread idle in uv_run/kevent, libuv workers and RocksDB threads idle (macOS sample), RocksDB LOG shows 0 write stalls; build exit 143. An instrumented rerun of buildPlanet with the same options (scratchpad diag/c1-diag.js, store/tmp/c1-diag) and run 2 above both completed. Cause not identified.

@@ -5,8 +5,11 @@ const path = require('bare-path')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { lonLatToTile, quadkey, subtreeRange } = require('../scripts/tiles')
-const { GAZ_ZOOM, haversineKm, gazKeys } = require('../scripts/gazetteer-lib')
-const { tmpStore, JAIPUR_CENTRE } = require('./helpers')
+const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer } = require('../scripts/gazetteer-lib')
+const { collect } = require('../scripts/gazetteer')
+const { readLabel } = require('../scripts/preview')
+const { tmpStore, spyPuts, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE } = require('./helpers')
+const { cities } = require('./atlas')
 
 const GAZ = path.join(__dirname, '..', 'data', 'gazetteer.json')
 
@@ -49,4 +52,33 @@ test('city+town gazetteer: nearest entry to the Jaipur centre is Jaipur', async 
   const full = cities.map((p) => ({ ...p, km: haversineKm(JAIPUR_CENTRE, p) })).sort((a, b) => a.km - b.km)
   t.is(full[0].name, 'Jaipur')
   t.comment(`full scan of city+town: nearest ${full[0].name} ${full[0].km.toFixed(2)} km; next nearest ${full[1].name} (${full[1].kind_detail}) ${full[1].km.toFixed(2)} km (inside the z8 range: ${found.some((p) => p.name === full[1].name)})`)
+})
+
+test('collect keeps only the requested kinds', async (t) => {
+  const all = { regionFeatures: 0, entries: [] }
+  const some = { regionFeatures: 0, entries: [] }
+  await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), all)
+  await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), some, new Set(['city', 'town']))
+  t.comment(`localities ${all.entries.length}, city+town ${some.entries.length}`)
+  t.ok(some.entries.length > 0)
+  t.ok(some.entries.every((e) => e.kind_detail === 'city' || e.kind_detail === 'town'), 'only city and town')
+  t.ok(some.entries.length < all.entries.length, 'fewer than every locality')
+})
+
+test('putGazetteer writes sorted g/ keys and readLabel finds Jaipur', async (t) => {
+  const store = await tmpStore(t, 'gaz-put')
+  const bee = new Hyperbee(store, { core: store.get({ name: 'gaz-put' }), writable: true })
+  await bee.ready()
+  const puts = spyPuts(bee)
+  const n = await putGazetteer(bee, cities(), { flushPuts: 200 })
+  t.is(n, 825)
+  let ascending = 0
+  for (let i = 1; i < puts.length; i++) if (b4a.compare(puts[i - 1], puts[i]) < 0) ascending++
+  t.is(ascending, puts.length - 1, 'put in key order')
+  const keys = []
+  for await (const e of bee.createReadStream()) keys.push(b4a.toString(e.key))
+  t.is(keys.length, 825)
+  t.ok(keys.every((k) => k.startsWith('g/')), 'every key under g/')
+  const label = await readLabel(bee, JAIPUR_CENTRE, { timeout: 5000 })
+  t.is(label.name, 'Jaipur')
 })

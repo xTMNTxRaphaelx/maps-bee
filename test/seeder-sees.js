@@ -3,7 +3,7 @@ const test = require('brittle')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { decodeBlock } = require('hyperbee2/lib/encoding.js')
-const { lonLatToTile, quadkey } = require('../scripts/tiles')
+const { pinTiles, quadkey } = require('../scripts/tiles')
 const { readPreview, DETAIL_ZOOM } = require('../scripts/preview')
 const { tmpStore, JAIPUR_CENTRE } = require('./helpers')
 const { fillAtlas } = require('./atlas')
@@ -27,7 +27,7 @@ async function valueOwners (core) {
   return owners
 }
 
-test('what a seeder sees: uploaded blocks name the z12 cell of the pin', async (t) => {
+test('what a seeder sees: uploaded blocks name the z12 cells of the pin\'s 2x2', async (t) => {
   const seederStore = await tmpStore(t, 'seeder-sees')
   const seedCore = seederStore.get({ name: 'atlas' })
   const seed = new Hyperbee(seederStore, { core: seedCore, writable: true })
@@ -46,8 +46,8 @@ test('what a seeder sees: uploaded blocks name the z12 cell of the pin', async (
   uploads.sort((a, b) => a.index - b.index)
   t.alike(uploads.map((u) => u.index), r.indices, 'seeder upload events match the client downloads')
 
-  const cell = lonLatToTile(lon, lat, DETAIL_ZOOM - 2)
-  const cellPrefix = `${DETAIL_ZOOM}/${quadkey(cell.x, cell.y, DETAIL_ZOOM - 2)}`
+  // the 2x2 can straddle z12 cells; a z14 quadkey's first 12 digits name its z12 cell
+  const prefixes = [...new Set(pinTiles(lon, lat, DETAIL_ZOOM).tiles.map(([x, y]) => `${DETAIL_ZOOM}/${quadkey(x >> 2, y >> 2, DETAIL_ZOOM - 2)}`))]
   const owners = await valueOwners(seedCore)
   const counts = { value: 0, values: 0, keys: 0 }
   let foreign = 0
@@ -57,7 +57,7 @@ test('what a seeder sees: uploaded blocks name the z12 cell of the pin', async (
       counts.value++
       counts.values += blk.values.length
       const names = owners.get(u.index) || []
-      foreign += names.filter((n) => !n.startsWith(cellPrefix)).length
+      foreign += names.filter((n) => !prefixes.some((p) => n.startsWith(p))).length
       t.comment(`block ${u.index}\tvalue\t${u.byteLength} B\t${names.join(' ')}`)
     } else {
       counts.keys++
@@ -67,7 +67,7 @@ test('what a seeder sees: uploaded blocks name the z12 cell of the pin', async (
     }
   }
   // values under 4 KiB pack together, so value blocks can be fewer than tiles
-  t.is(counts.values, 16, 'the 16 cell tile values are what was uploaded')
-  t.is(foreign, 0, `every uploaded value block belongs to ${cellPrefix}`)
-  t.comment(`seeder sees ${counts.value} value blocks holding the ${counts.values} tiles under ${cellPrefix}, plus ${counts.keys} keys+tree blocks whose key spans are listed above`)
+  t.is(counts.values, 4, 'the 4 tile values of the 2x2 are what was uploaded')
+  t.is(foreign, 0, `every uploaded value block belongs to ${prefixes.join(' or ')}`)
+  t.comment(`seeder sees ${counts.value} value blocks holding the ${counts.values} tiles under ${prefixes.join(' and ')}, plus ${counts.keys} keys+tree blocks whose key spans are listed above`)
 })

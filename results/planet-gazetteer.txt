@@ -1,0 +1,28 @@
+# bare scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10 (Wed Oct 14 11:00:06 IST 2026)
+data/planet-z10.pmtiles bbox -180,-85.05,180,85.05 z10-10: +111548 localities
+region features seen (not deduped, all zooms) 64
+localities 111548 by kind_detail {"city":11637,"town":99911}
+raw key+value bytes 10040315
+json bytes 10349411 gzip bytes 2081998
+subset city: json 1078616 gzip 243689
+subset town: json 9270796 gzip 1831562
+wrote data/planet-gazetteer.json
+      111.50 real       136.91 user         7.27 sys
+           887734272  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               63494  page reclaims
+                 268  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+               56023  voluntary context switches
+             2541592  involuntary context switches
+           314924977  instructions retired
+           100135564  cycles elapsed
+            15042360  peak memory footprint
+gazetteer exit 0 Wed Oct 14 11:01:57 IST 2026

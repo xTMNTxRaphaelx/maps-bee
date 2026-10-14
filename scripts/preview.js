@@ -2,14 +2,14 @@
 const b4a = require('b4a')
 const Hypercore = require('hypercore')
 const { REQUEST_TIMEOUT } = require('hypercore-errors')
-const { lonLatToTile, quadkey, tileKey, subtreeRange } = require('./tiles')
+const { lonLatToTile, pinTiles, quadkey, tileKey, subtreeRange } = require('./tiles')
 const { GAZ_ZOOM, haversineKm } = require('./gazetteer-lib')
 
 const DETAIL_ZOOM = 14
 const FALLBACK_ZOOM = 10
 const LABEL_ZOOM = 8
 
-const NO_TILES = { zoom: null, cell: null, tiles: null }
+const NO_TILES = { zoom: null, origin: null, tiles: null }
 
 // The replicator requests of one call, so a failed call leaves nothing in flight. A hyperbee2 range
 // stream marks its own request list dead when it ends (hyperbee2/lib/ranges.js:204), so each stream
@@ -34,23 +34,16 @@ function readOpts (opts, list) {
   return { timeout: opts.timeout, wait: opts.wait, activeRequests: list }
 }
 
-// the 16 z tiles under the z-2 cell (px, py), row-major (y outer, x inner), as parallel gets
-function readCell (bee, z, px, py, opts) {
-  const gets = []
-  for (let y = py << 2; y < (py << 2) + 4; y++) {
-    for (let x = px << 2; x < (px << 2) + 4; x++) gets.push(bee.get(tileKey(z, x, y), opts))
-  }
-  return Promise.all(gets)
-}
-
-// Cell contract: zoom z with the 16 tiles of its z-2 cell in row-major order. When at least one tile
-// is present the result stays at zoom z and each missing tile is null, which the client draws blank.
-// When all 16 are missing the result is null: outside the atlas, or a filler cell the builder skipped.
+// Tiles contract: zoom z with the 4 tiles of the pin's 2x2 (scripts/tiles.js pinTiles), row-major
+// from origin, the top-left tile. When at least one tile is present the result stays at zoom z and
+// each missing tile is null, which the client draws blank. When all 4 are missing the result is
+// null: outside the atlas, or a filler 2x2 the builder skipped.
 async function readTiles (bee, point, z, opts = {}, requests = new Requests()) {
-  const cell = lonLatToTile(point.lon, point.lat, z - 2)
-  const entries = await readCell(bee, z, cell.x, cell.y, readOpts(opts, requests.list()))
+  const { origin, tiles } = pinTiles(point.lon, point.lat, z)
+  const o = readOpts(opts, requests.list())
+  const entries = await Promise.all(tiles.map((t) => (t ? bee.get(tileKey(z, t[0], t[1]), o) : null)))
   if (!entries.some(Boolean)) return null
-  return { zoom: z, cell, tiles: entries.map((e) => (e ? e.value : null)) }
+  return { zoom: z, origin, tiles: entries.map((e) => (e ? e.value : null)) }
 }
 
 // null for a value that is not a place entry: the label is best effort and one bad entry must not sink it
@@ -96,6 +89,31 @@ async function readLabel (bee, point, opts = {}, requests = new Requests()) {
   return best
 }
 
+// Inflates the top `levels` levels of the tree, one level at a time with its nodes in parallel, so
+// later reads walk them from local blocks. Inflating a node fetches the block of every key it
+// references (hyperbee2/lib/inflate.js:18-31). Returns the node count per level reached.
+async function prefetchTop (bee, levels, opts) {
+  const list = []
+  const config = bee.config.options(readOpts(opts, list))
+  const nodes = []
+  try {
+    const root = await bee.bootstrap(config)
+    let level = root ? [root] : []
+    while (level.length > 0 && nodes.length < levels) {
+      nodes.push(level.length)
+      const values = await Promise.all(level.map((ptr) => bee.inflate(ptr, config)))
+      level = []
+      for (const v of values) {
+        for (let i = 0; i < v.children.length; i++) level.push(v.children.get(i))
+      }
+    }
+  } catch (err) {
+    Hypercore.destroyRequests(list, err)
+    throw err
+  }
+  return { nodes }
+}
+
 function checkOpts (opts) {
   if (!opts || !(Number.isFinite(opts.timeout) && opts.timeout > 0)) {
     throw new TypeError('readPreview needs opts.timeout, the per-block timeout in ms')
@@ -107,7 +125,7 @@ function checkOpts (opts) {
 
 function noop () {}
 
-// One call per shared location: the z14 cell, else the z10 cell, plus the nearest place.
+// One call per shared location: the z14 2x2, else the z10 2x2, plus the nearest place.
 // opts.timeout (required) bounds each block read and opts.deadline bounds the whole call; on either
 // the call rejects with REQUEST_TIMEOUT and destroys every request it made, so the caller shows text
 // instead. The label is best effort: its failure gives label null and never rejects the call.
@@ -137,4 +155,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readCell, readTiles, readLabel, readPreview }
+module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readTiles, readLabel, readPreview, prefetchTop }

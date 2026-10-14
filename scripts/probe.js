@@ -6,13 +6,14 @@ const Corestore = require('corestore')
 const Hyperbee = require('hyperbee2')
 const Hyperswarm = require('hyperswarm')
 const HypercoreId = require('hypercore-id-encoding')
-const { readPreview } = require('./preview')
+const { readPreview, prefetchTop } = require('./preview')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 
-// A cold client: fresh store, swarm lookup by discovery key, update, one preview per point, then
-// the first point again to show the repeat cost. Every read counts blocks and bytes downloaded.
-async function probe ({ key, points, bootstrap, dir = null, timeout = 10000, deadline = 30000, log = console.log }) {
+// A cold client: fresh store, swarm lookup by discovery key, update, optionally the top `levels`
+// tree levels as an app would ship them, one preview per point, then the first point again to show
+// the repeat cost. Every read counts blocks and bytes downloaded.
+async function probe ({ key, points, bootstrap, dir = null, levels = 0, timeout = 10000, deadline = 30000, log = console.log }) {
   if (!dir) {
     fs.mkdirSync(TMP, { recursive: true })
     dir = fs.mkdtempSync(path.join(TMP, 'probe-'))
@@ -46,18 +47,23 @@ async function probe ({ key, points, bootstrap, dir = null, timeout = 10000, dea
     log(`connect ms ${Math.round(connectMs * 10) / 10}\tupdate ms ${upd.ms} blocks ${upd.blocks} bytes ${upd.bytes}\tcore.length ${core.length}`)
     const bee = new Hyperbee(store, { core, writable: false })
     await bee.ready()
+    let prefetch = null
+    if (levels > 0) {
+      prefetch = await timed(() => prefetchTop(bee, levels, { timeout }))
+      log(`prefetch levels ${levels} nodes ${prefetch.value.nodes.join('/')}\tms ${prefetch.ms}\tblocks ${prefetch.blocks}\tbytes ${prefetch.bytes}`)
+    }
     const run = async (point, phase) => {
       const r = await timed(() => readPreview(bee, point, { timeout, deadline }))
       const present = r.value.tiles ? r.value.tiles.filter(Boolean).length : 0
       const label = r.value.label ? `${r.value.label.name} (${r.value.label.kind}, ${r.value.label.km.toFixed(1)} km)` : 'null'
       const out = { point, phase, ms: r.ms, blocks: r.blocks, bytes: r.bytes, zoom: r.value.zoom, present, label: r.value.label }
-      log(`${phase}\t${point.lat},${point.lon}\tms ${r.ms}\tblocks ${r.blocks}\tbytes ${r.bytes}\tzoom ${r.value.zoom}\ttiles ${present}/16\tlabel ${label}`)
+      log(`${phase}\t${point.lat},${point.lon}\tms ${r.ms}\tblocks ${r.blocks}\tbytes ${r.bytes}\tzoom ${r.value.zoom}\ttiles ${present}/4\tlabel ${label}`)
       results.push(out)
       return out
     }
     for (const point of points) await run(point, 'cold')
     if (points.length > 0) await run(points[0], 'repeat')
-    return { results, coreLength: core.length, connectMs, update: { ms: upd.ms, blocks: upd.blocks, bytes: upd.bytes } }
+    return { results, coreLength: core.length, connectMs, update: { ms: upd.ms, blocks: upd.blocks, bytes: upd.bytes }, prefetch }
   } finally {
     await swarm.destroy()
     await store.close()
@@ -74,9 +80,13 @@ function parsePoints (args) {
 }
 
 async function main () {
-  const [id, ...rest] = Bare.argv.slice(2)
-  if (!id || rest.length === 0) throw new Error('usage: probe.js <coreKey> <lat,lon>...')
-  await probe({ key: HypercoreId.decode(id), points: parsePoints(rest) })
+  const argv = Bare.argv.slice(2)
+  const flag = argv.find((a) => a.startsWith('--levels='))
+  const levels = flag ? Number(flag.slice('--levels='.length)) : 0
+  if (!(Number.isInteger(levels) && levels >= 0)) throw new Error('--levels must be a non-negative integer')
+  const [id, ...rest] = argv.filter((a) => !a.startsWith('--'))
+  if (!id || rest.length === 0) throw new Error('usage: probe.js [--levels=N] <coreKey> <lat,lon>...')
+  await probe({ key: HypercoreId.decode(id), points: parsePoints(rest), levels })
 }
 
 module.exports = { probe, parsePoints }

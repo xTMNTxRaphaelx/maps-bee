@@ -29,6 +29,22 @@ async function tmpStore (t, name) {
   return store
 }
 
+// every key passed to tryPut on any batch the bee hands out, in put order
+function spyPuts (bee) {
+  const keys = []
+  const write = bee.write.bind(bee)
+  bee.write = (opts) => {
+    const w = write(opts)
+    const tryPut = w.tryPut.bind(w)
+    w.tryPut = (key, value) => {
+      keys.push(key)
+      return tryPut(key, value)
+    }
+    return w
+  }
+  return keys
+}
+
 module.exports = {
   JAIPUR_CENTRE,
   JAIPUR_BBOX,
@@ -38,5 +54,6 @@ module.exports = {
   SINGLE_STORE,
   SIGNED_STORE,
   PUBLISH_OUT,
-  tmpStore
+  tmpStore,
+  spyPuts
 }

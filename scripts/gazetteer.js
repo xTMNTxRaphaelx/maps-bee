@@ -1,5 +1,5 @@
 'use strict'
-// usage: gazetteer.js <out.json> (<archive> <bbox> <minz> <maxz>)...
+// usage: gazetteer.js <out.json> [--kinds=a,b] (<archive> <bbox> <minz> <maxz>)...
 const fs = require('bare-fs')
 const zlib = require('bare-zlib')
 const { openArchive, readTile } = require('./pmtiles-file')
@@ -13,7 +13,8 @@ function inBbox (p, b) {
   return p.lon >= b[0] && p.lat >= b[1] && p.lon <= b[2] && p.lat <= b[3]
 }
 
-async function collect (path, bbox, minz, maxz, byName, counts) {
+// kinds: a Set of kind_detail values to keep, or null for every locality
+async function collect (path, bbox, minz, maxz, byName, counts, kinds = null) {
   const archive = openArchive(path)
   // highest zoom first so each place keeps its most precise point
   for (let z = maxz; z >= minz; z--) {
@@ -27,6 +28,7 @@ async function collect (path, bbox, minz, maxz, byName, counts) {
         const p = f.properties
         if (p.kind === 'region') counts.regionFeatures++
         if (p.kind !== 'locality' || !p.name) continue
+        if (kinds && !kinds.has(p.kind_detail)) continue
         const g = f.toGeoJSON(x, y, z).geometry
         if (g.type !== 'Point') continue
         const pt = { lon: Math.round(g.coordinates[0] * 1e5) / 1e5, lat: Math.round(g.coordinates[1] * 1e5) / 1e5 }
@@ -44,13 +46,16 @@ async function collect (path, bbox, minz, maxz, byName, counts) {
 }
 
 async function main () {
-  const [out, ...rest] = Bare.argv.slice(2)
+  const argv = Bare.argv.slice(2)
+  const flag = argv.find((a) => a.startsWith('--kinds='))
+  const kinds = flag ? new Set(flag.slice('--kinds='.length).split(',')) : null
+  const [out, ...rest] = argv.filter((a) => !a.startsWith('--'))
   const byName = new Map()
   const counts = { regionFeatures: 0, entries: [] }
   for (let i = 0; i < rest.length; i += 4) {
     const [path, bbox, minz, maxz] = rest.slice(i, i + 4)
     const before = counts.entries.length
-    await collect(path, parseBbox(bbox), Number(minz), Number(maxz), byName, counts)
+    await collect(path, parseBbox(bbox), Number(minz), Number(maxz), byName, counts, kinds)
     console.log(`${path} bbox ${bbox} z${minz}-${maxz}: +${counts.entries.length - before} localities`)
   }
   const entries = counts.entries
@@ -71,7 +76,11 @@ async function main () {
   console.log(`wrote ${out}`)
 }
 
-main().catch((err) => {
-  console.error(err)
-  Bare.exitCode = 1
-})
+module.exports = { collect }
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error(err)
+    Bare.exitCode = 1
+  })
+}

@@ -5,12 +5,21 @@ const perf = require('bare-performance')
 const Corestore = require('corestore')
 const { Compression, tileIdToZxy } = require('pmtiles')
 const { openArchive } = require('./pmtiles-file')
-const { tileKey } = require('./tiles')
+const { tileKey, mortonCode, mortonToXY } = require('./tiles')
 const { load } = require('./keys')
 const { openDraft } = require('./publish')
 
 const FLUSH_PUTS = 20000
 const FLUSH_BYTES = 64 * 1024 * 1024
+
+// one BigUint64 per tile: zoom in bits 58-63, the quadkey as a number in bits 26-57 (z <= 16) and
+// the directory entry index in bits 0-25, so a numeric sort is key order (keys are zz/quadkey)
+const Z_SHIFT = 58n
+const MORTON_SHIFT = 26n
+const MAX_SORTED_ZOOM = 16
+const MAX_SORTED_ENTRIES = 2 ** 26
+const MORTON_MASK = (1n << (Z_SHIFT - MORTON_SHIFT)) - 1n
+const ENTRY_MASK = (1n << MORTON_SHIFT) - 1n
 
 // Every directory of the archive in depth-first order: index 0 is the root's own tile entries,
 // then each leaf as the root lists it (pmtiles getZxyAttempt follows runLength 0 entries the same way).
@@ -50,6 +59,55 @@ async function readValues (archive, header, tiles) {
   return out
 }
 
+// Every tile the directory walk would put, packed and sorted into key order, with the offset and
+// length of each tile entry so values can be read in chunks of that order.
+async function collectSorted (archive, header, expandRunsUpToZoom) {
+  if (header.maxZoom > MAX_SORTED_ZOOM) throw new Error(`sorted build packs zooms up to ${MAX_SORTED_ZOOM}, archive has ${header.maxZoom}`)
+  if (header.numTileEntries >= MAX_SORTED_ENTRIES) throw new Error(`sorted build packs up to ${MAX_SORTED_ENTRIES} entries, archive has ${header.numTileEntries}`)
+  const tileIds = new Float64Array(header.numTileEntries)
+  const runLengths = new Uint32Array(header.numTileEntries)
+  const offsets = new Float64Array(header.numTileEntries)
+  const lengths = new Uint32Array(header.numTileEntries)
+  const stats = { entries: 0, tiles: 0, dirs: 0, fillerRuns: 0, fillerTiles: 0, sortMs: 0 }
+  for await (const { tiles } of directories(archive, header)) {
+    stats.dirs++
+    for (const e of tiles) {
+      if (stats.entries === header.numTileEntries) throw new Error(`archive has more tile entries than its header's ${header.numTileEntries}`)
+      const i = stats.entries++
+      tileIds[i] = e.tileId
+      runLengths[i] = e.runLength
+      offsets[i] = e.offset
+      lengths[i] = e.length
+      if (e.runLength === 1 || tileIdToZxy(e.tileId)[0] <= expandRunsUpToZoom) {
+        stats.tiles += e.runLength
+      } else {
+        stats.fillerRuns++
+        stats.fillerTiles += e.runLength
+      }
+    }
+  }
+  const packed = new BigUint64Array(stats.tiles)
+  let k = 0
+  for (let i = 0; i < stats.entries; i++) {
+    const [z] = tileIdToZxy(tileIds[i])
+    if (runLengths[i] !== 1 && z > expandRunsUpToZoom) continue
+    for (let r = 0; r < runLengths[i]; r++) {
+      const [rz, rx, ry] = tileIdToZxy(tileIds[i] + r)
+      packed[k++] = (BigInt(rz) << Z_SHIFT) | (BigInt(mortonCode(rx, ry, rz)) << MORTON_SHIFT) | BigInt(i)
+    }
+  }
+  const ts = perf.now()
+  packed.sort()
+  stats.sortMs = Math.round(perf.now() - ts)
+  return { packed, offsets, lengths, stats }
+}
+
+function unpack (v) {
+  const z = Number(v >> Z_SHIFT)
+  const { x, y } = mortonToXY(Number((v >> MORTON_SHIFT) & MORTON_MASK), z)
+  return { z, x, y, entry: Number(v & ENTRY_MASK) }
+}
+
 function readProgress (file) {
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'))
@@ -65,6 +123,9 @@ function readProgress (file) {
 // Puts go to the core in batches of flushPuts or flushBytes; progressFile records the last
 // directory whose puts are all flushed, and resume skips directories at or before it. A directory
 // interrupted mid-batch is redone from its start, which rewrites the same values.
+// sorted: puts each archive's tiles in key order (collectSorted) instead of the directory walk's
+// Hilbert order, so consecutive puts share leaves; the archives must not overlap in zoom and the
+// run has no checkpoint. inlineValueSize goes to every write batch (hyperbee2/lib/write.js:22).
 async function buildPlanet (bee, archives, opts = {}) {
   const {
     expandRunsUpToZoom,
@@ -73,14 +134,18 @@ async function buildPlanet (bee, archives, opts = {}) {
     progressFile = null,
     resume = false,
     maxDirs = Infinity,
+    sorted = false,
+    inlineValueSize,
     log = console.log
   } = opts
   if (!Number.isInteger(expandRunsUpToZoom)) throw new TypeError('expandRunsUpToZoom must be an integer zoom')
+  if (sorted && resume) throw new Error('a sorted build cannot resume')
+  if (sorted) await checkZoomOrder(archives)
   const core = bee.core
   const done = resume && progressFile ? readProgress(progressFile) : null
   const totals = { puts: 0, bytes: 0, flushes: 0, fillerRuns: 0, fillerTiles: 0, dirs: 0, lastKey: null }
   const t0 = perf.now()
-  let batch = bee.write()
+  let batch = bee.write({ inlineValueSize })
   let batchPuts = 0
   let batchBytes = 0
   let completed = null
@@ -88,15 +153,15 @@ async function buildPlanet (bee, archives, opts = {}) {
   const checkpoint = () => {
     if (progressFile && completed) fs.writeFileSync(progressFile, JSON.stringify(completed) + '\n')
   }
-  const flush = async (a, dir, total) => {
+  const flush = async (a, progress) => {
     await batch.flush()
     totals.flushes++
-    batch = bee.write()
+    batch = bee.write({ inlineValueSize })
     batchPuts = 0
     batchBytes = 0
     checkpoint()
     const s = (perf.now() - t0) / 1000
-    log(`archive ${a + 1}/${archives.length}\tdir ${dir}/${total}\tputs ${totals.puts}\tfillerRuns ${totals.fillerRuns}\tfillerTiles ${totals.fillerTiles}\tbytes ${totals.bytes}\tcore.length ${core.length}\telapsed ${s.toFixed(1)} s\tputs/s ${Math.round(totals.puts / s)}`)
+    log(`archive ${a + 1}/${archives.length}\t${progress}\tputs ${totals.puts}\tfillerRuns ${totals.fillerRuns}\tfillerTiles ${totals.fillerTiles}\tbytes ${totals.bytes}\tcore.length ${core.length}\telapsed ${s.toFixed(1)} s\tputs/s ${Math.round(totals.puts / s)}`)
   }
   const put = (key, value) => {
     batch.tryPut(key, value)
@@ -107,12 +172,47 @@ async function buildPlanet (bee, archives, opts = {}) {
     totals.lastKey = key
   }
 
+  // one batch per chunk of the sorted order, cut where the walk would flush; each chunk reads its
+  // distinct entries in file order, then puts in key order
+  const putSorted = async (archive, header, a) => {
+    const tc = perf.now()
+    const { packed, offsets, lengths, stats } = await collectSorted(archive, header, expandRunsUpToZoom)
+    totals.dirs += stats.dirs
+    totals.fillerRuns += stats.fillerRuns
+    totals.fillerTiles += stats.fillerTiles
+    log(`archive ${a + 1}/${archives.length}\tcollect entries ${stats.entries} tiles ${stats.tiles} dirs ${stats.dirs} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles}\tsort ms ${stats.sortMs}\tms ${Math.round(perf.now() - tc)}`)
+    let j = 0
+    while (j < packed.length) {
+      let end = j
+      let puts = 0
+      let bytes = 0
+      while (end < packed.length && puts < flushPuts && bytes < flushBytes) {
+        bytes += lengths[unpack(packed[end]).entry]
+        puts++
+        end++
+      }
+      const tiles = []
+      for (let i = j; i < end; i++) tiles.push(unpack(packed[i]))
+      const entries = [...new Set(tiles.map((t) => t.entry))].sort((p, q) => offsets[p] - offsets[q])
+      const values = await readValues(archive, header, entries.map((e) => ({ offset: offsets[e], length: lengths[e] })))
+      const byEntry = new Map(entries.map((e, i) => [e, values[i]]))
+      for (const t of tiles) put(tileKey(t.z, t.x, t.y), byEntry.get(t.entry))
+      await flush(a, `tile ${end}/${packed.length}`)
+      j = end
+    }
+  }
+
   for (let a = 0; a < archives.length; a++) {
     if (done && a < done.archive) continue
     const archive = openArchive(archives[a])
     const header = await archive.getHeader()
     if (header.tileCompression !== Compression.Gzip) {
       throw new Error(`${archives[a]}: tileCompression ${header.tileCompression} is not gzip`)
+    }
+    if (sorted) {
+      await putSorted(archive, header, a)
+      await archive.close()
+      continue
     }
     let dir = 0
     let total = 1
@@ -138,13 +238,13 @@ async function buildPlanet (bee, archives, opts = {}) {
           totals.fillerRuns++
           totals.fillerTiles += e.runLength
         }
-        if (batchPuts >= flushPuts || batchBytes >= flushBytes) await flush(a, dir, total)
+        if (batchPuts >= flushPuts || batchBytes >= flushBytes) await flush(a, `dir ${dir}/${total}`)
       }
       completed = { archive: a, dir }
       totals.dirs++
       dir++
     }
-    if (batchPuts > 0) await flush(a, dir, total)
+    if (batchPuts > 0) await flush(a, `dir ${dir}/${total}`)
     else checkpoint()
     await archive.close()
     if (totals.dirs >= maxDirs) break
@@ -153,13 +253,52 @@ async function buildPlanet (bee, archives, opts = {}) {
   return totals
 }
 
+// keys in a sorted build ascend across archives only if each archive's zooms lie above the last's
+async function checkZoomOrder (archives) {
+  let prev = null
+  for (const file of archives) {
+    const archive = openArchive(file)
+    const header = await archive.getHeader()
+    await archive.close()
+    if (prev && header.minZoom <= prev.maxZoom) {
+      throw new Error(`sorted build needs archives in zoom order: ${file} starts at z${header.minZoom}, the one before ends at z${prev.maxZoom}`)
+    }
+    prev = header
+  }
+}
+
+const FLAGS = ['--resume', '--sorted', '--inline-value-size', '--flush-puts', '--flush-bytes']
+
 function parseArgs (argv) {
-  const flags = new Set(argv.filter((a) => a.startsWith('--')))
+  const flags = new Map()
+  for (const a of argv.filter((s) => s.startsWith('--'))) {
+    const i = a.indexOf('=')
+    const name = i === -1 ? a : a.slice(0, i)
+    if (!FLAGS.includes(name)) throw new Error(`unknown flag ${name}`)
+    flags.set(name, i === -1 ? null : a.slice(i + 1))
+  }
+  const int = (name, min) => {
+    if (!flags.has(name)) return undefined
+    const n = Number(flags.get(name))
+    if (!(Number.isInteger(n) && n >= min)) throw new Error(`${name} must be an integer >= ${min}`)
+    return n
+  }
   const [storeDir, keysDir, name, zoom, ...archives] = argv.filter((a) => !a.startsWith('--'))
   if (!storeDir || !keysDir || !name || !zoom || archives.length === 0) {
-    throw new Error('usage: planet-build.js [--resume] <storeDir> <keysDir> <draftName> <expandRunsUpToZoom> <archive.pmtiles>...')
+    throw new Error('usage: planet-build.js [--resume] [--sorted] [--inline-value-size=N] [--flush-puts=N] [--flush-bytes=N] <storeDir> <keysDir> <draftName> <expandRunsUpToZoom> <archive.pmtiles>...')
   }
-  return { storeDir, keysDir, name, expandRunsUpToZoom: Number(zoom), archives, resume: flags.has('--resume') }
+  return {
+    storeDir,
+    keysDir,
+    name,
+    expandRunsUpToZoom: Number(zoom),
+    archives,
+    resume: flags.has('--resume'),
+    sorted: flags.has('--sorted'),
+    inlineValueSize: int('--inline-value-size', 0),
+    flushPuts: int('--flush-puts', 1),
+    flushBytes: int('--flush-bytes', 1)
+  }
 }
 
 async function main () {
@@ -167,7 +306,7 @@ async function main () {
   const store = new Corestore(args.storeDir)
   const { draft, bee } = await openDraft(store, load(args.keysDir), args.name)
   const progressFile = path.join(args.storeDir, 'planet-build.progress')
-  console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} progress ${progressFile}`)
+  console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} sorted ${args.sorted} inlineValueSize ${args.inlineValueSize ?? 'default'} flushPuts ${args.flushPuts ?? FLUSH_PUTS} flushBytes ${args.flushBytes ?? FLUSH_BYTES} progress ${progressFile}`)
   const totals = await buildPlanet(bee, args.archives, { ...args, progressFile })
   const last = totals.lastKey ? await bee.get(totals.lastKey) : null
   console.log(`done puts ${totals.puts} bytes ${totals.bytes} flushes ${totals.flushes} fillerRuns ${totals.fillerRuns} fillerTiles ${totals.fillerTiles} elapsed ${(totals.elapsedMs / 1000).toFixed(1)} s`)

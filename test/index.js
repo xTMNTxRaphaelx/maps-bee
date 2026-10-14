@@ -2,6 +2,7 @@
 const test = require('brittle')
 
 test.pause()
+require('./tiles')
 require('./keys')
 require('./archive')
 require('./value-size')
@@ -17,4 +18,5 @@ require('./second-publish')
 require('./chunked-commit')
 require('./seeder-sees')
 require('./cell-2x2')
+require('./top-levels')
 test.resume()

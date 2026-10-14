@@ -3,14 +3,16 @@ const test = require('brittle')
 const fs = require('bare-fs')
 const path = require('bare-path')
 const zlib = require('bare-zlib')
+const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { tileIdToZxy } = require('pmtiles')
+const { decodeBlock } = require('hyperbee2/lib/encoding.js')
 const { buildPlanet, directories } = require('../scripts/planet-build')
 const { buildBee } = require('../scripts/bee-build')
 const { openArchive } = require('../scripts/pmtiles-file')
 const { tileKey, parseTileKey } = require('../scripts/tiles')
 const { decodeGzip } = require('../scripts/mvt')
-const { tmpStore, STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
+const { tmpStore, spyPuts, STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
 
 // z10 only, 550 tiles in 239 entries, mostly open Atlantic: extracted from the planet z10 file (README)
 const ATLANTIC = path.join(__dirname, '..', 'data', 'extract', 'atlantic-z10.pmtiles')
@@ -144,4 +146,65 @@ test('run entries expand at or below the expand zoom and are skipped above it', 
   t.is(ts.fillerRuns, counts.runs)
   t.is(ts.fillerTiles, counts.runTiles)
   t.is(await skip.get(firstRun[0]), null, 'a run tile is absent')
+})
+
+test('sorted build puts keys in ascending order and the same set as the directory walk', async (t) => {
+  const sorted = await newBee(t, 'planet-sorted')
+  const walk = await newBee(t, 'planet-walk')
+  const keys = spyPuts(sorted)
+  const ts = await buildPlanet(sorted, ARCHIVES, { expandRunsUpToZoom: EXPAND, sorted: true, flushPuts: 200, log: () => {} })
+  const tw = await buildPlanet(walk, ARCHIVES, { expandRunsUpToZoom: EXPAND, flushPuts: 200, log: () => {} })
+  t.ok(ts.flushes > 1, `chunked into ${ts.flushes} flushes`)
+  t.is(keys.length, ts.puts, 'one tryPut per put')
+  let ascending = 0
+  for (let i = 1; i < keys.length; i++) if (b4a.compare(keys[i - 1], keys[i]) < 0) ascending++
+  t.is(ascending, keys.length - 1, 'every key above the one before it')
+  t.is(ts.puts, tw.puts)
+  t.is(ts.bytes, tw.bytes)
+  t.is(ts.fillerTiles, tw.fillerTiles)
+
+  const walkKeys = await keysOf(walk)
+  t.alike(str(await keysOf(sorted)), str(walkKeys), 'same key set')
+  let equal = 0
+  for (const key of walkKeys) {
+    const a = await sorted.get(key)
+    const b = await walk.get(key)
+    if (a && b4a.equals(a.value, b.value)) equal++
+  }
+  t.is(equal, walkKeys.length, 'every key readable with the same bytes')
+})
+
+async function inlinedValues (core) {
+  let n = 0
+  for (let i = 0; i < core.length; i++) {
+    const blk = decodeBlock(await core.get(i), i)
+    if (blk.keys) n += blk.keys.filter((k) => k.value).length
+  }
+  return n
+}
+
+test('inlineValueSize 0 leaves no value inlined in a key record', async (t) => {
+  const inl = await newBee(t, 'atlantic-inline')
+  const out = await newBee(t, 'atlantic-noinline')
+  await buildPlanet(inl, [ATLANTIC], { expandRunsUpToZoom: 10, log: () => {} })
+  await buildPlanet(out, [ATLANTIC], { expandRunsUpToZoom: 10, inlineValueSize: 0, log: () => {} })
+  const a = await inlinedValues(inl.core)
+  t.ok(a > 0, `default build inlines ${a} values (ocean tiles are 93 B)`)
+  t.is(await inlinedValues(out.core), 0, 'no inlined value with inlineValueSize 0')
+  t.comment(`core.length inline ${inl.core.length} byteLength ${inl.core.byteLength}; noinline ${out.core.length} byteLength ${out.core.byteLength}`)
+  const keys = await keysOf(inl)
+  let equal = 0
+  for (const key of keys) {
+    const x = await inl.get(key)
+    const y = await out.get(key)
+    if (y && b4a.equals(x.value, y.value)) equal++
+  }
+  t.is(equal, keys.length, 'same bytes for every key')
+})
+
+test('sorted build rejects --resume and archives out of zoom order', async (t) => {
+  const bee = await newBee(t, 'planet-sorted-bad')
+  await t.exception(buildPlanet(bee, [JAIPUR_ARCHIVE, STATE_ARCHIVE], { expandRunsUpToZoom: EXPAND, sorted: true, log: () => {} }), /zoom order/)
+  await t.exception(buildPlanet(bee, ARCHIVES, { expandRunsUpToZoom: EXPAND, sorted: true, resume: true, log: () => {} }), /resume/)
+  t.is(bee.core.length, 0, 'nothing written')
 })

@@ -20,7 +20,7 @@ test('seed.js serves the signed atlas and probe.js reads a preview over a testne
   t.is(p.results.length, 2, 'cold and repeat')
   const [cold, repeat] = p.results
   t.is(cold.zoom, 14)
-  t.is(cold.present, 16, 'all 16 z14 tiles')
+  t.is(cold.present, 4, 'all 4 z14 tiles of the 2x2')
   t.ok(cold.blocks > 0)
   t.is(repeat.blocks, 0, 'repeat read fetches nothing')
   t.is(s.stats.uploads, p.update.blocks + cold.blocks, 'seeder uploads equal client downloads')

@@ -4,7 +4,7 @@ const b4a = require("b4a");
 const MAX_LAT = 85.0511;
 
 // NaN masks to tile column 0 and 200 clamps to the last column, both real keys for the wrong place
-function lonLatToTile(lon, lat, z) {
+function lonLatToTileFraction(lon, lat, z) {
   if (
     !(Number.isFinite(lon) && Number.isFinite(lat)) ||
     Math.abs(lon) > 180 ||
@@ -14,14 +14,38 @@ function lonLatToTile(lon, lat, z) {
   }
   const n = 2 ** z;
   const rad = (lat * Math.PI) / 180;
-  const x = Math.floor(((lon + 180) / 360) * n);
-  const y = Math.floor(
-    ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n,
-  );
   return {
-    x: Math.min(Math.max(x, 0), n - 1),
-    y: Math.min(Math.max(y, 0), n - 1),
+    x: ((lon + 180) / 360) * n,
+    y: ((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n,
   };
+}
+
+function lonLatToTile(lon, lat, z) {
+  const n = 2 ** z;
+  const f = lonLatToTileFraction(lon, lat, z);
+  return {
+    x: Math.min(Math.max(Math.floor(f.x), 0), n - 1),
+    y: Math.min(Math.max(Math.floor(f.y), 0), n - 1),
+  };
+}
+
+// The pin's tile plus the column and row neighbours on the side the pin leans to, so a view
+// centred on the pin never runs off the tiles. Row-major from the top-left (origin); x wraps at
+// the antimeridian, and a row above 0 or below n - 1 has no tiles, so its slots are null and
+// origin.y is -1 when the pin leans above row 0.
+function pinTiles(lon, lat, z) {
+  const n = 2 ** z;
+  const f = lonLatToTileFraction(lon, lat, z);
+  const { x, y } = lonLatToTile(lon, lat, z);
+  const left = f.x - x < 0.5 ? x - 1 : x;
+  const top = f.y - y < 0.5 ? y - 1 : y;
+  const tiles = [];
+  for (const ty of [top, top + 1]) {
+    for (const tx of [left, left + 1]) {
+      tiles.push(ty < 0 || ty >= n ? null : [(tx + n) % n, ty]);
+    }
+  }
+  return { origin: { x: (left + n) % n, y: top }, tiles };
 }
 
 function quadkey(x, y, z) {
@@ -31,6 +55,28 @@ function quadkey(x, y, z) {
     q += String((x & mask ? 1 : 0) + (y & mask ? 2 : 0));
   }
   return q;
+}
+
+// the quadkey as a number: x bits in the even places, y bits in the odd; arithmetic instead of
+// bit operators so z up to 26 stays exact in a double
+function mortonCode(x, y, z) {
+  let m = 0;
+  for (let i = z - 1; i >= 0; i--) {
+    m = m * 4 + ((x >> i) & 1) + 2 * ((y >> i) & 1);
+  }
+  return m;
+}
+
+function mortonToXY(m, z) {
+  let x = 0;
+  let y = 0;
+  for (let i = 0; i < z; i++) {
+    const d = m % 4;
+    m = Math.floor(m / 4);
+    x |= (d & 1) << i;
+    y |= (d >> 1) << i;
+  }
+  return { x, y };
 }
 
 function zz(z) {
@@ -74,8 +120,12 @@ function parseBbox(s) {
 }
 
 module.exports = {
+  lonLatToTileFraction,
   lonLatToTile,
+  pinTiles,
   quadkey,
+  mortonCode,
+  mortonToXY,
   zz,
   tileKey,
   parseTileKey,

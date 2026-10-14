@@ -1,0 +1,71 @@
+# C2 no-inline build, 2026-10-14: bare scripts/planet-build.js --inline-value-size=0 store/planet-c2 keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles
+
+## build
+draft atlas length 0 resume false sorted false inlineValueSize 0 flushPuts 20000 flushBytes 67108864 progress store/planet-c2/planet-build.progress
+done puts 32888213 bytes 35221625742 flushes 1713 fillerRuns 7661427 fillerTiles 236595819 elapsed 436.5 s
+draft.length 5724427 byteLength 36445196139 lastKey 14/11111111111111 readable true
+      436.90 real       342.14 user       195.19 sys
+          4110598144  maximum resident set size
+build exit 0 Wed Oct 14 11:53:37 IST 2026
+
+## build progress, every 200th flush
+archive 2/2	dir 309/3502	puts 3668576	fillerRuns 859873	fillerTiles 26904553	bytes 3098232416	core.length 348967	elapsed 40.4 s	puts/s 90719
+archive 2/2	dir 694/3502	puts 7499845	fillerRuns 1380154	fillerTiles 42249707	bytes 7891569811	core.length 1136013	elapsed 91.9 s	puts/s 81645
+archive 2/2	dir 1063/3502	puts 11444069	fillerRuns 1598426	fillerTiles 47216026	bytes 12325568285	core.length 1898594	elapsed 143.6 s	puts/s 79680
+archive 2/2	dir 1591/3502	puts 15426769	fillerRuns 3576279	fillerTiles 120416735	bytes 15270459295	core.length 2472540	elapsed 198.9 s	puts/s 77546
+archive 2/2	dir 2126/3502	puts 19374701	fillerRuns 5666044	fillerTiles 192610595	bytes 18228837463	core.length 3004133	elapsed 255.7 s	puts/s 75766
+archive 2/2	dir 2518/3502	puts 23361752	fillerRuns 6095410	fillerTiles 198514841	bytes 22043871200	core.length 3702725	elapsed 305.6 s	puts/s 76452
+archive 2/2	dir 2867/3502	puts 27024427	fillerRuns 6370484	fillerTiles 202086948	bytes 28377728833	core.length 4636815	elapsed 355.5 s	puts/s 76018
+archive 2/2	dir 3207/3502	puts 30634332	fillerRuns 6603194	fillerTiles 204273015	bytes 34391441813	core.length 5528670	elapsed 407.8 s	puts/s 75123
+
+## gazetteer (scripts/gazetteer-put.js data/planet-gazetteer.json, then scripts/planet-commit.js)
+gazetteer puts 111548 draft.length 5725311 (+884) byteLength 36456513316
+gazetteer-put exit 0
+commit exit 0 Wed Oct 14 11:55:47 IST 2026
+draft atlas length 5725311 byteLength 36456513316 signed 0 chunk 20000
+commit {"length":5725311,"byteLength":36456513316} m.length 5725311 m.signedLength 5725311
+maps: { "key": "q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo", "length": 5725311 }
+signed commits: 287, last: commit length 5725311/5725311 byteLength 36456513316 elapsed 120.0 s
+
+## probe (2x2 unit, label; one seeder on the public DHT; seed line: seeding q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo length 5725311 byteLength 36456513316)
+connect ms 3259.9	update ms 0.8 blocks 0 bytes 0	core.length 5725311
+cold	26.9,75.8	ms 216.6	blocks 266	bytes 1825298	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 74.3	blocks 132	bytes 1203056	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 17.6	blocks 19	bytes 414060	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 19.4	blocks 10	bytes 298397	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 96.7	blocks 266	bytes 1591251	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=1
+connect ms 3273.4	update ms 0.8 blocks 0 bytes 0	core.length 5725311
+prefetch levels 1 nodes 1	ms 112.1	blocks 11	bytes 83002
+cold	26.9,75.8	ms 95.5	blocks 255	bytes 1742296	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 55.8	blocks 132	bytes 1203056	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 12.8	blocks 19	bytes 414060	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 15.1	blocks 10	bytes 298397	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 76.1	blocks 266	bytes 1591251	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.7	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=2
+connect ms 3138.5	update ms 0.7 blocks 0 bytes 0	core.length 5725311
+prefetch levels 2 nodes 1/10	ms 535.6	blocks 1288	bytes 7940746
+cold	26.9,75.8	ms 22.4	blocks 22	bytes 253832	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 29.5	blocks 19	bytes 468750	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 15.8	blocks 19	bytes 414060	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 20.9	blocks 10	bytes 298397	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 25.3	blocks 21	bytes 105715	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0
+
+## C3 probe --levels=3
+connect ms 3036.6	update ms 0.7 blocks 0 bytes 0	core.length 5725311
+prefetch levels 3 nodes 1/10/1415	ms 5203	blocks 5416	bytes 31162065
+cold	26.9,75.8	ms 7.8	blocks 12	bytes 175447	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 15.9	blocks 13	bytes 417897	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 11.2	blocks 14	bytes 390995	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 9.9	blocks 8	bytes 271483	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 6.2	blocks 8	bytes 46849	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 0.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+probe exit 0

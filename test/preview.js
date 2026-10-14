@@ -2,7 +2,7 @@
 const test = require('brittle')
 const Hyperbee = require('hyperbee2')
 const { haversineKm } = require('../scripts/gazetteer-lib')
-const { lonLatToTile } = require('../scripts/tiles')
+const { lonLatToTile, pinTiles } = require('../scripts/tiles')
 const { decodeGzip } = require('../scripts/mvt')
 const { openArchive, readTile } = require('../scripts/pmtiles-file')
 const { readPreview, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM } = require('../scripts/preview')
@@ -13,7 +13,7 @@ const h = require('./sparse-harness')
 const OPTS = { timeout: 5000 }
 const POINTS = {
   jaipur: JAIPUR_CENTRE, // inside the z14 box
-  partial: { lon: 75.66, lat: 27.04 }, // its z12 cell straddles the west edge of the z14 box
+  partial: { lon: 75.64, lat: 27.04 }, // its 2x2 straddles the west edge of the z14 box: x 11634 in, 11633 out
   jodhpur: { lon: 73.02, lat: 26.29 }, // state coverage only: z10 fallback
   edge: { lon: 73.13, lat: 26.29 }, // the nearest city sits in the neighbouring z8 cell
   mumbai: { lon: 72.88, lat: 19.08 } // outside the atlas
@@ -32,23 +32,20 @@ async function atlas (store) {
   return bee
 }
 
-// which of the 16 z14 tiles of the point's z12 cell the extract holds, row-major like readCell
+// which of the 4 z14 tiles of the point's 2x2 the extract holds, in pinTiles order
 async function presentInArchive (point) {
   const archive = openArchive(JAIPUR_ARCHIVE)
-  const c = lonLatToTile(point.lon, point.lat, DETAIL_ZOOM - 2)
   const present = []
-  for (let y = c.y << 2; y < (c.y << 2) + 4; y++) {
-    for (let x = c.x << 2; x < (c.x << 2) + 4; x++) present.push(Boolean(await readTile(archive, DETAIL_ZOOM, x, y)))
-  }
+  for (const [x, y] of pinTiles(point.lon, point.lat, DETAIL_ZOOM).tiles) present.push(Boolean(await readTile(archive, DETAIL_ZOOM, x, y)))
   await archive.close()
   return present
 }
 
 function assertCell (t, p, zoom, point) {
   t.is(p.zoom, zoom)
-  t.alike(p.cell, lonLatToTile(point.lon, point.lat, zoom - 2))
-  t.is(p.tiles.length, 16)
-  t.is(p.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, 16, 'all 16 tiles decode as MVT')
+  t.alike(p.origin, pinTiles(point.lon, point.lat, zoom).origin)
+  t.is(p.tiles.length, 4)
+  t.is(p.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, 4, 'all 4 tiles decode as MVT')
 }
 
 function assertLabel (t, p, places, point) {
@@ -71,8 +68,8 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   const partial = await readPreview(bee, POINTS.partial, OPTS)
   const expected = await presentInArchive(POINTS.partial)
   const n = expected.filter(Boolean).length
-  t.ok(n > 0 && n < 16, `the extract holds ${n} of the 16 tiles of this cell`)
-  t.is(partial.zoom, DETAIL_ZOOM, 'a partly published cell stays at z14, no fallback')
+  t.ok(n > 0 && n < 4, `the extract holds ${n} of the 4 tiles of this 2x2`)
+  t.is(partial.zoom, DETAIL_ZOOM, 'a partly published 2x2 stays at z14, no fallback')
   t.alike(partial.tiles.map(Boolean), expected, 'missing tiles are null, present ones in place')
   t.is(partial.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, n, 'present tiles decode as MVT')
 
@@ -87,6 +84,7 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
 
   const mumbai = await readPreview(bee, POINTS.mumbai, OPTS)
   t.is(mumbai.zoom, null)
+  t.is(mumbai.origin, null)
   t.is(mumbai.tiles, null)
   t.is(mumbai.label, null)
 })
