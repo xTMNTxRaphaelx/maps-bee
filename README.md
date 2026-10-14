@@ -1,68 +1,82 @@
 # maps-bee
 
-Setup and run commands. Everything runs under bare.
+**A signed, peer-to-peer map tile store for Keet location previews.**
+
+A Keet location message carries only latitude and longitude. This prototype turns that into a pinned map thumbnail on the viewer's device by fetching a few hundred kilobytes from peers: no map server, no trust in the peer that serves the bytes, nothing fetched on a second open.
+
+| | |
+| --- | --- |
+| Setup and commands | [SETUP.md](SETUP.md) |
+| Measurements | [`results/`](results/) |
+| Test app | [`app/`](app/), run with `npm start` |
+| Runtime | bare 1.34, hypercore 11, hyperbee2 2.18 |
+
+## How it fits together
 
 ```
-npm install
-mkdir -p tools data/extract results
-cp <path to the pmtiles binary> tools/pmtiles
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
-B=node_modules/bare-runtime/bin/bare
-$B scripts/keys.js keys
-$B scripts/build-bee.js store/single data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/build-bee.txt
-$B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/publish.txt
-./tools/pmtiles extract data/planet-z10.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
-$B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee results/gazetteer.txt
-npm test
+Protomaps planet build (OpenStreetMap, ODbL)
+        │  pmtiles extract: zoom 10 complete, zoom 14 without filler
+        ▼
+scripts/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
+scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
+        │  2-of-3 multisig, committed in signed chunks
+        ▼
+scripts/seed.js on any peer  ◀──── public DHT ────▶  the viewer
+                                                       │  readPreview(lat, lon): 2x2 tiles + label,
+                                                       │  sparse reads, timeout, deadline, cancel
+                                                       ▼
+                                              640 × 360 thumbnail with a pin
 ```
 
-Planet build, z10 complete plus z14 without filler runs, then sign, seed and probe:
+## Problem
 
-```
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/planet-z10.pmtiles --minzoom=10 --maxzoom=10
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/planet-z14.pmtiles --minzoom=14 --maxzoom=14
-$B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # publisher path, into an empty store dir: key-order puts, no value inlined with its key, no --resume
-$B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10 | tee results/planet-gazetteer.txt
-$B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json   # g/ keys after the tiles, before the commit; --inline-value-size=N as in planet-build.js
-$B scripts/planet-commit.js store/planet keys atlas   # optional 4th arg: blocks per signed commit, default 20000; resumable
-$B scripts/seed.js store/planet <key from the maps line>
-$B scripts/probe.js <key> 26.9,75.8 51.5,-0.12
-$B scripts/probe.js --levels=2 <key> 26.9,75.8 51.5,-0.12   # prefetch the top N tree levels first, then read
-```
+Keet has no server. Whatever the viewer of a shared location sees must come from the message, the viewer's own device, or other peers. Today the viewer gets a deep link to an external map. The target is a static map preview with a pin: a small fetch on first open, free on every later open, from data the viewer can verify.
 
-The measured experiments behind that build line (results/planet-c1-sorted.txt, results/planet-c2-noinline.txt, results/planet-c12-sorted-noinline.txt):
+## Design
 
-```
-$B scripts/planet-build.js store/planet keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # directory-walk order, add --resume after an interruption
-$B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 store/planet-c1 keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # key-order puts only
-$B scripts/planet-build.js --inline-value-size=0 store/planet-c2 keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # no inlined values only
-```
+- **One hyperbee holds the tiles.** Keys are `<zoom>/<quadkey>`, values are the gzipped Mapbox Vector Tile bytes exactly as Protomaps publishes them. The planet bee holds zoom 10 complete plus zoom 14 without the repeated ocean and empty tiles: 32,888,213 tiles, 36.4 GB on the core.
+- **Signed by a 2-of-3 multisig.** The publisher fills a draft session and commits it in signed chunks of 20,000 blocks, because hypercore loads every block of a commit into memory. A republish on the same key keeps warm clients' blocks valid. Clients receive the key and the signed length the way they receive other shared indexes.
+- **Read sparsely, never downloaded.** For one point the client fetches the 2x2 of zoom 14 tiles the pin leans into, chosen from the pin's fractional position inside its tile, so a 640 by 360 crop centred on the pin is always covered. If all four are absent it falls back to the zoom 10 2x2. Every block read has a timeout, the whole call a deadline, and a failed call cancels its own requests.
+- **A gazetteer in the same bee** gives the nearest city or town: 111,548 localities from the zoom 10 places layer. It is a label, not an address.
+- **An optional one-time prefetch** of the top two tree levels, 194 blocks and 1.85 MB, after which every point costs at most 18 blocks.
+- **Layout decides the cost.** hyperbee2 inflates a tree node by fetching the origin block of every key the node references, inlines values of 1 KB or less into key blocks, and cuts blocks far above its 4 KiB target. Writing tiles in key order in large batches and turning off value inlining are the two publisher flags that make a cold read cheap.
 
-Running the setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified. The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`. `keys/` holds test-only keys and is never committed.
+What the serving peer learns is the zoom 12 cell the viewer asked about, about 9 km across.
+
+## Measured
+
+Cold first open from a fresh client over the public DHT, 2x2 plus label, as blocks / bytes. Repeat opens cost 0 blocks on every layout.
+
+| Point | Baseline layout | Key order, no inlining | After the level-2 prefetch |
+| --- | ---: | ---: | ---: |
+| Jaipur | 266 / 10.16 MB | 60 / 0.69 MB | 13 / 0.18 MB |
+| London | 132 / 4.40 MB | 29 / 0.54 MB | 18 / 0.44 MB |
+| New York | 19 / 0.44 MB | 16 / 0.41 MB | 16 / 0.41 MB |
+| Open ocean, zoom 10 | 264 / 9.41 MB | 26 / 0.16 MB | 13 / 0.07 MB |
+
+| Measurement | File |
+| --- | --- |
+| Baseline layout, 2x2 unit | `results/planet-probe-2x2.txt` |
+| Key order only, no inlining only | `results/planet-c1-sorted.txt`, `results/planet-c2-noinline.txt` |
+| Both flags, the publisher path | `results/planet-c12-sorted-noinline.txt` |
+| Test app on the seeding host | `results/pear-smoke.txt` |
+| Fetch unit, second publish, what a seeder sees, filler tiles | `results/cell-2x2.txt`, `results/second-publish.txt`, `results/seeder-sees.txt`, `results/planet-filler.txt` |
+
+## Layout
+
+| Directory | Holds |
+| --- | --- |
+| `scripts/` | The prototype: tiles and quadkeys, pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer, `preview.js` (the client read), seed and probe, the SVG thumbnail renderer. |
+| `test/` | brittle tests, registered in `test/index.js`, run under bare. |
+| `app/` | The Electron test app: a bare worker over pear-runtime calls the real `readPreview`; the window shows the thumbnail and logs probe-format lines. |
+| `results/` | Every measurement quoted anywhere, as the scripts printed it. |
+
+## Status
+
+Done and measured: the read path, the signed publish, the planet-scale layout, the test app.
+
+Open: where the street address comes from (the tiles cannot yield one; the sender's geocoder or a second dataset can), the production renderer, who seeds the core, and the republish cadence against Protomaps builds. Integration into Keet is a separate spec.
+
+## Data
 
 Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed as an Open Database License produced work of OpenStreetMap: map data © OpenStreetMap contributors, ODbL. No tile data is in this repository.
-
-## Pear test app
-
-An Electron window over a bare worker (pear-runtime) that reads previews from the planet bee over the public DHT with `scripts/preview.js`, draws the 2x2 as a 640x360 thumbnail with a pin, and logs the probe lines. The renderer and Electron main only relay; every read runs in the bare worker (`app/worker.js`, `app/ops.js`).
-
-```
-npm install
-node node_modules/electron/install.js   # only when npm has ignore-scripts=true, which skips the Electron binary download
-npm start
-```
-
-One client per key stays open while the window is open, and its store under `store/tmp/probe-*` is removed on quit. The log lines match `scripts/probe.js`:
-
-```
-connect ms N	update ms N blocks N bytes N	core.length N             # once per key
-prefetch levels 2 nodes A/B	ms N	blocks N	bytes N                 # once per key, when the box is ticked
-cold|repeat	<lat>,<lon>	ms N	blocks N	bytes N	zoom Z	tiles P/4	label <name> (<kind>, <km> km)|null
-```
-
-Test window:
-
-- Seeder, kept running with its terminal open for the agreed window (a stats line every 10 s): `$B scripts/seed.js store/planet-c12 q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo`. Stop it with Ctrl-C, or `pkill -INT -f scripts/seed.js` from another terminal, since the `node_modules/bare-runtime/bin/bare` launcher does not forward SIGINT; it prints `stopping: ...`.
-- Tester: `git clone https://github.com/xTMNTxRaphaelx/maps-bee && cd maps-bee && npm install && npm start`, plus `node node_modules/electron/install.js` before `npm start` when npm has ignore-scripts. In the window keep the default key, tick prefetch or not, click each preset then Run, click Run a second time on Jaipur for the repeat line, try one free lat/lon, then click Copy log.
-- Results go in `results/pear-test-window.txt`. First line `# pear test window YYYY-MM-DD, tester <name>, seeder store/planet-c12 on <host>, prefetch on|off, app <git short sha>`, then one `## session N` heading per app launch, each followed by its copied log verbatim.
