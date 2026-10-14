@@ -80,7 +80,7 @@ function prefetchLine (levels, prefetch) {
 }
 
 function previewLine (phase, point, r) {
-  return `${phase}\t${point.lat},${point.lon}\tms ${r.ms}\tblocks ${r.blocks}\tbytes ${r.bytes}\tzoom ${r.value.zoom}\ttiles ${tilesPresent(r.value)}/4\tlabel ${labelText(r.value.label)}`
+  return `${phase}\t${point.lat},${point.lon}\tms ${r.ms}\tblocks ${r.blocks}\tbytes ${r.bytes}\tzoom ${r.value.zoom}\ttiles ${tilesPresent(r.value)}/4\tlabel ${labelText(r.value.label)}\taddress ${r.value.address ? r.value.address.display : 'null'}`
 }
 
 // A cold client as an app would open one, optionally the top `levels` tree levels as an app would

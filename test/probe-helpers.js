@@ -20,8 +20,9 @@ test('probe helpers: timed deltas and the probe line formats', async (t) => {
 
   const point = { lat: 26.9, lon: 75.8 }
   const label = { name: 'Jaipur', kind: 'city', km: 2.6 }
-  t.is(previewLine('cold', point, { ms: 162.5, blocks: 60, bytes: 693682, value: { zoom: 14, tiles: [1, 1, 1, 1], label } }),
-    'cold\t26.9,75.8\tms 162.5\tblocks 60\tbytes 693682\tzoom 14\ttiles 4/4\tlabel Jaipur (city, 2.6 km)')
-  const none = previewLine('cold', point, { ms: 1, blocks: 0, bytes: 0, value: { zoom: null, tiles: null, label: null } })
-  t.ok(none.endsWith('\tzoom null\ttiles 0/4\tlabel null'), none)
+  const address = { display: 'Elevated Hawa Sadak (112 m), Kachi Basti, Sudarshanpura, Jaipur' }
+  t.is(previewLine('cold', point, { ms: 162.5, blocks: 60, bytes: 693682, value: { zoom: 14, tiles: [1, 1, 1, 1], label, address } }),
+    'cold\t26.9,75.8\tms 162.5\tblocks 60\tbytes 693682\tzoom 14\ttiles 4/4\tlabel Jaipur (city, 2.6 km)\taddress Elevated Hawa Sadak (112 m), Kachi Basti, Sudarshanpura, Jaipur')
+  const none = previewLine('cold', point, { ms: 1, blocks: 0, bytes: 0, value: { zoom: null, tiles: null, label: null, address: null } })
+  t.ok(none.endsWith('\tzoom null\ttiles 0/4\tlabel null\taddress null'), none)
 })

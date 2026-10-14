@@ -7,15 +7,15 @@ const { STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
 
 const GAZ = path.join(__dirname, '..', 'data', 'gazetteer.json')
 
-function cities () {
-  return JSON.parse(fs.readFileSync(GAZ, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
+function cities (file = GAZ) {
+  return JSON.parse(fs.readFileSync(file, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
 }
 
 // tiles and the city+town gazetteer in one bee, as the signed planet bee would hold them
-async function fillAtlas (bee) {
-  await buildBee(bee, [STATE_ARCHIVE, JAIPUR_ARCHIVE], () => {})
+async function fillAtlas (bee, archives = [STATE_ARCHIVE, JAIPUR_ARCHIVE], gazetteer = GAZ) {
+  await buildBee(bee, archives, () => {})
   const w = bee.write()
-  for (const { key, value } of gazKeys(cities())) w.tryPut(key, value)
+  for (const { key, value } of gazKeys(cities(gazetteer))) w.tryPut(key, value)
   await w.flush()
 }
 

@@ -7,6 +7,9 @@ const { decodeBlock } = require('hyperbee2/lib/encoding.js')
 const DATA = path.join(__dirname, '..', 'data')
 const STATE_ARCHIVE = path.join(DATA, 'extract', 'rajasthan-z10.pmtiles')
 const JAIPUR_ARCHIVE = path.join(DATA, 'extract', 'jaipur-z11-14.pmtiles')
+const JAIPUR_Z15_ARCHIVE = path.join(DATA, 'extract', 'jaipur-z15.pmtiles')
+const LUGANO_ARCHIVE = path.join(DATA, 'extract', 'lugano-z11-14.pmtiles')
+const LUGANO_Z15_ARCHIVE = path.join(DATA, 'extract', 'lugano-z15.pmtiles')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 const SINGLE_STORE = path.join(__dirname, '..', 'store', 'single')
@@ -63,6 +66,9 @@ module.exports = {
   RAJASTHAN_BBOX,
   STATE_ARCHIVE,
   JAIPUR_ARCHIVE,
+  JAIPUR_Z15_ARCHIVE,
+  LUGANO_ARCHIVE,
+  LUGANO_Z15_ARCHIVE,
   SINGLE_STORE,
   SIGNED_STORE,
   PUBLISH_OUT,

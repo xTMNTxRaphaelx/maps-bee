@@ -4,10 +4,13 @@ const Hypercore = require('hypercore')
 const { REQUEST_TIMEOUT } = require('hypercore-errors')
 const { lonLatToTile, pinTiles, quadkey, tileKey, subtreeRange } = require('./tiles')
 const { GAZ_ZOOM, haversineKm } = require('./gazetteer-lib')
+const { decodeGzip } = require('./mvt')
+const { deriveAddress } = require('./address')
 
 const DETAIL_ZOOM = 14
 const FALLBACK_ZOOM = 10
 const LABEL_ZOOM = 8
+const PIN_ZOOM = 15
 
 const NO_TILES = { zoom: null, origin: null, tiles: null }
 
@@ -37,13 +40,21 @@ function readOpts (opts, list) {
 // Tiles contract: zoom z with the 4 tiles of the pin's 2x2 (scripts/tiles.js pinTiles), row-major
 // from origin, the top-left tile. When at least one tile is present the result stays at zoom z and
 // each missing tile is null, which the client draws blank. When all 4 are missing the result is
-// null: outside the atlas, or a filler 2x2 the builder skipped.
+// null: outside the atlas, or a filler 2x2 the builder skipped. The pin's own z15 tile is read
+// apart by readPinTile.
 async function readTiles (bee, point, z, opts = {}, requests = new Requests()) {
   const { origin, tiles } = pinTiles(point.lon, point.lat, z)
   const o = readOpts(opts, requests.list())
   const entries = await Promise.all(tiles.map((t) => (t ? bee.get(tileKey(z, t[0], t[1]), o) : null)))
   if (!entries.some(Boolean)) return null
   return { zoom: z, origin, tiles: entries.map((e) => (e ? e.value : null)) }
+}
+
+// The single PIN_ZOOM tile under the pin, or null when the bee does not hold it.
+async function readPinTile (bee, point, opts = {}, requests = new Requests()) {
+  const { x, y } = lonLatToTile(point.lon, point.lat, PIN_ZOOM)
+  const e = await bee.get(tileKey(PIN_ZOOM, x, y), readOpts(opts, requests.list()))
+  return e ? { zoom: PIN_ZOOM, x, y, tile: e.value } : null
 }
 
 // null for a value that is not a place entry: the label is best effort and one bad entry must not sink it
@@ -125,7 +136,18 @@ function checkOpts (opts) {
 
 function noop () {}
 
-// One call per shared location: the z14 2x2, else the z10 2x2, plus the nearest place.
+// the 2x2 of readTiles as decoded tiles placed on the globe, for deriveAddress
+function placeCell (point, cell) {
+  const placed = []
+  const xy = pinTiles(point.lon, point.lat, cell.zoom).tiles
+  for (let i = 0; i < xy.length; i++) {
+    if (cell.tiles[i]) placed.push({ vt: decodeGzip(cell.tiles[i]), x: xy[i][0], y: xy[i][1], zoom: cell.zoom })
+  }
+  return placed
+}
+
+// One call per shared location: the z14 2x2, else the z10 2x2, plus the pin's z15 tile, plus the
+// nearest place, all three read in parallel; the address is derived from what they return.
 // opts.timeout (required) bounds each block read and opts.deadline bounds the whole call; on either
 // the call rejects with REQUEST_TIMEOUT and destroys every request it made, so the caller shows text
 // instead. The label is best effort: its failure gives label null and never rejects the call.
@@ -142,11 +164,16 @@ async function readPreview (bee, point, opts) {
     const work = Promise.all([
       readTiles(bee, point, DETAIL_ZOOM, opts, requests)
         .then((r) => r || readTiles(bee, point, FALLBACK_ZOOM, opts, requests)),
+      readPinTile(bee, point, opts, requests),
       readLabel(bee, point, opts, requests).catch(() => null)
     ])
     work.catch(noop) // when the deadline wins, the cancelled work rejects later with nobody waiting
-    const [tiles, label] = await (deadline ? Promise.race([work, deadline]) : work)
-    return { ...(tiles || NO_TILES), label }
+    const [tiles, pinTile, label] = await (deadline ? Promise.race([work, deadline]) : work)
+    const placed = tiles ? placeCell(point, tiles) : []
+    if (pinTile) placed.push({ vt: decodeGzip(pinTile.tile), x: pinTile.x, y: pinTile.y, zoom: PIN_ZOOM })
+    // null outside the atlas, where no tile and no label exist
+    const address = placed.length > 0 || label ? deriveAddress({ point, tiles: placed, label }) : null
+    return { ...(tiles || NO_TILES), pinTile, address, label }
   } catch (err) {
     requests.destroy(err)
     throw err
@@ -155,4 +182,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readTiles, readLabel, readPreview, prefetchTop }
+module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readPreview, prefetchTop }

@@ -1,0 +1,70 @@
+TAP version 13
+
+# readPreview with z15: pin tile and address parts, no house number when the tile has none, null pin tile outside z15, z14 and z10 unchanged
+    ok 1 - should be equal
+    ok 2 - should be equal
+    ok 3 - should be equal
+    ok 4 - should be equal
+    ok 5 - should deep equal
+    ok 6 - expected truthy value
+    ok 7 - the nearest address point is 437.6 m away
+    ok 8 - should deep equal
+    ok 9 - near 106.35005648942311 m
+    ok 10 - should be equal
+    ok 11 - expected truthy value
+    ok 12 - should be equal
+    ok 13 - should be equal
+    ok 14 - should be equal
+    ok 15 - should be equal
+    ok 16 - should be equal
+    ok 17 - should be equal
+    ok 18 - should be equal
+    ok 19 - should be equal
+ok 1 - readPreview with z15: pin tile and address parts, no house number when the tile has none, null pin tile outside z15, z14 and z10 unchanged # time = 891ms
+
+# z15 cost: cold readPreview against z14 plus label alone, three Jaipur points
+    # atlas core.length 1436
+    ok 1 - should be equal
+    ok 2 - expected truthy value
+    ok 3 - the z15 tile costs blocks
+    # rtt0-26.9,75.8-z14+label	read-cold	ms 11.4	blocks 15 (1.0% of 1436)	blockBytes 228585	wireRequestTx 15	wireDataRx 15	wireBytesRx 231675	wireBytesTx 450
+    # rtt0-26.9,75.8-z14+z15+label	read-cold	ms 11	blocks 17 (1.2% of 1436)	blockBytes 282145	wireRequestTx 17	wireDataRx 17	wireBytesRx 285649	wireBytesTx 510
+    # address 26.9,75.8	near High court circle, Kachi Basti, Jaipur
+    ok 4 - should be equal
+    ok 5 - expected truthy value
+    ok 6 - the z15 tile costs blocks
+    # rtt0-26.95,75.8-z14+label	read-cold	ms 5.4	blocks 14 (1.0% of 1436)	blockBytes 200183	wireRequestTx 14	wireDataRx 14	wireBytesRx 203009	wireBytesTx 420
+    # rtt0-26.95,75.8-z14+z15+label	read-cold	ms 7.7	blocks 16 (1.1% of 1436)	blockBytes 247796	wireRequestTx 16	wireDataRx 16	wireBytesRx 250996	wireBytesTx 480
+    # address 26.95,75.8	near Dr. Johar's Ayush Unani Hospital, Bani Park, Jaipur
+    ok 7 - should be equal
+    ok 8 - expected truthy value
+    ok 9 - the z15 tile costs blocks
+    # rtt0-26.91,75.83-z14+label	read-cold	ms 8.9	blocks 15 (1.0% of 1436)	blockBytes 211345	wireRequestTx 15	wireDataRx 15	wireBytesRx 214439	wireBytesTx 450
+    # rtt0-26.91,75.83-z14+z15+label	read-cold	ms 12.9	blocks 17 (1.2% of 1436)	blockBytes 257503	wireRequestTx 17	wireDataRx 17	wireBytesRx 261013	wireBytesTx 510
+    # address 26.91,75.83	Janata Colony, Ramganj, Jaipur
+    ok 10 - should be equal
+    ok 11 - expected truthy value
+    ok 12 - the z15 tile costs blocks
+    # rtt100-26.9,75.8-z14+label	read-cold	ms 429.8	blocks 15 (1.0% of 1436)	blockBytes 228585	wireRequestTx 15	wireDataRx 15	wireBytesRx 231703	wireBytesTx 508
+    # rtt100-26.9,75.8-z14+z15+label	read-cold	ms 438.5	blocks 17 (1.2% of 1436)	blockBytes 282145	wireRequestTx 17	wireDataRx 17	wireBytesRx 285677	wireBytesTx 568
+    # address 26.9,75.8	near High court circle, Kachi Basti, Jaipur
+    ok 13 - should be equal
+    ok 14 - expected truthy value
+    ok 15 - the z15 tile costs blocks
+    # rtt100-26.95,75.8-z14+label	read-cold	ms 422.9	blocks 14 (1.0% of 1436)	blockBytes 200183	wireRequestTx 14	wireDataRx 14	wireBytesRx 203037	wireBytesTx 478
+    # rtt100-26.95,75.8-z14+z15+label	read-cold	ms 428	blocks 16 (1.1% of 1436)	blockBytes 247796	wireRequestTx 16	wireDataRx 16	wireBytesRx 251024	wireBytesTx 538
+    # address 26.95,75.8	near Dr. Johar's Ayush Unani Hospital, Bani Park, Jaipur
+    ok 16 - should be equal
+    ok 17 - expected truthy value
+    ok 18 - the z15 tile costs blocks
+    # rtt100-26.91,75.83-z14+label	read-cold	ms 427.7	blocks 15 (1.0% of 1436)	blockBytes 211345	wireRequestTx 15	wireDataRx 15	wireBytesRx 214467	wireBytesTx 508
+    # rtt100-26.91,75.83-z14+z15+label	read-cold	ms 440	blocks 17 (1.2% of 1436)	blockBytes 257503	wireRequestTx 17	wireDataRx 17	wireBytesRx 261041	wireBytesTx 568
+    # address 26.91,75.83	Janata Colony, Ramganj, Jaipur
+ok 2 - z15 cost: cold readPreview against z14 plus label alone, three Jaipur points # time = 6355ms
+
+1..2
+# tests = 2/2 pass
+# asserts = 37/37 pass
+# time = 7303ms
+
+# ok

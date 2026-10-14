@@ -1,0 +1,65 @@
+TAP version 13
+
+# address accuracy: 20 Jaipur points against Nominatim, hit rate and distances per part
+    ok 1 - should be equal
+    ok 2 - city at 26.879464,75.796516
+    # 26.879464,75.796516	road Market Road (215m)|- n/a	nb Barkat Nagar (470m)|Barkat Nagar	sub Tonk Phatak (322m)|Tonk Phatak HIT	vil -|- n/a	city Jaipur (4.6km)|Jaipur HIT	hn -|- n/a	display Barkat Nagar, Tonk Phatak, Jaipur
+    ok 3 - city at 26.9124,75.7873
+    # 26.9124,75.7873	road Acharya Shri Tulsi Setu (2m)|Acharya Shri Tulsi Setu HIT	nb Hasanpura-C (623m)|Hasanpura-C	sub Sodala (1782m)|Sodala HIT	vil -|- n/a	city Jaipur (3.2km)|Jaipur HIT	hn -|- n/a	display Acharya Shri Tulsi Setu, Hasanpura-C, Jaipur
+    ok 4 - city at 26.9239,75.8267
+    # 26.9239,75.8267	road Amer Road (35m)|Amer Road HIT	nb -|-	sub Ramganj (870m)|Ramganj HIT	vil -|- n/a	city Jaipur (1.2km)|Jaipur HIT	hn -|- n/a	display Amer Road, Ramganj, Jaipur
+    ok 5 - city at 26.9196,75.788
+    # 26.9196,75.788	road Ram Mandir Road (123m)|Station Road miss	nb Barodia Scheme , Jaipur (508m)|Barodia Scheme , Jaipur	sub Bani Park (1547m)|Bani Park HIT	vil -|- n/a	city Jaipur (3.1km)|Jaipur HIT	hn -|- n/a	display near Dawa Dost, Barodia Scheme , Jaipur, Jaipur
+    ok 6 - city at 26.9082,75.8035
+    # 26.9082,75.8035	road Prithviraj Road (14m)|Prithviraj Road HIT	nb -|-	sub Adarsh Nagar (1658m)|Adarsh Nagar HIT	vil -|- n/a	city Jaipur (1.7km)|Jaipur HIT	hn -|- n/a	display Prithviraj Road, Adarsh Nagar, Jaipur
+    ok 7 - city at 26.9304,75.7954
+    # 26.9304,75.7954	road Hathi Babu Marg (81m)|- n/a	nb -|-	sub Bani Park (145m)|Bani Park HIT	vil -|- n/a	city Jaipur (2.9km)|Jaipur HIT	hn -|- n/a	display near Children's Academy, Bani Park, Jaipur
+    ok 8 - city at 26.905,75.77
+    # 26.905,75.77	road -|- n/a	nb Jamuna Nagar (117m)|Jamuna Nagar	sub Sodala (485m)|Sodala HIT	vil -|- n/a	city Jaipur (5.0km)|Jaipur HIT	hn -|- n/a	display Jamuna Nagar, Sodala, Jaipur
+    ok 9 - city at 26.9118,75.7362
+    # 26.9118,75.7362	road Amrapali Marg (61m)|- n/a	nb Jagdamba colony (221m)|Jagdamba colony	sub Block A (206m)|Vaishali Nagar HIT	vil -|- n/a	city Jaipur (8.2km)|Jaipur HIT	hn -|- n/a	display near Krishiv Multi Speciality Hospital, Block A, Jaipur
+    ok 10 - city at 26.9434,75.7544
+    # 26.9434,75.7544	road Kalwad Road (47m)|Kalwad Road HIT	nb Shilp Colony (61m)|Shilp Colony	sub Jothwara (741m)|Jothwara HIT	vil -|- n/a	city Jaipur (7.1km)|Jaipur HIT	hn -|- n/a	display Kalwad Road, Shilp Colony, Jaipur
+    ok 11 - city at 26.8498,75.762
+    # 26.8498,75.762	road Patel Marg (124m)|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Jaipur (9.2km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display near Mahaveer Boys Hostel, Jaipur
+    ok 12 - city at 26.8536,75.8117
+    # 26.8536,75.8117	road Hari Marg (63m)|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Jaipur (6.9km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display Jaipur
+    ok 13 - city at 26.8545,75.7903
+    # 26.8545,75.7903	road Mandir Marg (48m)|- n/a	nb Durgapura (716m)|-	sub Gopalpura (2468m)|- n/a	vil -|- n/a	city Jaipur (7.4km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display Mandir Marg, Durgapura, Jaipur
+    ok 14 - city at 26.842,75.804
+    # 26.842,75.804	road Jawahar Circle (143m)|- n/a	nb -|-	sub Jagatpura (2495m)|Jagatpura HIT	vil -|- n/a	city Jaipur (8.3km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display Jagatpura, Jaipur
+    ok 15 - city at 26.829,75.858
+    # 26.829,75.858	road -|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Jaipur (10.4km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display Jaipur
+    ok 16 - city at 26.8171,75.7956
+    # 26.8171,75.7956	road Tonk Road Flyover (223m)|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Jaipur (11.2km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display near Laxmi Homoeo Clinic, Jaipur
+    ok 17 - city at 26.8085,75.8211
+    # 26.8085,75.8211	road Pannadhay Circle (143m)|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Jaipur (11.9km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display Jaipur
+    ok 18 - city at 26.9855,75.8513
+    # 26.9855,75.8513	road to Jaigarh Fort (42m)|to Jaigarh Fort HIT	nb kundalaoo Colony (282m)|kundalaoo Colony	sub -|- n/a	vil Amber (586m)|Amber HIT	city Jaipur (8.4km)|Jaipur Municipal Corporation HIT	hn -|- n/a	display to Jaigarh Fort, kundalaoo Colony, Jaipur
+    ok 19 - city at 26.9276,75.7128
+    # 26.9276,75.7128	road Kanakpura Railway Fatak Road (209m)|- n/a	nb -|-	sub Kanak Pura (501m)|Kanak Pura HIT	vil -|- n/a	city Jaipur (10.6km)|Jaipur HIT	hn -|- n/a	display Kanak Pura, Jaipur
+    ok 20 - city at 26.92,75.93
+    # 26.92,75.93	road -|- n/a	nb -|-	sub -|- n/a	vil -|Dyodha Chor miss	city Jaipur (11.0km)|Dyodha Chor miss	hn -|- n/a	display Jaipur
+    ok 21 - city at 26.78,75.83
+    # 26.78,75.83	road Sitapura Circle (110m)|- n/a	nb -|-	sub Sitapura (846m)|Sitapura HIT	vil -|- n/a	city Jaipur (15.1km)|- n/a	hn -|- n/a	display Sitapura, Jaipur
+    # rate road 5/6
+    # rate neighbourhood 7/7
+    # rate suburb 12/12
+    # rate village 1/2
+    # rate city 18/19
+    # rate housenumber 0/0
+    # dist road: 2 14 35 42 47 48 61 63 81 110 123 124 143 143 209 215 223
+    # dist neighbourhood: 61 117 221 282 470 508 623 716
+    # dist suburb: 145 206 322 485 501 741 846 870 1547 1658 1782 2468 2495
+    # dist village: 586
+    # dist city: 1209 1735 2865 3104 3159 4583 4994 6920 7114 7354 8217 8306 8419 9235 10367 10612 11020 11183 11899 15105
+    # dist housenumber:
+    ok 22 - rates printed
+ok 1 - address accuracy: 20 Jaipur points against Nominatim, hit rate and distances per part # time = 904ms
+
+1..1
+# tests = 1/1 pass
+# asserts = 22/22 pass
+# time = 1003ms
+
+# ok

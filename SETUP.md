@@ -12,7 +12,7 @@ Everything runs under bare from `node_modules/bare-runtime/bin/bare`. npm and no
 
 ## Quick start: test atlas and suite
 
-About two minutes end to end, including two small downloads.
+About two minutes end to end, including three small downloads.
 
 ```sh
 npm install
@@ -20,25 +20,33 @@ mkdir -p tools data/extract results
 cp <path to the pmtiles binary> tools/pmtiles
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/jaipur-z15.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z11-14.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z15.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z10.pmtiles --bbox=8.85,45.95,9.05,46.06 --maxzoom=10
 B=node_modules/bare-runtime/bin/bare
 $B scripts/keys.js keys
 $B scripts/build-bee.js store/single data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/build-bee.txt
 $B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/publish.txt
 ./tools/pmtiles extract data/planet-z10.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 $B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee results/gazetteer.txt
+$B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
 npm test
+PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy.js > results/address-accuracy-jaipur.txt
+PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-lugano.js > results/address-accuracy-lugano.txt
 ```
 
 Expected tail of `npm test`:
 
 ```
-# tests = 52/52 pass
-# asserts = 483/483 pass
+# tests = 59/59 pass
+# asserts = 616/616 pass
 # ok
 ```
 
 Notes:
 
+- The Jaipur zoom 15 extract is 2.8 MB and cuts in seconds; only the z15 tests (`test/address.js`, `test/z15.js`, `test/address-accuracy.js`, `test/render-svg.js`) read it.
 - The Atlantic extract reads `data/planet-z10.pmtiles`, the 2.2 GB file from the planet section below.
 - The setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified.
 - The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
@@ -97,7 +105,7 @@ The log lines match `scripts/probe.js`:
 ```
 connect ms N	update ms N blocks N bytes N	core.length N             # once per key
 prefetch levels 2 nodes A/B	ms N	blocks N	bytes N                 # once per key, when the box is ticked
-cold|repeat	<lat>,<lon>	ms N	blocks N	bytes N	zoom Z	tiles P/4	label <name> (<kind>, <km> km)|null
+cold|repeat	<lat>,<lon>	ms N	blocks N	bytes N	zoom Z	tiles P/4	label <name> (<kind>, <km> km)|null	address <display>|null
 ```
 
 ## Test window with an outside tester

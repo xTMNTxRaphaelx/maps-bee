@@ -3,8 +3,8 @@ const test = require('brittle')
 const { pinTiles } = require('../scripts/tiles')
 const { decode } = require('../scripts/mvt')
 const { openArchive, readTile } = require('../scripts/pmtiles-file')
-const { renderThumbnail, pinOffset } = require('../scripts/render-svg')
-const { JAIPUR_ARCHIVE, JAIPUR_CENTRE } = require('./helpers')
+const { renderThumbnail, pinOffset, pinTileOffset } = require('../scripts/render-svg')
+const { JAIPUR_ARCHIVE, JAIPUR_Z15_ARCHIVE, JAIPUR_CENTRE } = require('./helpers')
 
 function count (s, sub) {
   return s.split(sub).length - 1
@@ -53,6 +53,30 @@ test('renderThumbnail: 640x360, one path per feature, pin at the centre, attribu
   t.is(count(half, '<path '), counts[2].paths + counts[3].paths + 1, 'one path per feature plus the pin')
   t.ok(half.includes('<g transform="translate(320 180)">'))
   t.ok(half.includes('© OpenStreetMap contributors'))
+})
+
+test('renderThumbnail draws the z15 pin tile over its z14 quarter', async (t) => {
+  const { origin, tiles: xy } = pinTiles(JAIPUR_CENTRE.lon, JAIPUR_CENTRE.lat, 14)
+  const archive = openArchive(JAIPUR_ARCHIVE)
+  const tiles = []
+  for (const [x, y] of xy) tiles.push(decode((await readTile(archive, 14, x, y)).raw))
+  await archive.close()
+  const archive15 = openArchive(JAIPUR_Z15_ARCHIVE)
+  const z15 = decode((await readTile(archive15, 15, 23283, 13840)).raw)
+  await archive15.close()
+  const pin = pinOffset(JAIPUR_CENTRE, origin, 14)
+  const counts = tiles.map(drawn)
+  const z14paths = counts.reduce((n, c) => n + c.paths, 0)
+  const z14places = counts.reduce((n, c) => n + c.places, 0)
+
+  const at = pinTileOffset({ x: 23283, y: 13840 }, origin)
+  t.alike(at, { x: 0.5, y: 1 })
+  const svg = renderThumbnail(tiles, pin, { tile: z15, ...at })
+  t.is(count(svg, '<clipPath '), 5)
+  t.ok(svg.includes('<clipPath id="p"><rect x="320" y="640" width="320" height="320"/>'))
+  t.is(count(svg, '<path '), z14paths + drawn(z15).paths + 1)
+  t.is(count(svg, '<text '), z14places + drawn(z15).places + 1)
+  t.is(count(renderThumbnail(tiles, pin), '<clipPath '), 4)
 })
 
 test('pinOffset unwraps the antimeridian and the row above 0', (t) => {

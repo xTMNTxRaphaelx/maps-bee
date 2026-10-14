@@ -64,6 +64,15 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   const jaipur = await readPreview(bee, POINTS.jaipur, OPTS)
   assertCell(t, jaipur, DETAIL_ZOOM, POINTS.jaipur)
   assertLabel(t, jaipur, places, POINTS.jaipur)
+  t.is(jaipur.pinTile, null, 'no z15 in this atlas')
+  t.is(jaipur.address.housenumber, null)
+  t.is(jaipur.address.road.name, 'Elevated Hawa Sadak')
+  t.ok(Math.abs(jaipur.address.road.metres - 112) < 1, `road ${jaipur.address.road.metres} m`)
+  t.is(jaipur.address.neighbourhood.name, 'Kachi Basti')
+  t.is(jaipur.address.suburb.name, 'Sudarshanpura')
+  t.is(jaipur.address.city.name, 'Jaipur')
+  t.is(jaipur.address.near, null)
+  t.is(jaipur.address.display, 'Kachi Basti, Sudarshanpura, Jaipur')
 
   const partial = await readPreview(bee, POINTS.partial, OPTS)
   const expected = await presentInArchive(POINTS.partial)
@@ -76,6 +85,10 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   const jodhpur = await readPreview(bee, POINTS.jodhpur, OPTS)
   assertCell(t, jodhpur, FALLBACK_ZOOM, POINTS.jodhpur)
   assertLabel(t, jodhpur, places, POINTS.jodhpur)
+  t.is(jodhpur.address.road, null, 'z10 roads carry no names')
+  t.is(jodhpur.address.neighbourhood, null)
+  t.is(jodhpur.address.suburb, null)
+  t.is(jodhpur.address.display, 'Jodhpur')
 
   const edge = await readPreview(bee, POINTS.edge, OPTS)
   const truth = nearestByScan(places, POINTS.edge)
@@ -87,6 +100,8 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   t.is(mumbai.origin, null)
   t.is(mumbai.tiles, null)
   t.is(mumbai.label, null)
+  t.is(mumbai.pinTile, null)
+  t.is(mumbai.address, null)
 })
 
 test('readPreview rejects bad opts and bad points before any read', async (t) => {

@@ -1,0 +1,47 @@
+TAP version 13
+
+# address accuracy: 11 Lugano points against Nominatim, hit rate and distances per part
+    ok 1 - should be equal
+    ok 2 - city at 46.006005,8.952766
+    # 46.006005,8.952766	road Corso Enrico Pestalozzi (5m)|Corso Enrico Pestalozzi HIT	nb Quartiere Maghetti (121m)|Quartiere Maghetti	sub Molino Nuovo (836m)|Castagnola HIT	vil -|Breganzona miss	city Lugano (0.3km)|Lugano HIT	hn 9|9 HIT	display 9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano
+    ok 3 - city at 46.0036,8.9511
+    # 46.0036,8.9511	road piazza Rizziero Rezzonico (10m)|Piazza della Riforma miss	nb Quartiere Maghetti (290m)|Quartiere Maghetti	sub Molino Nuovo (1133m)|Pregassona HIT	vil -|Breganzona miss	city Lugano (0.0km)|Lugano HIT	hn 10B|1 miss	display 10B piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+    ok 4 - city at 46.0056,8.947
+    # 46.0056,8.947	road Lugano Stazione (11m)|Piazzale della Stazione miss	nb Quartiere Maghetti (539m)|-	sub Molino Nuovo (1126m)|Cassarate miss	vil -|Breganzona miss	city Lugano (0.4km)|Lugano HIT	hn 2|2 HIT	display 2 Lugano Stazione, Quartiere Maghetti, Lugano
+    ok 5 - city at 46.005,8.957
+    # 46.005,8.957	road Viale Carlo Cattaneo (72m)|Piazza dell'Indipendenza miss	nb Quartiere Maghetti (237m)|Quartiere Maghetti	sub Molino Nuovo (878m)|Molino Nuovo HIT	vil -|- n/a	city Lugano (0.5km)|Lugano HIT	hn -|4 n/a	display near Palazzo dei Congressi, Quartiere Maghetti, Lugano
+    ok 6 - city at 45.991,8.947
+    # 45.991,8.947	road Via General Guisan (1m)|Via General Guisan HIT	nb -|-	sub Molino Nuovo (2557m)|- n/a	vil Paradiso (154m)|Paradiso HIT	city Lugano (1.5km)|Paradiso HIT	hn 14|16 miss	display 14 Via General Guisan, Paradiso, Lugano
+    ok 7 - city at 46.007,8.975
+    # 46.007,8.975	road Via Noseda (70m)|Via Noseda HIT	nb Aldesago (360m)|Aldesago	sub Cassarate (357m)|Ruvigliana HIT	vil -|- n/a	city Lugano (1.9km)|Lugano HIT	hn -|4a n/a	display Aldesago, Cassarate, Lugano
+    ok 8 - city at 46.011,8.942
+    # 46.011,8.942	road Via Madonna della Salute (14m)|Via Madonna della Salute HIT	nb Besso (574m)|-	sub Molino Nuovo (1185m)|- n/a	vil Massagno (263m)|Massagno HIT	city Lugano (1.1km)|Massagno HIT	hn 18|18 HIT	display 18 Via Madonna della Salute, Massagno, Lugano
+    ok 9 - city at 46.01,8.97
+    # 46.01,8.97	road Via Collina (38m)|Via Collina HIT	nb Aldesago (737m)|-	sub Cassarate (306m)|Viganello miss	vil -|- n/a	city Lugano (1.6km)|Lugano HIT	hn -|35 n/a	display Via Collina, Cassarate, Lugano
+    ok 10 - city at 46.019,8.977
+    # 46.019,8.977	road Via Probello (13m)|Via Probello HIT	nb -|-	sub Pregassona (198m)|Pregassona HIT	vil -|- n/a	city Lugano (2.6km)|Lugano HIT	hn 7|- n/a	display 7 Via Probello, Pregassona, Lugano
+    ok 11 - city at 46.004,8.91
+    # 46.004,8.91	road Sentiero Vedeggio (122m)|Via Aeroporto miss	nb -|-	sub -|- n/a	vil -|Cimo miss	city Lugano (3.2km)|Cimo miss	hn -|- n/a	display near Aeroporto di Lugano-Agno, Lugano
+    ok 12 - city at 46.012,8.989
+    # 46.012,8.989	road Sentiero Arcate (34m)|Sentiero Arcate HIT	nb -|Aldesago	sub Albonago (1152m)|- n/a	vil Brè sopra Lugano (606m)|- n/a	city Lugano (3.1km)|Lugano HIT	hn -|- n/a	display Sentiero Arcate, Brè sopra Lugano, Lugano
+    # rate road 7/11
+    # rate neighbourhood 4/5
+    # rate suburb 5/7
+    # rate village 2/6
+    # rate city 10/11
+    # rate housenumber 3/5
+    # dist road: 1 5 10 11 13 14 34 38 70 72 122
+    # dist neighbourhood: 121 237 290 360 539 574 737
+    # dist suburb: 198 306 357 836 878 1126 1133 1152 1185 2557
+    # dist village: 154 263 606
+    # dist city: 26 271 380 467 1069 1462 1606 1872 2611 3058 3182
+    # dist housenumber: 9 9 11 16 22 24
+    ok 13 - rates printed
+ok 1 - address accuracy: 11 Lugano points against Nominatim, hit rate and distances per part # time = 359ms
+
+1..1
+# tests = 1/1 pass
+# asserts = 13/13 pass
+# time = 458ms
+
+# ok

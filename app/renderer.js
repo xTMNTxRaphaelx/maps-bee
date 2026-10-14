@@ -30,6 +30,7 @@ $('run').addEventListener('click', async () => {
     })
     $('thumb').innerHTML = r.svg || ''
     $('label').textContent = r.label
+    $('address').textContent = r.address ? r.address.display : 'null'
     append(r.lines.join('\n'))
   } catch (err) {
     append(`error\t${err.message}`)

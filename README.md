@@ -1,3 +1,5 @@
+| village | 1/2 | 586 m (1 point) |
+| village | places layer kind `locality` with kind_detail village, in the tiles already fetched; hamlets (population 200) were the wrong label at every distance | Amber 586 m from 26.9855,75.8513; Paradiso 154 m and Massagno 263 m in Lugano |
 # maps-bee
 
 **A signed, peer-to-peer map tile store for Keet location previews.**
@@ -22,7 +24,7 @@ scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
         │  2-of-3 multisig, committed in signed chunks
         ▼
 scripts/seed.js on any peer  ◀──── public DHT ────▶  the viewer
-                                                       │  readPreview(lat, lon): 2x2 tiles + label,
+                                                       │  readPreview(lat, lon): 2x2 tiles + z15 pin tile + label → address,
                                                        │  sparse reads, timeout, deadline, cancel
                                                        ▼
                                               640 × 360 thumbnail with a pin
@@ -75,8 +77,76 @@ Cold first open from a fresh client over the public DHT, 2x2 plus label, as bloc
 
 Done and measured: the read path, the signed publish, the planet-scale layout, the test app.
 
-Open: where the street address comes from (the tiles cannot yield one; the sender's geocoder or a second dataset can), the production renderer, who seeds the core, and the republish cadence against Protomaps builds. Integration into Keet is a separate spec.
+Open: where the street address comes from (the tiles give road, neighbourhood, suburb and city with the rates in the Address section, a house number only at zoom 15 within 30 m, no postcode), the production renderer, who seeds the core, and the republish cadence against Protomaps builds. Integration into Keet is a separate spec.
 
 ## Data
 
 Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed as an Open Database License produced work of OpenStreetMap: map data © OpenStreetMap contributors, ODbL. No tile data is in this repository.
+
+## Address
+
+`readPreview` derives `address` from the tiles it already reads (`scripts/address.js`); no extra fetch. What the data can and cannot give:
+
+| Address part | Source in the bee | Verified |
+| --- | --- | --- |
+| house number | z15 buildings layer, `kind=address`, property `addr_housenumber` only; the schema has no street, postcode or unit property | Jaipur z15: 468 points in 928 tiles, 0 to 4 per tile |
+| road | roads layer `name` (and `ref`), z15 pin tile has the complete network | pin 26.879464,75.796516: nearest road 11 m is unnamed, nearest named road "Market Road" at 215 m; 11 of 31 roads in the tile are named |
+| neighbourhood, suburb, quarter | places layer points, kind `neighbourhood` (kind_detail neighbourhood, suburb) and `macrohood` (quarter), present in the z14 2x2 already fetched | Tonk Phatak 322 m, Barkat Nagar 470 m, Pratap Nagar 479 m, Bapu Nagar 764 m |
+| city or town | gazetteer, already in the bee | Jaipur (city, 4.6 km) |
+| state, country | places layer kinds `region` and `country`, which sit in low-zoom tiles the bee does not hold; z10 tiles near Jaipur carry only locality and macrohood points | z10 scan: locality/city, town, village, macrohood/quarter |
+| postcode | nowhere in the Protomaps schema | |
+| tehsil, municipal corporation, district | boundaries layer has lines by kind with no names; no admin polygons with names | |
+
+Each part is the nearest matching feature across the z14 (or z10) 2x2 and the z15 pin tile together, within a threshold; roads by point-to-segment distance, places and pois by distance to their label point:
+
+```
+address: {
+  housenumber:   { value, metres } | null,       // buildings kind=address within HOUSE_M (30 m)
+  road:          { name, kind, metres } | null,  // named road within ROAD_M (300 m)
+  neighbourhood: { name, metres } | null,        // places neighbourhood/neighbourhood within NEIGHBOURHOOD_M (800 m)
+  suburb:        { name, metres }   village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M (700 m); hamlet labels were wrong at every distance
+| null,        // places neighbourhood/suburb or macrohood within SUBURB_M (3000 m)
+  city:          { name, kind, km } | null,      // the gazetteer label
+  region:        null,                           // not in the bee
+  country:       null,                           // not in the bee
+  near:          { name, kind, metres } | null,  // named poi within NEAR_M (150 m)
+  display:       string                          // at most three parts: the house number within HOUSE_M and/or a road within ROAD_ON_M (50 m), else "near <poi>" within NEAR_M; the nearest area label, or the two nearest small-to-large; the city
+}
+```
+
+`address` is null only outside the atlas, where there is no tile and no label.
+
+Measured on 20 Jaipur points against Nominatim reverse results (`test/fixtures/jaipur-nominatim.json`, scored by `test/address-accuracy.js`; a neighbourhood or suburb counts as a hit when it equals any of Nominatim's neighbourhood, suburb or quarter; the city when it equals Nominatim's city, town or village, or starts Nominatim's city, or when our village is that locality). Rows, rates and distances: [`results/address-accuracy-jaipur.txt`](results/address-accuracy-jaipur.txt).
+
+| Part | Hits/n | Chosen-part distance range |
+| --- | --- | --- |
+| road | 5/6 | 2 to 223 m (17 points) |
+| neighbourhood | 7/7 | 61 to 716 m (8 points) |
+| suburb | 12/12 | 145 to 2495 m (13 points) |
+| city | 18/19 | 1209 to 15105 m (20 points) |
+| house number | 0/0 | none within 30 m |
+
+The road miss: at 26.9196,75.788 the nearest named road is Ram Mandir Road at 123 m and Nominatim gives Station Road, 146 m away; Nominatim picks by polygon, so nearest-line cannot match it. The city and village misses are the same point: at 26.92,75.93 Nominatim gives the village Dyodha Chor; the gazetteer, which holds cities and towns only, gives Jaipur at 11.0 km, and the nearest village or hamlet label in the tiles is Malpura at 1.3 km with Dyodha Chor itself at 2.3 km, so VILLAGE_M leaves the part null rather than wrong.
+
+### Lugano, where the data is dense
+
+Swiss OpenStreetMap carries house numbers and street names on most buildings. At 46.006005,8.952766, six metres off Corso Enrico Pestalozzi, the same rules give `9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano`: house number 9 at 16 m, the road at 5 m, the neighbourhood label at 121 m. The next municipality, Massagno, has its village label 987 m away and loses to the nearer neighbourhood, which is why the display takes the nearest area label rather than a fixed order (test/address.js, Lugano test on data/extract/lugano-z11-14.pmtiles and lugano-z15.pmtiles). Scored on 11 Lugano points against Nominatim (`test/fixtures/lugano-nominatim.json`, `test/address-accuracy-lugano.js`, results/address-accuracy-lugano.txt):
+
+| Part | Hits/n | Chosen-part distance range |
+| --- | --- | --- |
+| road | 7/11 | 1 to 122 m (11 points) |
+| neighbourhood | 4/5 | 121 to 737 m (7 points) |
+| suburb | 5/7 | 198 to 2557 m (10 points) |
+| village | 2/6 | 154 to 606 m (3 points) |
+| city | 10/11 | 26 m to 3.2 km (11 points) |
+| house number | 3/5 | 9 to 24 m (6 points) |
+
+The road misses are squares and the airport, where Nominatim names a different adjoining way (Piazza della Riforma against piazza Rizziero Rezzonico 10 m away, Piazzale della Stazione against Lugano Stazione). The two house-number misses are the neighbouring building: 10B against 1, 14 against 16, for pins placed between buildings. Paradiso and Massagno are municipalities of their own that OpenStreetMap tags as villages; the city gazetteer keeps cities and towns, so the city part says Lugano there while the village part names them at 154 and 263 m, and the scorer credits the city part when the village is Nominatim's locality. The remaining city miss is Cimo, whose label is 1.1 km from the point. The village misses are Cimo and three central points where Nominatim gives Breganzona as the village and the nearest village label in the tiles is Massagno at 815 to 1,138 m, past VILLAGE_M.
+
+### Zoom 15 on the Jaipur region
+
+`data/extract/jaipur-z15.pmtiles` (SETUP.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
+
+Address points: in the `buildings` layer, geometry type point, `kind: 'address'`, with `addr_housenumber` as the only address key (no street or postcode in any layer). A central z15 tile holds 0 to 2 of them, and none lies within HOUSE_M of any scored point (results/address-accuracy-jaipur.txt, `rate housenumber 0/0`).
+
+`readPreview` reads the pin's z15 tile in parallel with the 2x2 and the label and returns it as `pinTile` (`{ zoom: 15, x, y, tile }` or null). Cold cost on the test atlas: +2 blocks and about +50 KB (the tile's leaf node and its value block); on a bee without z15 the miss costs +1 block, 13 KB. The thumbnail draws the z15 tile over its z14 quarter. Numbers: [`results/z15-jaipur.txt`](results/z15-jaipur.txt).
