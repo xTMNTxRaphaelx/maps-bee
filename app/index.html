@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>maps-bee test</title>
+  <style>
+    body { font-family: Helvetica, Arial, sans-serif; font-size: 13px; margin: 12px }
+    #key { width: 100% }
+    #thumb { width: 640px; height: 360px; border: 1px solid #ccc; margin: 8px 0 }
+    #log { white-space: pre; font-size: 11px; height: 160px; overflow: auto; border: 1px solid #ccc; padding: 4px }
+    p { margin: 6px 0 }
+  </style>
+</head>
+<body>
+  <p><input id="key" type="text" value="q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91dyeyqcoo"></p>
+  <p>
+    <button data-lat="26.9" data-lon="75.8">Jaipur</button>
+    <button data-lat="51.5" data-lon="-0.12">London</button>
+    <button data-lat="40.7" data-lon="-74">New York</button>
+    <button data-lat="-33.9" data-lon="151.2">Sydney</button>
+    <button data-lat="0" data-lon="-30">ocean</button>
+  </p>
+  <p>
+    lat <input id="lat" type="text" size="10">
+    lon <input id="lon" type="text" size="10">
+    <label><input id="prefetch" type="checkbox"> prefetch top 2 levels once</label>
+    <button id="run">Run</button>
+  </p>
+  <div id="thumb"></div>
+  <p>label <span id="label"></span></p>
+  <pre id="log"></pre>
+  <p><button id="copy">Copy log</button></p>
+  <script src="renderer.js"></script>
+</body>
+</html>

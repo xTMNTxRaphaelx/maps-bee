@@ -1,0 +1,11 @@
+# pear test app smoke run, 2026-10-14, app on the seeding host (store/planet-c12), prefetch on, branch pear-app
+
+connect ms 3288.2	update ms 0.2 blocks 0 bytes 0	core.length 5761082
+prefetch levels 2 nodes 1/15	ms 260.6	blocks 194	bytes 1850219
+cold	26.9,75.8	ms 11.6	blocks 13	bytes 179972	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+cold	51.5,-0.12	ms 51.7	blocks 18	bytes 442485	zoom 14	tiles 4/4	label London (city, 1.0 km)
+cold	40.7,-74	ms 36.5	blocks 16	bytes 406373	zoom 14	tiles 4/4	label New York (city, 1.5 km)
+cold	-33.9,151.2	ms 37.7	blocks 9	bytes 286426	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)
+cold	0,-30	ms 16.5	blocks 13	bytes 72331	zoom 10	tiles 4/4	label null
+repeat	26.9,75.8	ms 3.8	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)
+repeat	51.5,-0.12	ms 3.9	blocks 0	bytes 0	zoom 14	tiles 4/4	label London (city, 1.0 km)
