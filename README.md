@@ -33,4 +33,6 @@ $B scripts/probe.js <key> 26.9,75.8 51.5,-0.12
 $B scripts/probe.js --levels=2 <key> 26.9,75.8 51.5,-0.12   # prefetch the top N tree levels first, then read
 ```
 
-The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`. `keys/` holds test-only keys and is never committed.
+Running the setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified. The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`. `keys/` holds test-only keys and is never committed.
+
+Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed as an Open Database License produced work of OpenStreetMap: map data © OpenStreetMap contributors, ODbL. No tile data is in this repository.
