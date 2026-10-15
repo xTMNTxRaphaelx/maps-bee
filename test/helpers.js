@@ -18,7 +18,9 @@ const GAZETTEER_LUGANO_JSON = path.join(DATA, 'gazetteer-lugano.json')
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 const SINGLE_STORE = path.join(__dirname, '..', 'store', 'single')
 const SIGNED_STORE = path.join(__dirname, '..', 'store', 'signed')
-const PUBLISH_OUT = path.join(__dirname, '..', 'results', 'publish.txt')
+// the three keypairs scripts/keys.js writes; the published key derives from their public halves
+const KEYS_DIR = path.join(__dirname, '..', 'keys')
+const KEYS_FILE = path.join(KEYS_DIR, 'a.json')
 
 const JAIPUR_CENTRE = { lon: 75.8, lat: 26.9 }
 const JAIPUR_BBOX = [75.65, 26.75, 75.95, 27.05]
@@ -78,7 +80,8 @@ module.exports = {
   GAZETTEER_LUGANO_JSON,
   SINGLE_STORE,
   SIGNED_STORE,
-  PUBLISH_OUT,
+  KEYS_DIR,
+  KEYS_FILE,
   tmpStore,
   spyPuts
 }

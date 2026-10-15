@@ -1,18 +1,25 @@
 'use strict'
-const fs = require('bare-fs')
 const perf = require('bare-performance')
 const Corestore = require('corestore')
+const Hypercore = require('hypercore')
 const Hyperbee = require('hyperbee2')
 const HypercoreId = require('hypercore-id-encoding')
 const { Transform } = require('streamx')
 const { decodeGzip } = require('../scripts/mvt')
 const { tileKey, quadkey, subtreeRange } = require('../scripts/tiles')
-const { tmpStore, SIGNED_STORE, PUBLISH_OUT } = require('./helpers')
+const { load } = require('../scripts/keys')
+const { manifestFor } = require('../scripts/sign')
+const { tmpStore, SIGNED_STORE, KEYS_DIR } = require('./helpers')
+
+// scripts/publish.js opens the core as store.get({ manifest: manifestFor(publicKeys) }), so the
+// published key is a pure function of the three public keys in keys/ — derive it rather than
+// scraping it out of results/publish.txt, which is a log of whoever ran the setup last and so has
+// to be locally modified, and never committed, for this to pass.
+const PUBLISHED_LENGTH = 1076
 
 function publishedRef () {
-  const m = fs.readFileSync(PUBLISH_OUT, 'utf8').match(/maps: \{ "key": "([^"]+)", "length": (\d+) \}/)
-  if (!m) throw new Error('results/publish.txt has no maps line; run scripts/publish.js first')
-  return { key: HypercoreId.decode(m[1]), id: m[1], length: Number(m[2]) }
+  const key = Hypercore.key(manifestFor(load(KEYS_DIR).map((k) => k.publicKey)))
+  return { key, id: HypercoreId.encode(key), length: PUBLISHED_LENGTH }
 }
 
 // readOnly: no device-file lock and no RocksDB writes, so store/signed stays untouched
@@ -21,7 +28,9 @@ async function openSeeder (t) {
   const store = new Corestore(SIGNED_STORE, { readOnly: true })
   const core = store.get({ key: ref.key, writable: false })
   await core.ready()
-  t.is(core.length, ref.length, 'seeder holds the published length')
+  // the build is deterministic, so this is a real check of store/signed against a known length,
+  // not the tautology it would be if both sides came out of the same run's log
+  t.is(core.length, ref.length, `seeder holds the published length ${ref.length}`)
   t.teardown(() => store.close())
   return { store, core, ref }
 }

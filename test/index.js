@@ -11,7 +11,7 @@ const {
   GAZETTEER_JSON,
   GAZETTEER_LUGANO_JSON,
   SIGNED_STORE,
-  PUBLISH_OUT
+  KEYS_FILE
 } = require('./helpers')
 
 // A clean clone has no data/ (docs/SETUP.md). Without this preflight the first data-dependent
@@ -28,7 +28,7 @@ const FIXTURES = [
   GAZETTEER_JSON,
   GAZETTEER_LUGANO_JSON,
   SIGNED_STORE,
-  PUBLISH_OUT
+  KEYS_FILE
 ]
 
 test.pause()

@@ -49,8 +49,8 @@ Notes:
 - The Jaipur zoom 15 extract is 2.8 MB and cuts in seconds; only the z15 tests (`test/address.js`, `test/z15.js`, `test/address-accuracy.js`, `test/render-svg.js`) read it.
 - The Atlantic extract is cut straight from the remote build, so the quick start needs nothing from the planet section. It is zoom 10 over open ocean, and `test/planet-build.js` asserts its exact `addressed tiles count: 550` — check that with `./tools/pmtiles show` if that test fails.
 - `test/index.js` preflights all ten fixture paths and skips the data-dependent suite with one `# SKIP` line if any is absent, so a partial run of this section fails loudly rather than aborting the process.
-- The setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified.
-- The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
+- The setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified. They are measurement logs, not test input — restore them with `git checkout -- results/` and nothing breaks.
+- The sparse tests derive the published key from `keys/` (the same manifest `scripts/publish.js` publishes under) and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
 - `keys/` holds test-only keys and is never committed.
 
 ## Planet bee
@@ -150,4 +150,4 @@ One `## session N` heading per app launch.
 | `npm test` ends at `# tests = 32/32` with a `data fixtures are present # SKIP` line | one or more of the ten fixtures is missing; the names are printed on stderr | finish the quick start section |
 | a seeder keeps running after Ctrl-C in another terminal | the launcher ignores SIGINT; the real bare child must get it | `pkill -INT -f scripts/seed.js` |
 | the app's Run never returns | no seeder is online for that key | start the seeder, then Run again |
-| three `results/` files show as modified | the setup regenerates them for your keys | expected; do not commit them |
+| three `results/` files show as modified | the setup regenerates them for your keys | expected; do not commit them, `git checkout -- results/` to drop them |
