@@ -1,0 +1,302 @@
+[
+ {
+  "lat": -1.267769,
+  "lon": 36.807324,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.331564,
+  "lon": 36.866362,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.26541,
+  "lon": 36.806357,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.29638,
+  "lon": 36.908102,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.356055,
+  "lon": 36.740738,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.353249,
+  "lon": 36.756537,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.253524,
+  "lon": 36.794781,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.286659,
+  "lon": 36.764244,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.262794,
+  "lon": 36.805938,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.297029,
+  "lon": 36.76236,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.309268,
+  "lon": 36.814789,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.301492,
+  "lon": 36.800006,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.284196,
+  "lon": 36.777089,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.298658,
+  "lon": 36.7883,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.343176,
+  "lon": 36.752604,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.340191,
+  "lon": 36.735397,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.271829,
+  "lon": 36.81351,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.329308,
+  "lon": 36.881467,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.293193,
+  "lon": 36.787891,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.278472,
+  "lon": 36.83008,
+  "stratum": "addr"
+ },
+ {
+  "lat": -1.291535,
+  "lon": 36.876712,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.267563,
+  "lon": 36.707709,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.299797,
+  "lon": 36.889909,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.291778,
+  "lon": 36.847376,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.225368,
+  "lon": 36.921126,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.21959,
+  "lon": 36.766698,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.278738,
+  "lon": 36.804047,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.2635,
+  "lon": 36.82005,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.234016,
+  "lon": 36.872687,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.225273,
+  "lon": 36.765008,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.328992,
+  "lon": 36.782433,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.281565,
+  "lon": 36.826331,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.265697,
+  "lon": 36.759919,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.229133,
+  "lon": 36.843148,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.259055,
+  "lon": 36.815892,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.29613,
+  "lon": 36.87006,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.316096,
+  "lon": 36.920913,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.275216,
+  "lon": 36.771536,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.290261,
+  "lon": 36.783049,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.334473,
+  "lon": 36.736162,
+  "stratum": "road"
+ },
+ {
+  "lat": -1.24867,
+  "lon": 36.897955,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.329087,
+  "lon": 36.724066,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.339121,
+  "lon": 36.802166,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.284042,
+  "lon": 36.771824,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.236165,
+  "lon": 36.77805,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.232725,
+  "lon": 36.915439,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.271384,
+  "lon": 36.867266,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.327162,
+  "lon": 36.795912,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.316947,
+  "lon": 36.751153,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.322908,
+  "lon": 36.932743,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.224725,
+  "lon": 36.739965,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.313847,
+  "lon": 36.719164,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.354877,
+  "lon": 36.895909,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.305799,
+  "lon": 36.760932,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.339222,
+  "lon": 36.905295,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.316887,
+  "lon": 36.92311,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.286377,
+  "lon": 36.806958,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.263908,
+  "lon": 36.78621,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.325664,
+  "lon": 36.83401,
+  "stratum": "plain"
+ },
+ {
+  "lat": -1.253265,
+  "lon": 36.898584,
+  "stratum": "plain"
+ }
+]

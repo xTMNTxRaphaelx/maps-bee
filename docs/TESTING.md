@@ -205,23 +205,45 @@ The scored fixtures are 20 Jaipur and 11 Lugano points, which is thin — a two-
 decides whether the bee needs z14. To widen, sample candidates from the extracts, reverse geocode
 them, then compare the address shapes:
 
+Four cities, chosen to span the regimes address derivation has to cope with:
+
+| City | bbox | z15 address points | Why |
+| --- | --- | ---: | --- |
+| Jaipur | `75.65,26.75,75.95,27.05` | 468 | dense streets, almost no house numbers |
+| Lugano | `8.85,45.95,9.05,46.06` | 34 372 | small, complete Swiss addressing |
+| Berlin | `13.30,52.45,13.55,52.56` | 120 954 | rich hierarchy, house numbers everywhere |
+| Nairobi | `36.70,-1.36,36.95,-1.22` | 1 205 | sparse coverage, the hardest regime |
+
 ```sh
 B=node_modules/bare-runtime/bin/bare
+S=https://build.protomaps.com/20261012.pmtiles
 
-# 1. candidates: deterministic from the seed, three strata (addr / road / plain)
-$B scripts/fixture-points.js data/extract/jaipur-z15.pmtiles 75.65,26.75,75.95,27.05 60 1 > test/fixtures/jaipur-candidates.json
-$B scripts/fixture-points.js data/extract/lugano-z15.pmtiles 8.85,45.95,9.05,46.06 45 1 > test/fixtures/lugano-candidates.json
+# 0. Berlin and Nairobi extracts and city gazetteers (Jaipur and Lugano come from the quick start)
+for C in "berlin 13.30,52.45,13.55,52.56" "nairobi 36.70,-1.36,36.95,-1.22"; do
+  set -- $C
+  ./tools/pmtiles -q extract $S data/extract/$1-z11-14.pmtiles --bbox=$2 --minzoom=11 --maxzoom=14
+  ./tools/pmtiles -q extract $S data/extract/$1-z15.pmtiles    --bbox=$2 --minzoom=15 --maxzoom=15
+  ./tools/pmtiles -q extract $S data/extract/$1-z10.pmtiles    --bbox=$2 --maxzoom=10
+  $B scripts/gazetteer.js data/gazetteer-$1.json --kinds=city,town data/extract/$1-z10.pmtiles $2 0 10
+done
+
+# 1. candidates are committed; regenerate only to change n or the seed
+#    $B scripts/fixture-points.js data/extract/<city>-z15.pmtiles <bbox> 60 1 > test/fixtures/<city>-candidates.json
 
 # 2. ground truth: node, not bare; one request a second, as Nominatim's policy requires
-node scripts/fetch-nominatim.js test/fixtures/jaipur-candidates.json test/fixtures/jaipur-nominatim-wide.json
-node scripts/fetch-nominatim.js test/fixtures/lugano-candidates.json test/fixtures/lugano-nominatim-wide.json
+for C in jaipur lugano berlin nairobi; do
+  node scripts/fetch-nominatim.js test/fixtures/$C-candidates.json test/fixtures/$C-nominatim-wide.json
+done
 
-# 3. compare the three shapes on the wider set
-$B scripts/address-shapes.js test/fixtures/jaipur-nominatim-wide.json data/extract/jaipur-z11-14.pmtiles data/extract/jaipur-z15.pmtiles 75.65,26.75,75.95,27.05 data/gazetteer.json
-$B scripts/address-shapes.js test/fixtures/lugano-nominatim-wide.json data/extract/lugano-z11-14.pmtiles data/extract/lugano-z15.pmtiles 8.85,45.95,9.05,46.06 data/gazetteer-lugano.json
+# 3. compare the three shapes
+$B scripts/address-shapes.js test/fixtures/jaipur-nominatim-wide.json  data/extract/jaipur-z11-14.pmtiles  data/extract/jaipur-z15.pmtiles  75.65,26.75,75.95,27.05 data/gazetteer.json
+$B scripts/address-shapes.js test/fixtures/lugano-nominatim-wide.json  data/extract/lugano-z11-14.pmtiles  data/extract/lugano-z15.pmtiles  8.85,45.95,9.05,46.06   data/gazetteer-lugano.json
+$B scripts/address-shapes.js test/fixtures/berlin-nominatim-wide.json  data/extract/berlin-z11-14.pmtiles  data/extract/berlin-z15.pmtiles  13.30,52.45,13.55,52.56 data/gazetteer-berlin.json
+$B scripts/address-shapes.js test/fixtures/nairobi-nominatim-wide.json data/extract/nairobi-z11-14.pmtiles data/extract/nairobi-z15.pmtiles 36.70,-1.36,36.95,-1.22 data/gazetteer-nairobi.json
 ```
 
-Step 2 takes about two minutes for 105 points and needs `nominatim.openstreetmap.org` reachable.
+Step 2 is 225 points at one a second, so about four minutes, and needs
+`nominatim.openstreetmap.org` reachable.
 
 What the comparison answers: **A vs B** is whether z14 earns its place in the bee once z15 is there;
 **B vs C** is whether the area gazetteer earns its place. On the narrow fixture A and B are identical
