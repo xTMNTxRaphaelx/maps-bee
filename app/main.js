@@ -13,8 +13,17 @@ const pending = new Map()
 let seq = 0
 
 pipe.on('data', (data) => {
-  const { id, ok, result, error } = JSON.parse(data.toString())
+  // a malformed frame, or a reply for an id already settled, must not throw out of this handler:
+  // uncaught here takes the Electron main process down
+  let msg
+  try {
+    msg = JSON.parse(data.toString())
+  } catch {
+    return
+  }
+  const { id, ok, result, error } = msg
   const p = pending.get(id)
+  if (!p) return
   pending.delete(id)
   if (ok) p.resolve(result)
   else p.reject(new Error(error))

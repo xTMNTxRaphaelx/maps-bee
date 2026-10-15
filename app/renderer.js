@@ -8,7 +8,7 @@ function append (text) {
 
 function coordinate (id) {
   const s = $(id).value.trim()
-  if (s === '') throw new Error(` is empty`)
+  if (s === '') throw new Error(`${id} is empty`)
   return Number(s)
 }
 

@@ -51,8 +51,12 @@ function createOps ({ bootstrap } = {}) {
 // JSON requests { id, op, ...req } in, { id, ok, result | error } out
 function serve (pipe, ops) {
   pipe.on('data', async (data) => {
-    const { id, op, ...req } = JSON.parse(data.toString())
+    // parse inside the try: a malformed frame throws before id is bound, and a reply without an id
+    // is a reply the caller's pending promise can never match, so the window waits forever
+    let id = null
     try {
+      const { id: frameId, op, ...req } = JSON.parse(data.toString())
+      id = frameId
       if (typeof ops[op] !== 'function') throw new Error(`unknown op ${op}`)
       const result = await ops[op](req)
       pipe.write(JSON.stringify({ id, ok: true, result }))
