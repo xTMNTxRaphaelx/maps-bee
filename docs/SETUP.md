@@ -12,7 +12,7 @@ Everything runs under bare from `node_modules/bare-runtime/bin/bare`. npm and no
 
 ## Quick start: test atlas and suite
 
-About two minutes end to end, including three small downloads.
+About two minutes end to end, including seven small downloads totalling about 28 MB.
 
 ```sh
 npm install
@@ -24,11 +24,11 @@ cp <path to the pmtiles binary> tools/pmtiles
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z11-14.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=11 --maxzoom=14
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z15.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=15 --maxzoom=15
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z10.pmtiles --bbox=8.85,45.95,9.05,46.06 --maxzoom=10
+./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 B=node_modules/bare-runtime/bin/bare
 $B scripts/keys.js keys
 $B scripts/build-bee.js store/single data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/build-bee.txt
 $B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/publish.txt
-./tools/pmtiles extract data/planet-z10.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 $B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee results/gazetteer.txt
 $B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
 npm test
@@ -39,15 +39,16 @@ PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-
 Expected tail of `npm test`:
 
 ```
-# tests = 59/59 pass
-# asserts = 616/616 pass
+# tests = 77/77 pass
+# asserts = 713/713 pass
 # ok
 ```
 
 Notes:
 
 - The Jaipur zoom 15 extract is 2.8 MB and cuts in seconds; only the z15 tests (`test/address.js`, `test/z15.js`, `test/address-accuracy.js`, `test/render-svg.js`) read it.
-- The Atlantic extract reads `data/planet-z10.pmtiles`, the 2.2 GB file from the planet section below.
+- The Atlantic extract is cut straight from the remote build, so the quick start needs nothing from the planet section. It is zoom 10 over open ocean, and `test/planet-build.js` asserts its exact `addressed tiles count: 550` — check that with `./tools/pmtiles show` if that test fails.
+- `test/index.js` preflights all ten fixture paths and skips the data-dependent suite with one `# SKIP` line if any is absent, so a partial run of this section fails loudly rather than aborting the process.
 - The setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified.
 - The sparse tests read the published key from `results/publish.txt` and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
 - `keys/` holds test-only keys and is never committed.
@@ -145,7 +146,8 @@ One `## session N` heading per app launch.
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | `npm start` says Electron failed to install | `~/.npmrc` has `ignore-scripts=true` | `node node_modules/electron/install.js` |
-| `pmtiles extract data/planet-z10.pmtiles ...` fails | the planet zoom 10 file is not there yet | run the first line of the planet section first |
+| `pmtiles extract data/planet-z10.pmtiles ...` fails in the planet section | the planet zoom 10 file is not there yet | run the first line of that section first |
+| `npm test` ends at `# tests = 32/32` with a `data fixtures are present # SKIP` line | one or more of the ten fixtures is missing; the names are printed on stderr | finish the quick start section |
 | a seeder keeps running after Ctrl-C in another terminal | the launcher ignores SIGINT; the real bare child must get it | `pkill -INT -f scripts/seed.js` |
 | the app's Run never returns | no seeder is online for that key | start the seeder, then Run again |
 | three `results/` files show as modified | the setup regenerates them for your keys | expected; do not commit them |

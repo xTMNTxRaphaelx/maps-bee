@@ -1,5 +1,3 @@
-| village | 1/2 | 586 m (1 point) |
-| village | places layer kind `locality` with kind_detail village, in the tiles already fetched; hamlets (population 200) were the wrong label at every distance | Amber 586 m from 26.9855,75.8513; Paradiso 154 m and Massagno 263 m in Lugano |
 # maps-bee
 
 **A signed, peer-to-peer map tile store for Keet location previews.**
@@ -8,7 +6,7 @@ A Keet location message carries only latitude and longitude. This prototype turn
 
 | | |
 | --- | --- |
-| Setup and commands | [SETUP.md](SETUP.md) |
+| Setup and commands | [docs/SETUP.md](docs/SETUP.md) |
 | Measurements | [`results/`](results/) |
 | Test app | [`app/`](app/), run with `npm start` |
 | Runtime | bare 1.34, hypercore 11, hyperbee2 2.18 |
@@ -72,6 +70,7 @@ Cold first open from a fresh client over the public DHT, 2x2 plus label, as bloc
 | `test/` | brittle tests, registered in `test/index.js`, run under bare. |
 | `app/` | The Electron test app: a bare worker over pear-runtime calls the real `readPreview`; the window shows the thumbnail and logs probe-format lines. |
 | `results/` | Every measurement quoted anywhere, as the scripts printed it. |
+| `docs/` | Setup and commands. |
 
 ## Status
 
@@ -92,20 +91,21 @@ Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed
 | house number | z15 buildings layer, `kind=address`, property `addr_housenumber` only; the schema has no street, postcode or unit property | Jaipur z15: 468 points in 928 tiles, 0 to 4 per tile |
 | road | roads layer `name` (and `ref`), z15 pin tile has the complete network | pin 26.879464,75.796516: nearest road 11 m is unnamed, nearest named road "Market Road" at 215 m; 11 of 31 roads in the tile are named |
 | neighbourhood, suburb, quarter | places layer points, kind `neighbourhood` (kind_detail neighbourhood, suburb) and `macrohood` (quarter), present in the z14 2x2 already fetched | Tonk Phatak 322 m, Barkat Nagar 470 m, Pratap Nagar 479 m, Bapu Nagar 764 m |
+| village | places layer kind `locality` with kind_detail village, in the tiles already fetched; hamlets (population 200) were the wrong label at every distance | Amber 586 m from 26.9855,75.8513; Paradiso 154 m and Massagno 263 m in Lugano |
 | city or town | gazetteer, already in the bee | Jaipur (city, 4.6 km) |
 | state, country | places layer kinds `region` and `country`, which sit in low-zoom tiles the bee does not hold; z10 tiles near Jaipur carry only locality and macrohood points | z10 scan: locality/city, town, village, macrohood/quarter |
 | postcode | nowhere in the Protomaps schema | |
 | tehsil, municipal corporation, district | boundaries layer has lines by kind with no names; no admin polygons with names | |
 
-Each part is the nearest matching feature across the z14 (or z10) 2x2 and the z15 pin tile together, within a threshold; roads by point-to-segment distance, places and pois by distance to their label point:
+Each part is the nearest matching feature across the z14 (or z10) 2x2 and the z15 pin tile together, within a threshold; roads by point-to-segment distance, places and pois by distance to their label point. Both are measured with one `cheap-ruler` built at the pin's latitude, so every part is on the same ruler: its scale factors are the exact WGS84 degree lengths there, within 0.5 m of a Vincenty geodesic at 3 km.
 
 ```
 address: {
   housenumber:   { value, metres } | null,       // buildings kind=address within HOUSE_M (30 m)
   road:          { name, kind, metres } | null,  // named road within ROAD_M (300 m)
   neighbourhood: { name, metres } | null,        // places neighbourhood/neighbourhood within NEIGHBOURHOOD_M (800 m)
-  suburb:        { name, metres }   village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M (700 m); hamlet labels were wrong at every distance
-| null,        // places neighbourhood/suburb or macrohood within SUBURB_M (3000 m)
+  suburb:        { name, metres } | null,        // places neighbourhood/suburb or macrohood within SUBURB_M (3000 m)
+  village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M (700 m); hamlet labels were wrong at every distance
   city:          { name, kind, km } | null,      // the gazetteer label
   region:        null,                           // not in the bee
   country:       null,                           // not in the bee
@@ -123,6 +123,7 @@ Measured on 20 Jaipur points against Nominatim reverse results (`test/fixtures/j
 | road | 5/6 | 2 to 223 m (17 points) |
 | neighbourhood | 7/7 | 61 to 716 m (8 points) |
 | suburb | 12/12 | 145 to 2495 m (13 points) |
+| village | 1/2 | 586 m (1 point) |
 | city | 18/19 | 1209 to 15105 m (20 points) |
 | house number | 0/0 | none within 30 m |
 
@@ -145,7 +146,7 @@ The road misses are squares and the airport, where Nominatim names a different a
 
 ### Zoom 15 on the Jaipur region
 
-`data/extract/jaipur-z15.pmtiles` (SETUP.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
+`data/extract/jaipur-z15.pmtiles` (docs/SETUP.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
 
 Address points: in the `buildings` layer, geometry type point, `kind: 'address'`, with `addr_housenumber` as the only address key (no street or postcode in any layer). A central z15 tile holds 0 to 2 of them, and none lies within HOUSE_M of any scored point (results/address-accuracy-jaipur.txt, `rate housenumber 0/0`).
 
