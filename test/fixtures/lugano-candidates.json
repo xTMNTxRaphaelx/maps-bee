@@ -1,0 +1,227 @@
+[
+ {
+  "lat": 46.025501,
+  "lon": 8.954127,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.001604,
+  "lon": 8.986769,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.038207,
+  "lon": 8.947661,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.00541,
+  "lon": 9.001168,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.975951,
+  "lon": 8.877909,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.971319,
+  "lon": 8.88316,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.038527,
+  "lon": 8.926544,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.997729,
+  "lon": 8.898925,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.058346,
+  "lon": 8.950627,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.993141,
+  "lon": 8.891663,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.007581,
+  "lon": 8.954548,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.054165,
+  "lon": 8.942585,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.015326,
+  "lon": 8.907878,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.994559,
+  "lon": 8.920401,
+  "stratum": "addr"
+ },
+ {
+  "lat": 45.979138,
+  "lon": 8.878674,
+  "stratum": "addr"
+ },
+ {
+  "lat": 46.040786,
+  "lon": 8.877831,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.985511,
+  "lon": 8.942796,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.036222,
+  "lon": 9.049426,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.99084,
+  "lon": 8.913086,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.95653,
+  "lon": 8.994244,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.004663,
+  "lon": 8.984007,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.011419,
+  "lon": 8.855675,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.053153,
+  "lon": 8.993102,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.061365,
+  "lon": 8.973199,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.036042,
+  "lon": 9.017497,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.971071,
+  "lon": 8.882994,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.96819,
+  "lon": 8.922356,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.958106,
+  "lon": 8.934521,
+  "stratum": "road"
+ },
+ {
+  "lat": 46.039539,
+  "lon": 8.98197,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.966409,
+  "lon": 8.883001,
+  "stratum": "road"
+ },
+ {
+  "lat": 45.981893,
+  "lon": 8.878746,
+  "stratum": "plain"
+ },
+ {
+  "lat": 46.022003,
+  "lon": 8.959812,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.985708,
+  "lon": 8.874033,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.965548,
+  "lon": 8.863486,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.983091,
+  "lon": 8.985122,
+  "stratum": "plain"
+ },
+ {
+  "lat": 46.021659,
+  "lon": 8.873368,
+  "stratum": "plain"
+ },
+ {
+  "lat": 46.005899,
+  "lon": 8.954647,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.973302,
+  "lon": 9.00844,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.977758,
+  "lon": 9.048331,
+  "stratum": "plain"
+ },
+ {
+  "lat": 46.054941,
+  "lon": 9.024002,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.950408,
+  "lon": 8.886594,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.953119,
+  "lon": 9.04685,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.986269,
+  "lon": 8.994135,
+  "stratum": "plain"
+ },
+ {
+  "lat": 46.045195,
+  "lon": 8.868771,
+  "stratum": "plain"
+ },
+ {
+  "lat": 45.977567,
+  "lon": 9.023954,
+  "stratum": "plain"
+ }
+]

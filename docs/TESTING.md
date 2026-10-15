@@ -199,6 +199,35 @@ What to watch for, since this is the path with the least coverage:
   never re-enables is the failure the frame-parsing fix was meant to remove
 - `store/tmp/probe-*` must be gone after you quit the window
 
+## Widening the address fixture
+
+The scored fixtures are 20 Jaipur and 11 Lugano points, which is thin — a two-point difference
+decides whether the bee needs z14. To widen, sample candidates from the extracts, reverse geocode
+them, then compare the address shapes:
+
+```sh
+B=node_modules/bare-runtime/bin/bare
+
+# 1. candidates: deterministic from the seed, three strata (addr / road / plain)
+$B scripts/fixture-points.js data/extract/jaipur-z15.pmtiles 75.65,26.75,75.95,27.05 60 1 > test/fixtures/jaipur-candidates.json
+$B scripts/fixture-points.js data/extract/lugano-z15.pmtiles 8.85,45.95,9.05,46.06 45 1 > test/fixtures/lugano-candidates.json
+
+# 2. ground truth: node, not bare; one request a second, as Nominatim's policy requires
+node scripts/fetch-nominatim.js test/fixtures/jaipur-candidates.json test/fixtures/jaipur-nominatim-wide.json
+node scripts/fetch-nominatim.js test/fixtures/lugano-candidates.json test/fixtures/lugano-nominatim-wide.json
+
+# 3. compare the three shapes on the wider set
+$B scripts/address-shapes.js test/fixtures/jaipur-nominatim-wide.json data/extract/jaipur-z11-14.pmtiles data/extract/jaipur-z15.pmtiles 75.65,26.75,75.95,27.05 data/gazetteer.json
+$B scripts/address-shapes.js test/fixtures/lugano-nominatim-wide.json data/extract/lugano-z11-14.pmtiles data/extract/lugano-z15.pmtiles 8.85,45.95,9.05,46.06 data/gazetteer-lugano.json
+```
+
+Step 2 takes about two minutes for 105 points and needs `nominatim.openstreetmap.org` reachable.
+
+What the comparison answers: **A vs B** is whether z14 earns its place in the bee once z15 is there;
+**B vs C** is whether the area gazetteer earns its place. On the narrow fixture A and B are identical
+on all twelve rates while C loses two Jaipur suburbs, so z14 looks droppable and the gazetteer areas
+look load-bearing — on two points. That is what the wider set is for.
+
 ## Reporting back
 
 Send me, in this order:
