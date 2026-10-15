@@ -7,6 +7,7 @@ const Hyperbee = require('hyperbee2')
 const Hyperswarm = require('hyperswarm')
 const HypercoreId = require('hypercore-id-encoding')
 const { readPreview, prefetchTop } = require('./preview')
+const { parseFlags, intFlag } = require('./flags')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 
@@ -121,11 +122,9 @@ function parsePoints (args) {
 }
 
 async function main () {
-  const argv = Bare.argv.slice(2)
-  const flag = argv.find((a) => a.startsWith('--levels='))
-  const levels = flag ? Number(flag.slice('--levels='.length)) : 0
-  if (!(Number.isInteger(levels) && levels >= 0)) throw new Error('--levels must be a non-negative integer')
-  const [id, ...rest] = argv.filter((a) => !a.startsWith('--'))
+  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--levels'])
+  const levels = intFlag(flags, '--levels', 0) ?? 0
+  const [id, ...rest] = args
   if (!id || rest.length === 0) throw new Error('usage: probe.js [--levels=N] <coreKey> <lat,lon>...')
   await probe({ key: HypercoreId.decode(id), points: parsePoints(rest), levels })
 }

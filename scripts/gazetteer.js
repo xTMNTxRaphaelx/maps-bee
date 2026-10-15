@@ -4,6 +4,7 @@ const fs = require('bare-fs')
 const zlib = require('bare-zlib')
 const { openArchive, readTile } = require('./pmtiles-file')
 const { bboxTiles, parseBbox } = require('./tiles')
+const { parseFlags } = require('./flags')
 const { decode } = require('./mvt')
 const { haversineKm, gazKeys } = require('./gazetteer-lib')
 
@@ -16,6 +17,14 @@ function inBbox (p, b) {
 // kinds: a Set of kind_detail values to keep, or null for every locality
 async function collect (path, bbox, minz, maxz, byName, counts, kinds = null) {
   const archive = openArchive(path)
+  try {
+    await collectFrom(archive, bbox, minz, maxz, byName, counts, kinds)
+  } finally {
+    await archive.close()
+  }
+}
+
+async function collectFrom (archive, bbox, minz, maxz, byName, counts, kinds) {
   // highest zoom first so each place keeps its most precise point
   for (let z = maxz; z >= minz; z--) {
     for (const { x, y } of bboxTiles(bbox, z)) {
@@ -42,18 +51,25 @@ async function collect (path, bbox, minz, maxz, byName, counts, kinds = null) {
       }
     }
   }
-  await archive.close()
 }
 
 async function main () {
-  const argv = Bare.argv.slice(2)
-  const flag = argv.find((a) => a.startsWith('--kinds='))
-  const kinds = flag ? new Set(flag.slice('--kinds='.length).split(',')) : null
-  const [out, ...rest] = argv.filter((a) => !a.startsWith('--'))
+  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--kinds'])
+  const kindsFlag = flags.get('--kinds')
+  const kinds = kindsFlag ? new Set(kindsFlag.split(',')) : null
+  const [out, ...rest] = args
+  // the sources are read four at a time, so a missing or misspelt one used to leave minz/maxz NaN,
+  // `for (let z = NaN; z >= NaN; z--)` never ran, and the script reported a successful empty run
+  if (!out || rest.length === 0 || rest.length % 4 !== 0) {
+    throw new Error('usage: gazetteer.js [--kinds=a,b] <out.json> (<archive.pmtiles> <minLon,minLat,maxLon,maxLat> <minz> <maxz>)...')
+  }
   const byName = new Map()
   const counts = { regionFeatures: 0, entries: [] }
   for (let i = 0; i < rest.length; i += 4) {
     const [path, bbox, minz, maxz] = rest.slice(i, i + 4)
+    for (const [label, v] of [['minz', minz], ['maxz', maxz]]) {
+      if (!/^\d+$/.test(v)) throw new Error(`${path}: ${label} must be a non-negative integer, got ${JSON.stringify(v)}`)
+    }
     const before = counts.entries.length
     await collect(path, parseBbox(bbox), Number(minz), Number(maxz), byName, counts, kinds)
     console.log(`${path} bbox ${bbox} z${minz}-${maxz}: +${counts.entries.length - before} localities`)
