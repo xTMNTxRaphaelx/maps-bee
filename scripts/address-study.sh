@@ -40,8 +40,28 @@ gaz () {
   esac
 }
 
-[ -x tools/pmtiles ] || { echo "tools/pmtiles missing; see docs/SETUP.md" >&2; exit 1; }
 [ -x "$B" ] || { echo "$B missing; run npm install" >&2; exit 1; }
+
+# only needed when an extract has to be cut; tools/ is gitignored, so a fresh clone has no binary
+need_pmtiles () {
+  if [ -x tools/pmtiles ]; then
+    return 0
+  fi
+  cat >&2 <<'EOF'
+tools/pmtiles is missing and an extract still has to be cut.
+
+  mkdir -p tools
+  # arm64 Macs; use Darwin_x86_64 on Intel
+  curl -L -o /tmp/pmtiles.zip https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles-1.31.2_Darwin_arm64.zip
+  unzip -o -j /tmp/pmtiles.zip pmtiles -d tools
+  chmod +x tools/pmtiles
+  xattr -d com.apple.quarantine tools/pmtiles 2>/dev/null
+  ./tools/pmtiles version
+
+Already have the binary elsewhere? Copy or symlink it in:  ln -s /path/to/pmtiles tools/pmtiles
+EOF
+  exit 1
+}
 command -v node >/dev/null || { echo "node is needed for the Nominatim fetch" >&2; exit 1; }
 mkdir -p results
 
@@ -49,14 +69,17 @@ echo "== 1/3 extracts and gazetteers =="
 for C in berlin nairobi; do
   BB=$(bbox "$C")
   if [ -f "data/extract/$C-z11-14.pmtiles" ]; then echo "  have $C z11-14"; else
+    need_pmtiles
     echo "  cutting $C z11-14"
     ./tools/pmtiles -q extract "$S" "data/extract/$C-z11-14.pmtiles" --bbox="$BB" --minzoom=11 --maxzoom=14
   fi
   if [ -f "data/extract/$C-z15.pmtiles" ]; then echo "  have $C z15"; else
+    need_pmtiles
     echo "  cutting $C z15"
     ./tools/pmtiles -q extract "$S" "data/extract/$C-z15.pmtiles" --bbox="$BB" --minzoom=15 --maxzoom=15
   fi
   if [ -f "data/extract/$C-z10.pmtiles" ]; then echo "  have $C z10"; else
+    need_pmtiles
     echo "  cutting $C z10"
     ./tools/pmtiles -q extract "$S" "data/extract/$C-z10.pmtiles" --bbox="$BB" --maxzoom=10
   fi
