@@ -63,7 +63,8 @@ EOF
   exit 1
 }
 command -v node >/dev/null || { echo "node is needed for the Nominatim fetch" >&2; exit 1; }
-mkdir -p results
+# data/ is gitignored, so a fresh clone has neither of these and pmtiles cannot write its output
+mkdir -p data/extract results
 
 echo "== 1/3 extracts and gazetteers =="
 for C in berlin nairobi; do
