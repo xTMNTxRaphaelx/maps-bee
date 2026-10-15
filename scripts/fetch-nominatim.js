@@ -32,19 +32,28 @@ async function main () {
   const candidates = JSON.parse(fs.readFileSync(candFile, 'utf8'))
   const out = []
   let failed = 0
+  let run = 0
   for (let i = 0; i < candidates.length; i++) {
     const { lat, lon, stratum } = candidates[i]
     try {
       const r = await reverse(lat, lon, ua)
       out.push({ lat, lon, stratum, display_name: r.display_name, address: r.address || {} })
+      run = 0
     } catch (err) {
       failed++
+      run++
       console.error(`  skipped ${lat},${lon}: ${err.message}`)
+      // five in a row is the host being unreachable or rate limiting, not one bad point; writing a
+      // mostly-empty fixture would score as a silent accuracy collapse further down the pipeline
+      if (run >= 5) throw new Error(`${run} consecutive failures, giving up: ${err.message}`)
     }
     if ((i + 1) % 10 === 0 || i === candidates.length - 1) {
       console.error(`  ${i + 1}/${candidates.length} (${failed} skipped)`)
     }
     if (i < candidates.length - 1) await sleep(DELAY_MS)
+  }
+  if (out.length < candidates.length * 0.8) {
+    throw new Error(`only ${out.length} of ${candidates.length} points resolved; not writing ${outFile}`)
   }
   fs.writeFileSync(outFile, JSON.stringify(out, null, 1) + '\n')
   const have = {}
