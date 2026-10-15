@@ -1,9 +1,6 @@
 # address shapes, 2026-10-15T14:47:30Z, protomaps build 20261012
 # A z14 2x2 + z15 pin | B z15 2x2 + gazetteer areas | C z15 2x2 only
-<<<<<<< HEAD
-=======
 # run on macOS; 225 points over four cities, candidates in test/fixtures/*-candidates.json
->>>>>>> vm/main
 
 test/fixtures/jaipur-nominatim-wide.json: 60 points, 274 area labels from z13
 part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
@@ -49,8 +46,6 @@ part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
   tiles/point   4.9            3.9
   KiB/point     242.5          248.5
 
-<<<<<<< HEAD
-=======
 # Totals over the 225 points
 #
 # A vs B, does z14 earn its place once z15 is there:
@@ -65,4 +60,3 @@ part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
 #   The byte saving is uneven: Jaipur -42%, Lugano -20%, Berlin -6%, Nairobi +2.5%.
 #
 # Housenumber, which the planet bee cannot serve at all today: 74/89 (83%).
->>>>>>> vm/main
