@@ -1,0 +1,1106 @@
+[
+ {
+  "lat": 26.907397,
+  "lon": 75.795586,
+  "stratum": "addr",
+  "display_name": "Half Light Coffee Roasters, F-31, Azad Marg, Geejgarh Vihar Colony, Bais Godam, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "amenity": "Half Light Coffee Roasters",
+   "house_number": "F-31",
+   "road": "Azad Marg",
+   "quarter": "Geejgarh Vihar Colony",
+   "suburb": "Bais Godam",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 27.046314,
+  "lon": 75.905225,
+  "stratum": "addr",
+  "display_name": "DoubleTree by Hilton Jaipur Amer, 935, NH248, Dheengpur, Amer Chak No. 2, Amber Tehsil, Jaipur, Rajasthan, 302028, India",
+  "address": {
+   "tourism": "DoubleTree by Hilton Jaipur Amer",
+   "house_number": "935",
+   "road": "NH248",
+   "hamlet": "Dheengpur",
+   "village": "Amer Chak No. 2",
+   "county": "Amber Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302028",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.914949,
+  "lon": 75.801881,
+  "stratum": "addr",
+  "display_name": "Amrapali Museum, Ashok Marg, Bani Park, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302006, India",
+  "address": {
+   "tourism": "Amrapali Museum",
+   "road": "Ashok Marg",
+   "suburb": "Bani Park",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302006",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.936358,
+  "lon": 75.923413,
+  "stratum": "addr",
+  "display_name": "Amul Cafe, Keshav Vidyapeeth Road, Jaipur, Jaipur Municipal Corporation, Bassi Tehsil, Jaipur, Rajasthan, 302031, India",
+  "address": {
+   "amenity": "Amul Cafe",
+   "house_number": "Amul Cafe",
+   "road": "Keshav Vidyapeeth Road",
+   "city": "Jaipur",
+   "county": "Bassi Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302031",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.910048,
+  "lon": 75.743235,
+  "stratum": "addr",
+  "display_name": "F-30, Gautam Marg, Girnar Colony, Block E, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "house_number": "F-30",
+   "road": "Gautam Marg",
+   "neighbourhood": "Girnar Colony",
+   "quarter": "Block E",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.905444,
+  "lon": 75.750378,
+  "stratum": "addr",
+  "display_name": "Allen Career Institute, B41, Gandhi Path, Girnar Colony, Guru Jhambeshwar Nagar A, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "office": "Allen Career Institute",
+   "house_number": "B41",
+   "road": "Gandhi Path",
+   "neighbourhood": "Girnar Colony",
+   "quarter": "Guru Jhambeshwar Nagar A",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.93535,
+  "lon": 75.791765,
+  "stratum": "addr",
+  "display_name": "Inox City Plaza - Space Cinemas, City Plaza, Pani Pech, Meera Marg, Sanjay Colony, Bani Park, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302006, India",
+  "address": {
+   "amenity": "Inox City Plaza - Space Cinemas",
+   "house_number": "City Plaza, Pani Pech",
+   "road": "Meera Marg",
+   "neighbourhood": "Sanjay Colony",
+   "suburb": "Bani Park",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302006",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.937314,
+  "lon": 75.757965,
+  "stratum": "addr",
+  "display_name": "303, Khatipura Road, Sain Colony, Shivpuri Extention, Jothwara, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302012, India",
+  "address": {
+   "house_number": "303",
+   "road": "Khatipura Road",
+   "neighbourhood": "Sain Colony",
+   "quarter": "Shivpuri Extention",
+   "suburb": "Jothwara",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302012",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.91614,
+  "lon": 75.795888,
+  "stratum": "addr",
+  "display_name": "Hotel Kalyan, 59 hathroi fort, Hari Kisham Somani Marg, Barodia Scheme , Jaipur, Bani Park, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "tourism": "Hotel Kalyan",
+   "house_number": "59 hathroi fort",
+   "road": "Hari Kisham Somani Marg",
+   "neighbourhood": "Barodia Scheme , Jaipur",
+   "suburb": "Bani Park",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.875423,
+  "lon": 75.756126,
+  "stratum": "addr",
+  "display_name": "A R Infotech, 13/516,, Shipra Path, Santosh Nagar, New Aatish Market, Devi Nagar, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302020, India",
+  "address": {
+   "building": "A R Infotech",
+   "house_number": "13/516,",
+   "road": "Shipra Path",
+   "neighbourhood": "Santosh Nagar",
+   "quarter": "New Aatish Market",
+   "suburb": "Devi Nagar",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302020",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.859805,
+  "lon": 75.807592,
+  "stratum": "addr",
+  "display_name": "30, Calgiri Road, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302018, India",
+  "address": {
+   "house_number": "30",
+   "road": "Calgiri Road",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302018",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.902649,
+  "lon": 75.785985,
+  "stratum": "addr",
+  "display_name": "Elevated Hawa Sadak, Geejgarh Vihar Colony, Bais Godam, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Elevated Hawa Sadak",
+   "residential": "Geejgarh Vihar Colony",
+   "quarter": "Geejgarh Vihar Colony",
+   "suburb": "Bais Godam",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.960975,
+  "lon": 75.772154,
+  "stratum": "addr",
+  "display_name": "Vidyadhar Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "suburb": "Vidyadhar Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.903927,
+  "lon": 75.776449,
+  "stratum": "addr",
+  "display_name": "airbnb, 51, Keshav Path, Gayatri Nagar, Ram Nagar Extension, Sodala, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "tourism": "airbnb",
+   "house_number": "51",
+   "road": "Keshav Path",
+   "neighbourhood": "Gayatri Nagar",
+   "quarter": "Ram Nagar Extension",
+   "suburb": "Sodala",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.905372,
+  "lon": 75.744636,
+  "stratum": "addr",
+  "display_name": "Guru Govind Prem, 11-12, Gandhi Path, Girnar Colony, Guru Jhambeshwar Nagar A, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302021, India",
+  "address": {
+   "building": "Guru Govind Prem",
+   "house_number": "11-12",
+   "road": "Gandhi Path",
+   "neighbourhood": "Girnar Colony",
+   "quarter": "Guru Jhambeshwar Nagar A",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302021",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.910127,
+  "lon": 75.743814,
+  "stratum": "addr",
+  "display_name": "E-19, Gautam Marg, Girnar Colony, Block E, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "house_number": "E-19",
+   "road": "Gautam Marg",
+   "neighbourhood": "Girnar Colony",
+   "quarter": "Block E",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.910823,
+  "lon": 75.7953,
+  "stratum": "addr",
+  "display_name": "Starbucks, A-5, Suryavanshi Pearl, Sardar Patel Road, Geejgarh Vihar Colony, Bais Godam, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302007, India",
+  "address": {
+   "amenity": "Starbucks",
+   "house_number": "A-5, Suryavanshi Pearl",
+   "road": "Sardar Patel Road",
+   "quarter": "Geejgarh Vihar Colony",
+   "suburb": "Bais Godam",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302007",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.934607,
+  "lon": 75.923302,
+  "stratum": "addr",
+  "display_name": "Bazingaa, Keshav Vidyapeeth Road, Jaipur, Jaipur Municipal Corporation, Bassi Tehsil, Jaipur, Rajasthan, 302031, India",
+  "address": {
+   "amenity": "Bazingaa",
+   "house_number": "Bazingaa",
+   "road": "Keshav Vidyapeeth Road",
+   "city": "Jaipur",
+   "county": "Bassi Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302031",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.988084,
+  "lon": 75.773457,
+  "stratum": "addr",
+  "display_name": "Crossland Ford, Near Metro, VKIA Area, Sikar Road, Vishwakarma Industrial Area, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "shop": "Crossland Ford",
+   "house_number": "Near Metro, VKIA Area",
+   "road": "Sikar Road",
+   "suburb": "Vishwakarma Industrial Area",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.947871,
+  "lon": 75.844786,
+  "stratum": "addr",
+  "display_name": "Karbala, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "suburb": "Karbala",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.91406,
+  "lon": 75.834374,
+  "stratum": "road",
+  "display_name": "Rasta Balaji Ki Kothi, Mahavaton Ka Mohalla, Ramganj, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Rasta Balaji Ki Kothi",
+   "neighbourhood": "Mahavaton Ka Mohalla",
+   "suburb": "Ramganj",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.812046,
+  "lon": 75.695969,
+  "stratum": "road",
+  "display_name": "Jaipur Outer Ring Road, Sanganer Tehsil, Jaipur, Rajasthan, India",
+  "address": {
+   "road": "Jaipur Outer Ring Road",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.901423,
+  "lon": 75.843412,
+  "stratum": "road",
+  "display_name": "Burmese Colony Road, Burmese Colony, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Burmese Colony Road",
+   "neighbourhood": "Burmese Colony",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.933671,
+  "lon": 75.816277,
+  "stratum": "road",
+  "display_name": "New Rambah Road, Bani Park, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302006, India",
+  "address": {
+   "road": "New Rambah Road",
+   "suburb": "Bani Park",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302006",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.865982,
+  "lon": 75.892112,
+  "stratum": "road",
+  "display_name": "Goner Road, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302031, India",
+  "address": {
+   "road": "Goner Road",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302031",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.871337,
+  "lon": 75.730695,
+  "stratum": "road",
+  "display_name": "80 Ft Road, Nirman Nagar, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302024, India",
+  "address": {
+   "road": "80 Ft Road",
+   "suburb": "Nirman Nagar",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302024",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.942512,
+  "lon": 75.765332,
+  "stratum": "road",
+  "display_name": "Jhotwara Road flyover, Sain Colony, Jothwara, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Jhotwara Road flyover",
+   "neighbourhood": "Sain Colony",
+   "suburb": "Jothwara",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.88147,
+  "lon": 75.77844,
+  "stratum": "road",
+  "display_name": "40ft Road, Sharda Colony, Shiva Colony, Gopalpura, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302005, India",
+  "address": {
+   "road": "40ft Road",
+   "neighbourhood": "Sharda Colony",
+   "quarter": "Shiva Colony",
+   "suburb": "Gopalpura",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302005",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.831437,
+  "lon": 75.822277,
+  "stratum": "road",
+  "display_name": "Jagatpura, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302017, India",
+  "address": {
+   "suburb": "Jagatpura",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302017",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.853548,
+  "lon": 75.738189,
+  "stratum": "road",
+  "display_name": "Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302020, India",
+  "address": {
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302020",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.881841,
+  "lon": 75.74838,
+  "stratum": "road",
+  "display_name": "7 number lane, Kasturba Nagar, Nirman Nagar, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302019, India",
+  "address": {
+   "road": "7 number lane",
+   "residential": "Kasturba Nagar",
+   "suburb": "Nirman Nagar",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302019",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.932308,
+  "lon": 75.787779,
+  "stratum": "road",
+  "display_name": "Khandela Haveli, D 219-A, Bhaskar Marg, Bani Park, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302016, India",
+  "address": {
+   "tourism": "Khandela Haveli",
+   "house_number": "D 219-A",
+   "road": "Bhaskar Marg",
+   "suburb": "Bani Park",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302016",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.900754,
+  "lon": 75.737364,
+  "stratum": "road",
+  "display_name": "Gulabi Marg, Chitrakoot - Sector 10, Chitrakoot, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Gulabi Marg",
+   "neighbourhood": "Chitrakoot - Sector 10",
+   "quarter": "Chitrakoot",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.882976,
+  "lon": 75.800508,
+  "stratum": "road",
+  "display_name": "Laxmi Mandir Underpass, Bapu Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302015, India",
+  "address": {
+   "road": "Laxmi Mandir Underpass",
+   "suburb": "Bapu Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302015",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.879778,
+  "lon": 75.777875,
+  "stratum": "road",
+  "display_name": "Sharda Colony, Shiva Colony, Gopalpura, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302005, India",
+  "address": {
+   "neighbourhood": "Sharda Colony",
+   "quarter": "Shiva Colony",
+   "suburb": "Gopalpura",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302005",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.915633,
+  "lon": 75.827805,
+  "stratum": "road",
+  "display_name": "Thakur Pachewar Ka Rasta, Ramganj, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Thakur Pachewar Ka Rasta",
+   "suburb": "Ramganj",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 27.030305,
+  "lon": 75.894553,
+  "stratum": "road",
+  "display_name": "Arya College Jaipur, SP-40, Arya College Road, Kukas, Amber Tehsil, Jaipur, Rajasthan, 302028, India",
+  "address": {
+   "office": "Arya College Jaipur",
+   "house_number": "SP-40",
+   "road": "Arya College Road",
+   "village": "Kukas",
+   "county": "Amber Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302028",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.923614,
+  "lon": 75.745515,
+  "stratum": "road",
+  "display_name": "Block A, Goms Defence Colony, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "neighbourhood": "Block A",
+   "quarter": "Goms Defence Colony",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.911348,
+  "lon": 75.750617,
+  "stratum": "road",
+  "display_name": "Rathore Nagar, D Block, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "neighbourhood": "Rathore Nagar",
+   "quarter": "D Block",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.937533,
+  "lon": 75.73673,
+  "stratum": "road",
+  "display_name": "100 ft Road, Brij mandal Colony, Shivpuri Extention, Jothwara, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "100 ft Road",
+   "residential": "Brij mandal Colony",
+   "quarter": "Shivpuri Extention",
+   "suburb": "Jothwara",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.988564,
+  "lon": 75.887547,
+  "stratum": "plain",
+  "display_name": "Kunda, Amber Tehsil, Jaipur, Rajasthan, 302028, India",
+  "address": {
+   "village": "Kunda",
+   "county": "Amber Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302028",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.816242,
+  "lon": 75.678879,
+  "stratum": "plain",
+  "display_name": "Sanganer Tehsil, Jaipur, Rajasthan, 302037, India",
+  "address": {
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302037",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.794741,
+  "lon": 75.772599,
+  "stratum": "plain",
+  "display_name": "Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302030, India",
+  "address": {
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302030",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.912766,
+  "lon": 75.736189,
+  "stratum": "plain",
+  "display_name": "Jagdamba colony, Block A, Vaishali Nagar, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "neighbourhood": "Jagdamba colony",
+   "quarter": "Block A",
+   "suburb": "Vaishali Nagar",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 27.015361,
+  "lon": 75.74366,
+  "stratum": "plain",
+  "display_name": "Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 27.022732,
+  "lon": 75.908527,
+  "stratum": "plain",
+  "display_name": "Nagal Susawatan, Jamwa Ramgarh Tehsil, Jaipur, Rajasthan, 302028, India",
+  "address": {
+   "village": "Nagal Susawatan",
+   "county": "Jamwa Ramgarh Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302028",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.939892,
+  "lon": 75.850719,
+  "stratum": "plain",
+  "display_name": "Jamwa Ramgarh Road, Deewan Colony , JAIPUR, Ramganj, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Jamwa Ramgarh Road",
+   "neighbourhood": "Deewan Colony , JAIPUR",
+   "suburb": "Ramganj",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.820367,
+  "lon": 75.765095,
+  "stratum": "plain",
+  "display_name": "Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302029, India",
+  "address": {
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302029",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.842256,
+  "lon": 75.711383,
+  "stratum": "plain",
+  "display_name": "Sanganer Tehsil, Jaipur, Rajasthan, 302026, India",
+  "address": {
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302026",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.829482,
+  "lon": 75.929292,
+  "stratum": "plain",
+  "display_name": "Bhatesari, Hingoniya, Bassi Tehsil, Jaipur, Rajasthan, 303012, India",
+  "address": {
+   "hamlet": "Bhatesari",
+   "village": "Hingoniya",
+   "county": "Bassi Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "303012",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 27.039874,
+  "lon": 75.697958,
+  "stratum": "plain",
+  "display_name": "Jalsoo Tehsil, Jaipur, Rajasthan, India",
+  "address": {
+   "county": "Jalsoo Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.848898,
+  "lon": 75.672997,
+  "stratum": "plain",
+  "display_name": "Mahapura, Sanganer Tehsil, Jaipur, Rajasthan, 302026, India",
+  "address": {
+   "village": "Mahapura",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302026",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.760978,
+  "lon": 75.885091,
+  "stratum": "plain",
+  "display_name": "Prahladpura, Goner, Sanganer Tehsil, Jaipur, Rajasthan, 303905, India",
+  "address": {
+   "suburb": "Prahladpura",
+   "village": "Goner",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "303905",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.866145,
+  "lon": 75.723119,
+  "stratum": "plain",
+  "display_name": "Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 300021, India",
+  "address": {
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "300021",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.794525,
+  "lon": 75.896354,
+  "stratum": "plain",
+  "display_name": "Goner, Sanganer Tehsil, Jaipur, Rajasthan, 302025, India",
+  "address": {
+   "village": "Goner",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302025",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.842385,
+  "lon": 75.917732,
+  "stratum": "plain",
+  "display_name": "Hingoniya, Bassi Tehsil, Jaipur, Rajasthan, 303012, India",
+  "address": {
+   "village": "Hingoniya",
+   "county": "Bassi Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "303012",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.907763,
+  "lon": 75.77835,
+  "stratum": "plain",
+  "display_name": "Ajmer Road, Gayatri Nagar, Ram Nagar Extension, Sodala, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "road": "Ajmer Road",
+   "neighbourhood": "Gayatri Nagar",
+   "quarter": "Ram Nagar Extension",
+   "suburb": "Sodala",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.955912,
+  "lon": 75.753452,
+  "stratum": "plain",
+  "display_name": "Jhotwara Industrial Area, Jothwara, Jaipur, Jaipur Municipal Corporation, Jaipur Tehsil, Jaipur, Rajasthan, 302001, India",
+  "address": {
+   "neighbourhood": "Jhotwara Industrial Area",
+   "suburb": "Jothwara",
+   "city": "Jaipur",
+   "county": "Jaipur Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302001",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.823578,
+  "lon": 75.810812,
+  "stratum": "plain",
+  "display_name": "Jaipur International Airport, Tonk Road Flyover Ramp, Jaipur Municipal Corporation, Sanganer Tehsil, Jaipur, Rajasthan, 302018, India",
+  "address": {
+   "aeroway": "Jaipur International Airport",
+   "road": "Tonk Road Flyover Ramp",
+   "city": "Jaipur Municipal Corporation",
+   "county": "Sanganer Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302018",
+   "country": "India",
+   "country_code": "in"
+  }
+ },
+ {
+  "lat": 26.978719,
+  "lon": 75.8883,
+  "stratum": "plain",
+  "display_name": "Kunda, Amber Tehsil, Jaipur, Rajasthan, 302027, India",
+  "address": {
+   "village": "Kunda",
+   "county": "Amber Tehsil",
+   "state_district": "Jaipur",
+   "state": "Rajasthan",
+   "ISO3166-2-lvl4": "IN-RJ",
+   "postcode": "302027",
+   "country": "India",
+   "country_code": "in"
+  }
+ }
+]

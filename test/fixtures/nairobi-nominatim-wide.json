@@ -1,0 +1,1123 @@
+[
+ {
+  "lat": -1.267769,
+  "lon": 36.807324,
+  "stratum": "addr",
+  "display_name": "29, Westlands Road, Highridge sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "house_number": "29",
+   "road": "Westlands Road",
+   "city_block": "Highridge sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.331564,
+  "lon": 36.866362,
+  "stratum": "addr",
+  "display_name": "ABC Bank, Libra House,, Mombasa Road, South C ward, Langata, Nairobi, Nairobi County, 50504, Kenya",
+  "address": {
+   "amenity": "ABC Bank",
+   "house_number": "Libra House,",
+   "road": "Mombasa Road",
+   "suburb": "South C ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "50504",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.26541,
+  "lon": 36.806357,
+  "stratum": "addr",
+  "display_name": "Vision Tower, 26, Muthithi Road, Highridge sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "building": "Vision Tower",
+   "house_number": "26",
+   "road": "Muthithi Road",
+   "city_block": "Highridge sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.29638,
+  "lon": 36.908102,
+  "stratum": "addr",
+  "display_name": "Masjid Noor (Mosque), --, Kayole Spine Road, LOWER SAVANNAH, Jacaranda, Lower Savannah ward, Embakasi, Nairobi, Nairobi County, 56744, Kenya",
+  "address": {
+   "amenity": "Masjid Noor (Mosque)",
+   "house_number": "--",
+   "road": "Kayole Spine Road",
+   "residential": "LOWER SAVANNAH",
+   "quarter": "Jacaranda",
+   "suburb": "Lower Savannah ward",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "56744",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.356055,
+  "lon": 36.740738,
+  "stratum": "addr",
+  "display_name": "JKUAT Karen Library, Pofu Rd, Nairobi, Pala Close, Karen Hardy, Karen ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "amenity": "JKUAT Karen Library",
+   "house_number": "Pofu Rd, Nairobi",
+   "road": "Pala Close",
+   "suburb": "Karen Hardy",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.353249,
+  "lon": 36.756537,
+  "stratum": "addr",
+  "display_name": "Fatso's Authentic Swahili Dishes, Bogani E Rd, Nairobi, Bogani East Road, Karen Hardy, Karen ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "amenity": "Fatso's Authentic Swahili Dishes",
+   "house_number": "Bogani E Rd, Nairobi",
+   "road": "Bogani East Road",
+   "suburb": "Karen Hardy",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.253524,
+  "lon": 36.794781,
+  "stratum": "addr",
+  "display_name": "245, General Mathenge Gardens, Parklands location, Parklands/Highridge ward, Highridge division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "house_number": "245",
+   "road": "General Mathenge Gardens",
+   "city_block": "Parklands location",
+   "neighbourhood": "Parklands/Highridge ward",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.286659,
+  "lon": 36.764244,
+  "stratum": "addr",
+  "display_name": "21, Jacaranda Avenue, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 54102, Kenya",
+  "address": {
+   "house_number": "21",
+   "road": "Jacaranda Avenue",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "54102",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.262794,
+  "lon": 36.805938,
+  "stratum": "addr",
+  "display_name": "Victoria Courts, 09, Parklands Road, Parklands location, Parklands/Highridge ward, Highridge division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "building": "Victoria Courts",
+   "house_number": "09",
+   "road": "Parklands Road",
+   "city_block": "Parklands location",
+   "neighbourhood": "Parklands/Highridge ward",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.297029,
+  "lon": 36.76236,
+  "stratum": "addr",
+  "display_name": "Rosa Mystica Spiritual Center church, Bamboo Lane, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 54102, Kenya",
+  "address": {
+   "amenity": "Rosa Mystica Spiritual Center church",
+   "road": "Bamboo Lane",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "54102",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.309268,
+  "lon": 36.814789,
+  "stratum": "addr",
+  "display_name": "Etihad Airways Agent, Keri Rd, Nairobi City, Keri Road, Madaraka Estate, Nairobi West, Nairobi West ward, Langata, Nairobi, Nairobi County, 00202, Kenya",
+  "address": {
+   "shop": "Etihad Airways Agent",
+   "house_number": "Keri Rd, Nairobi City",
+   "road": "Keri Road",
+   "residential": "Madaraka Estate",
+   "suburb": "Nairobi West",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00202",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.301492,
+  "lon": 36.800006,
+  "stratum": "addr",
+  "display_name": "MARKETING SOCIETY OF KENYA, 47, Muchai Drive, Sunview Estate, Woodley/Kenyatta/Golf Course ward, Kibra, Nairobi, Nairobi County, 30728, Kenya",
+  "address": {
+   "office": "MARKETING SOCIETY OF KENYA",
+   "house_number": "47",
+   "road": "Muchai Drive",
+   "neighbourhood": "Sunview Estate",
+   "suburb": "Woodley/Kenyatta/Golf Course ward",
+   "city_district": "Kibra",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "30728",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.284196,
+  "lon": 36.777089,
+  "stratum": "addr",
+  "display_name": "Kauria Close, Kileleshwa sublocation, Kileleshwa location, Kilimani division, Westlands, Nairobi, Nairobi County, 54102, Kenya",
+  "address": {
+   "road": "Kauria Close",
+   "city_block": "Kileleshwa sublocation",
+   "neighbourhood": "Kileleshwa location",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "54102",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.298658,
+  "lon": 36.7883,
+  "stratum": "addr",
+  "display_name": "Simba Tractors Ltd., 1/142, Ring Road, Parklands location, Parklands/Highridge ward, Highridge division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "shop": "Simba Tractors Ltd.",
+   "house_number": "1/142",
+   "road": "Ring Road",
+   "city_block": "Parklands location",
+   "neighbourhood": "Parklands/Highridge ward",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.343176,
+  "lon": 36.752604,
+  "stratum": "addr",
+  "display_name": "De Paul Center, De Paul Center Building, P.O. Box 24749, Nairobi, Langata Road, Bomas, Karen ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "office": "De Paul Center",
+   "house_number": "De Paul Center Building, P.O. Box 24749, Nairobi",
+   "road": "Langata Road",
+   "quarter": "Bomas",
+   "suburb": "Karen ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.340191,
+  "lon": 36.735397,
+  "stratum": "addr",
+  "display_name": "Fair Acres Guest House, 35, Fair Acres Road, Karen, Hekima Road, Karen C Kuwinda, Karen C, Karen ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "tourism": "Fair Acres Guest House",
+   "house_number": "35, Fair Acres Road, Karen",
+   "road": "Hekima Road",
+   "neighbourhood": "Karen C Kuwinda",
+   "suburb": "Karen C",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.271829,
+  "lon": 36.81351,
+  "stratum": "addr",
+  "display_name": "Sibiloi Apartments, 32, Ojijo Road, Highridge sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 00400, Kenya",
+  "address": {
+   "building": "Sibiloi Apartments",
+   "house_number": "32",
+   "road": "Ojijo Road",
+   "city_block": "Highridge sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00400",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.329308,
+  "lon": 36.881467,
+  "stratum": "addr",
+  "display_name": "Serena Central Stores Nairobi Kenya, Mombasa Road, South C ward, Langata, Nairobi, Nairobi County, 00501, Kenya",
+  "address": {
+   "tourism": "Serena Central Stores Nairobi Kenya",
+   "road": "Mombasa Road",
+   "suburb": "South C ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00501",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.293193,
+  "lon": 36.787891,
+  "stratum": "addr",
+  "display_name": "Argwings Kodhek Road, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 29526, Kenya",
+  "address": {
+   "road": "Argwings Kodhek Road",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "29526",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.278472,
+  "lon": 36.83008,
+  "stratum": "addr",
+  "display_name": "Musindi Lane, Ngara East sublocation, Ngara location, CBD division, Starehe, Nairobi, Nairobi County, 00100, Kenya",
+  "address": {
+   "road": "Musindi Lane",
+   "city_block": "Ngara East sublocation",
+   "neighbourhood": "Ngara location",
+   "suburb": "CBD division",
+   "city_district": "Starehe",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00100",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.291535,
+  "lon": 36.876712,
+  "stratum": "road",
+  "display_name": "Olosolani Court, Buruburu phase 3, Harambee sublocation, Harambee ward, Makadara subcounty, Nairobi, Nairobi County, 00504, Kenya",
+  "address": {
+   "road": "Olosolani Court",
+   "neighbourhood": "Buruburu phase 3",
+   "suburb": "Harambee ward",
+   "city_district": "Makadara subcounty",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00504",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.267563,
+  "lon": 36.707709,
+  "stratum": "road",
+  "display_name": "Kabage Path, Uthiru/Ruthimitu ward, Waithaka division, Dagoretti, Nairobi, Nairobi County, 29039, Kenya",
+  "address": {
+   "road": "Kabage Path",
+   "neighbourhood": "Uthiru/Ruthimitu ward",
+   "suburb": "Waithaka division",
+   "city_district": "Dagoretti",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "29039",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.299797,
+  "lon": 36.889909,
+  "stratum": "road",
+  "display_name": "Bansora Court, Doonholm, Lower Savannah ward, Embakasi, Nairobi, Nairobi County, 00515, Kenya",
+  "address": {
+   "road": "Bansora Court",
+   "suburb": "Doonholm",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00515",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.291778,
+  "lon": 36.847376,
+  "stratum": "road",
+  "display_name": "Ambira Road, Nolfok, Shauri Moyo sublocation, Pumwani ward, Kamukunji, Nairobi, Nairobi County, 00101, Kenya",
+  "address": {
+   "road": "Ambira Road",
+   "neighbourhood": "Nolfok",
+   "suburb": "Pumwani ward",
+   "city_district": "Kamukunji",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00101",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.225368,
+  "lon": 36.921126,
+  "stratum": "road",
+  "display_name": "Hunters, Clay City sublocation, Kasarani division, Kasarani, Nairobi, Nairobi County, 00608, Kenya",
+  "address": {
+   "neighbourhood": "Hunters",
+   "suburb": "Kasarani division",
+   "city_district": "Kasarani",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00608",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.21959,
+  "lon": 36.766698,
+  "stratum": "road",
+  "display_name": "Gachie, Kihara ward, Kabete, Kiambu, 43563, Kenya",
+  "address": {
+   "village": "Gachie",
+   "city": "Kihara ward",
+   "county": "Kabete",
+   "state": "Kiambu",
+   "ISO3166-2-lvl4": "KE-13",
+   "postcode": "43563",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.278738,
+  "lon": 36.804047,
+  "stratum": "road",
+  "display_name": "Aboretum Drive, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 00400, Kenya",
+  "address": {
+   "road": "Aboretum Drive",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00400",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.2635,
+  "lon": 36.82005,
+  "stratum": "road",
+  "display_name": "Nirav Apartments, Highridge sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 48648, Kenya",
+  "address": {
+   "road": "Nirav Apartments",
+   "city_block": "Highridge sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "48648",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.234016,
+  "lon": 36.872687,
+  "stratum": "road",
+  "display_name": "Garden Estate Road, Roysambu sublocation, Roysambu location, Roysambu division, Kasarani, Nairobi, Nairobi County, 31224, Kenya",
+  "address": {
+   "road": "Garden Estate Road",
+   "city_block": "Roysambu sublocation",
+   "neighbourhood": "Roysambu location",
+   "suburb": "Roysambu division",
+   "city_district": "Kasarani",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "31224",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.225273,
+  "lon": 36.765008,
+  "stratum": "road",
+  "display_name": "Msasa Road, Karura sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 11403, Kenya",
+  "address": {
+   "road": "Msasa Road",
+   "city_block": "Karura sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "11403",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.328992,
+  "lon": 36.782433,
+  "stratum": "road",
+  "display_name": "Maboko Crescent, Rubia, Mugumo-ini ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "road": "Maboko Crescent",
+   "quarter": "Rubia",
+   "suburb": "Mugumo-ini ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.281565,
+  "lon": 36.826331,
+  "stratum": "road",
+  "display_name": "Citywall Hotels, 10, Duruma Road, City Centre, Starehe location, CBD division, Starehe, Nairobi, Nairobi County, 40204, Kenya",
+  "address": {
+   "building": "Citywall Hotels",
+   "house_number": "10",
+   "road": "Duruma Road",
+   "commercial": "City Centre",
+   "neighbourhood": "Starehe location",
+   "suburb": "CBD division",
+   "city_district": "Starehe",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "40204",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.265697,
+  "lon": 36.759919,
+  "stratum": "road",
+  "display_name": "Lonina Close, Muthangari sublocation, Kileleshwa location, Kilimani division, Westlands, Nairobi, Nairobi County, 23546, Kenya",
+  "address": {
+   "road": "Lonina Close",
+   "city_block": "Muthangari sublocation",
+   "neighbourhood": "Kileleshwa location",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "23546",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.229133,
+  "lon": 36.843148,
+  "stratum": "road",
+  "display_name": "Ridgeways Springs, Garden Estate sublocation, Roysambu location, Roysambu division, Kasarani, Nairobi, Nairobi County, 31224, Kenya",
+  "address": {
+   "road": "Ridgeways Springs",
+   "city_block": "Garden Estate sublocation",
+   "neighbourhood": "Roysambu location",
+   "suburb": "Roysambu division",
+   "city_district": "Kasarani",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "31224",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.259055,
+  "lon": 36.815892,
+  "stratum": "road",
+  "display_name": "3rd Parklands Avenue, Highridge sublocation, Highridge location, Highridge division, Westlands, Nairobi, Nairobi County, 00606, Kenya",
+  "address": {
+   "road": "3rd Parklands Avenue",
+   "city_block": "Highridge sublocation",
+   "neighbourhood": "Highridge location",
+   "suburb": "Highridge division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00606",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.29613,
+  "lon": 36.87006,
+  "stratum": "road",
+  "display_name": "Makadara Road, Hamza, Hamza sublocation, Maringo/Hamza ward, Makadara subcounty, Nairobi, Nairobi County, 00504, Kenya",
+  "address": {
+   "road": "Makadara Road",
+   "quarter": "Hamza",
+   "neighbourhood": "Hamza sublocation",
+   "suburb": "Maringo/Hamza ward",
+   "city_district": "Makadara subcounty",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00504",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.316096,
+  "lon": 36.920913,
+  "stratum": "road",
+  "display_name": "Airport North Road, Mradi, Embakasi village, Jua Kali, Embakasi, Nairobi, Nairobi County, 00501, Kenya",
+  "address": {
+   "road": "Airport North Road",
+   "neighbourhood": "Mradi",
+   "quarter": "Embakasi village",
+   "suburb": "Jua Kali",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00501",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.275216,
+  "lon": 36.771536,
+  "stratum": "road",
+  "display_name": "Olenguruone Avenue, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 54102, Kenya",
+  "address": {
+   "road": "Olenguruone Avenue",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "54102",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.290261,
+  "lon": 36.783049,
+  "stratum": "road",
+  "display_name": "Daily Harvest Gardens, Pheroze Nowrojee Road, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 29526, Kenya",
+  "address": {
+   "tourism": "Daily Harvest Gardens",
+   "road": "Pheroze Nowrojee Road",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "29526",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.334473,
+  "lon": 36.736162,
+  "stratum": "road",
+  "display_name": "Hillcrest Road, Karen C Kuwinda, Karen C, Karen ward, Langata, Nairobi, Nairobi County, 00505, Kenya",
+  "address": {
+   "road": "Hillcrest Road",
+   "neighbourhood": "Karen C Kuwinda",
+   "suburb": "Karen C",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00505",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.24867,
+  "lon": 36.897955,
+  "stratum": "plain",
+  "display_name": "Dandora Area II, Dandora Area II ward, Njiru, Nairobi, Nairobi County, 00623, Kenya",
+  "address": {
+   "quarter": "Dandora Area II",
+   "suburb": "Dandora Area II ward",
+   "city_district": "Njiru",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00623",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.329087,
+  "lon": 36.724066,
+  "stratum": "plain",
+  "display_name": "Karen Plains Road, Lenana sublocation, Karen ward, Langata, Nairobi, Nairobi County, 00505, Kenya",
+  "address": {
+   "road": "Karen Plains Road",
+   "neighbourhood": "Lenana sublocation",
+   "suburb": "Karen ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00505",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.339121,
+  "lon": 36.802166,
+  "stratum": "plain",
+  "display_name": "Nairobi West ward, Langata, Nairobi, Nairobi County, 00509, Kenya",
+  "address": {
+   "suburb": "Nairobi West ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00509",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.284042,
+  "lon": 36.771824,
+  "stratum": "plain",
+  "display_name": "Mageta Road, Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 54102, Kenya",
+  "address": {
+   "road": "Mageta Road",
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "54102",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.236165,
+  "lon": 36.77805,
+  "stratum": "plain",
+  "display_name": "Waiyaki Red Hill Link Road, Kitisuru location, Kitisuru ward, Kangemi division, Westlands, Nairobi, Nairobi County, 63445, Kenya",
+  "address": {
+   "road": "Waiyaki Red Hill Link Road",
+   "city_block": "Kitisuru location",
+   "neighbourhood": "Kitisuru ward",
+   "suburb": "Kangemi division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "63445",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.232725,
+  "lon": 36.915439,
+  "stratum": "plain",
+  "display_name": "Sunton, Kasarani sublocation, Kasarani division, Kasarani, Nairobi, Nairobi County, 00608, Kenya",
+  "address": {
+   "neighbourhood": "Sunton",
+   "suburb": "Kasarani division",
+   "city_district": "Kasarani",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00608",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.271384,
+  "lon": 36.867266,
+  "stratum": "plain",
+  "display_name": "Moi Air Base, Thirteenth Street, Eastleigh, Airbase ward, Kamukunji, Nairobi, Nairobi County, 00610, Kenya",
+  "address": {
+   "aeroway": "Moi Air Base",
+   "road": "Thirteenth Street",
+   "suburb": "Eastleigh",
+   "city_district": "Kamukunji",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00610",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.327162,
+  "lon": 36.795912,
+  "stratum": "plain",
+  "display_name": "Southern Bypass, Uhuru gardens Estate, Mugumo-ini ward, Langata, Nairobi, Nairobi County, 00603, Kenya",
+  "address": {
+   "road": "Southern Bypass",
+   "quarter": "Uhuru gardens Estate",
+   "suburb": "Mugumo-ini ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00603",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.316947,
+  "lon": 36.751153,
+  "stratum": "plain",
+  "display_name": "Homeward Bound, Karen C, Karen ward, Langata, Nairobi, Nairobi County, 00505, Kenya",
+  "address": {
+   "road": "Homeward Bound",
+   "suburb": "Karen C",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00505",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.322908,
+  "lon": 36.932743,
+  "stratum": "plain",
+  "display_name": "Tower Road, Embakasi, Nairobi, Nairobi County, 74416, Kenya",
+  "address": {
+   "road": "Tower Road",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "74416",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.224725,
+  "lon": 36.739965,
+  "stratum": "plain",
+  "display_name": "Gathiga Road, Nyadhuna ward, Kabete, Kiambu, 23083, Kenya",
+  "address": {
+   "road": "Gathiga Road",
+   "city": "Nyadhuna ward",
+   "county": "Kabete",
+   "state": "Kiambu",
+   "ISO3166-2-lvl4": "KE-13",
+   "postcode": "23083",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.313847,
+  "lon": 36.719164,
+  "stratum": "plain",
+  "display_name": "Lenana sublocation, Karen ward, Langata, Nairobi, Nairobi County, 00505, Kenya",
+  "address": {
+   "neighbourhood": "Lenana sublocation",
+   "suburb": "Karen ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00505",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.354877,
+  "lon": 36.895909,
+  "stratum": "plain",
+  "display_name": "Nairobi Terminus (SGR), Old Mombasa Road, Mombasa Road Industrial Area, South C ward, Langata, Nairobi, Nairobi County, 74416, Kenya",
+  "address": {
+   "railway": "Nairobi Terminus (SGR)",
+   "road": "Old Mombasa Road",
+   "industrial": "Mombasa Road Industrial Area",
+   "suburb": "South C ward",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "74416",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.305799,
+  "lon": 36.760932,
+  "stratum": "plain",
+  "display_name": "Jamhuri short sentence prison, Oau Road, Jamhuri Park Showground, Jamhuri, Woodley/Kenyatta/Golf Course ward, Kibra, Nairobi, Nairobi County, 21104, Kenya",
+  "address": {
+   "amenity": "Jamhuri short sentence prison",
+   "road": "Oau Road",
+   "commercial": "Jamhuri Park Showground",
+   "quarter": "Jamhuri",
+   "suburb": "Woodley/Kenyatta/Golf Course ward",
+   "city_district": "Kibra",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "21104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.339222,
+  "lon": 36.905295,
+  "stratum": "plain",
+  "display_name": "Airport South Road, Pipeline ward, Embakasi, Nairobi, Nairobi County, 74416, Kenya",
+  "address": {
+   "road": "Airport South Road",
+   "suburb": "Pipeline ward",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "74416",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.316887,
+  "lon": 36.92311,
+  "stratum": "plain",
+  "display_name": "Kenya Airways Headquarters, Airport North Road, Jua Kali, Embakasi, Nairobi, Nairobi County, 00501, Kenya",
+  "address": {
+   "office": "Kenya Airways Headquarters",
+   "road": "Airport North Road",
+   "suburb": "Jua Kali",
+   "city_district": "Embakasi",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00501",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.286377,
+  "lon": 36.806958,
+  "stratum": "plain",
+  "display_name": "Kilimani location, Kilimani ward, Kilimani division, Westlands, Nairobi, Nairobi County, 00400, Kenya",
+  "address": {
+   "city_block": "Kilimani location",
+   "neighbourhood": "Kilimani ward",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00400",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.263908,
+  "lon": 36.78621,
+  "stratum": "plain",
+  "display_name": "Rhapta Road, Muthangari sublocation, Kileleshwa location, Kilimani division, Westlands, Nairobi, Nairobi County, 97104, Kenya",
+  "address": {
+   "road": "Rhapta Road",
+   "city_block": "Muthangari sublocation",
+   "neighbourhood": "Kileleshwa location",
+   "suburb": "Kilimani division",
+   "city_district": "Westlands",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "97104",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.325664,
+  "lon": 36.83401,
+  "stratum": "plain",
+  "display_name": "Kawi Road, South C, South C ward, Langata, Nairobi, Nairobi County, 00603, Kenya",
+  "address": {
+   "road": "Kawi Road",
+   "suburb": "South C",
+   "city_district": "Langata",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00603",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ },
+ {
+  "lat": -1.253265,
+  "lon": 36.898584,
+  "stratum": "plain",
+  "display_name": "Dandora Area II, Dandora Area II ward, Njiru, Nairobi, Nairobi County, 00623, Kenya",
+  "address": {
+   "quarter": "Dandora Area II",
+   "suburb": "Dandora Area II ward",
+   "city_district": "Njiru",
+   "city": "Nairobi",
+   "state": "Nairobi County",
+   "ISO3166-2-lvl4": "KE-30",
+   "postcode": "00623",
+   "country": "Kenya",
+   "country_code": "ke"
+  }
+ }
+]

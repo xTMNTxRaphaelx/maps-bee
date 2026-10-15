@@ -1,0 +1,1070 @@
+[
+ {
+  "lat": 52.465002,
+  "lon": 13.439153,
+  "stratum": "addr",
+  "display_name": "17A, Bruno-Bauer-Straße, Neu-Britz, Neukölln, Berlin, 12051, Germany",
+  "address": {
+   "house_number": "17A",
+   "road": "Bruno-Bauer-Straße",
+   "quarter": "Neu-Britz",
+   "suburb": "Neukölln",
+   "borough": "Neukölln",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12051",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.515738,
+  "lon": 13.546925,
+  "stratum": "addr",
+  "display_name": "18, Luise-Zietz-Straße, Biesdorf-Nord, Biesdorf, Marzahn-Hellersdorf, Berlin, 12683, Germany",
+  "address": {
+   "house_number": "18",
+   "road": "Luise-Zietz-Straße",
+   "quarter": "Biesdorf-Nord",
+   "suburb": "Biesdorf",
+   "borough": "Marzahn-Hellersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12683",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.484411,
+  "lon": 13.446172,
+  "stratum": "addr",
+  "display_name": "65, Kiehlufer, Harzer Kiez, Weserkiez, Neukölln, Berlin, 12059, Germany",
+  "address": {
+   "house_number": "65",
+   "road": "Kiehlufer",
+   "neighbourhood": "Harzer Kiez",
+   "quarter": "Weserkiez",
+   "suburb": "Neukölln",
+   "borough": "Neukölln",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12059",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.492924,
+  "lon": 13.556074,
+  "stratum": "addr",
+  "display_name": "83A, Alfelder Straße, Biesenhorst I, Biesdorf, Marzahn-Hellersdorf, Berlin, 12683, Germany",
+  "address": {
+   "house_number": "83A",
+   "road": "Alfelder Straße",
+   "quarter": "Biesenhorst I",
+   "suburb": "Biesdorf",
+   "borough": "Marzahn-Hellersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12683",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.504189,
+  "lon": 13.33166,
+  "stratum": "addr",
+  "display_name": "Lindt, 17, Kurfürstendamm, City West, Charlottenburg, Charlottenburg-Wilmersdorf, Berlin, 10719, Germany",
+  "address": {
+   "shop": "Lindt",
+   "house_number": "17",
+   "road": "Kurfürstendamm",
+   "neighbourhood": "City West",
+   "suburb": "Charlottenburg",
+   "borough": "Charlottenburg-Wilmersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10719",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.472368,
+  "lon": 13.333006,
+  "stratum": "addr",
+  "display_name": "34, Niedstraße, Wagnerviertel, Friedenau, Tempelhof-Schöneberg, Berlin, 12159, Germany",
+  "address": {
+   "house_number": "34",
+   "road": "Niedstraße",
+   "neighbourhood": "Wagnerviertel",
+   "suburb": "Friedenau",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12159",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.547744,
+  "lon": 13.403383,
+  "stratum": "addr",
+  "display_name": "20, Korsörer Straße, Gleimviertel, Prenzlauer Berg, Pankow, Berlin, 10437, Germany",
+  "address": {
+   "house_number": "20",
+   "road": "Korsörer Straße",
+   "quarter": "Gleimviertel",
+   "suburb": "Prenzlauer Berg",
+   "borough": "Pankow",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10437",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.503952,
+  "lon": 13.342546,
+  "stratum": "addr",
+  "display_name": "8;10, Ansbacher Straße, Nollendorfkiez, Schöneberg, Tempelhof-Schöneberg, Berlin, 10787, Germany",
+  "address": {
+   "house_number": "8;10",
+   "road": "Ansbacher Straße",
+   "quarter": "Nollendorfkiez",
+   "suburb": "Schöneberg",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10787",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.547537,
+  "lon": 13.43776,
+  "stratum": "addr",
+  "display_name": "68, Ostseestraße, Wohnstadt Carl Legien, Humann-Kiez, Prenzlauer Berg, Pankow, Berlin, 10409, Germany",
+  "address": {
+   "house_number": "68",
+   "road": "Ostseestraße",
+   "neighbourhood": "Wohnstadt Carl Legien",
+   "quarter": "Humann-Kiez",
+   "suburb": "Prenzlauer Berg",
+   "borough": "Pankow",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10409",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.475929,
+  "lon": 13.344497,
+  "stratum": "addr",
+  "display_name": "6, Traegerstraße, Ceciliengärten, Malerviertel, Schöneberg, Tempelhof-Schöneberg, Berlin, 12159, Germany",
+  "address": {
+   "house_number": "6",
+   "road": "Traegerstraße",
+   "neighbourhood": "Ceciliengärten",
+   "quarter": "Malerviertel",
+   "suburb": "Schöneberg",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12159",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.550737,
+  "lon": 13.486455,
+  "stratum": "addr",
+  "display_name": "12, Augustastraße, Villenviertel am Orankesee, Alt-Hohenschönhausen, Lichtenberg, Berlin, 13053, Germany",
+  "address": {
+   "house_number": "12",
+   "road": "Augustastraße",
+   "neighbourhood": "Villenviertel am Orankesee",
+   "suburb": "Alt-Hohenschönhausen",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13053",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.528774,
+  "lon": 13.412908,
+  "stratum": "addr",
+  "display_name": "5, Straßburger Straße, Kollwitzkiez, Prenzlauer Berg, Pankow, Berlin, 10405, Germany",
+  "address": {
+   "house_number": "5",
+   "road": "Straßburger Straße",
+   "quarter": "Kollwitzkiez",
+   "suburb": "Prenzlauer Berg",
+   "borough": "Pankow",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10405",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.496489,
+  "lon": 13.353807,
+  "stratum": "addr",
+  "display_name": "25, Goltzstraße, Winterfeldtkiez, Nollendorfkiez, Schöneberg, Tempelhof-Schöneberg, Berlin, 10781, Germany",
+  "address": {
+   "house_number": "25",
+   "road": "Goltzstraße",
+   "neighbourhood": "Winterfeldtkiez",
+   "quarter": "Nollendorfkiez",
+   "suburb": "Schöneberg",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10781",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.476871,
+  "lon": 13.373437,
+  "stratum": "addr",
+  "display_name": "5, Hessenring, Gartenstadt Neu-Tempelhof, Tempelhof, Tempelhof-Schöneberg, Berlin, 12101, Germany",
+  "address": {
+   "house_number": "5",
+   "road": "Hessenring",
+   "quarter": "Gartenstadt Neu-Tempelhof",
+   "suburb": "Tempelhof",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12101",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.479927,
+  "lon": 13.331789,
+  "stratum": "addr",
+  "display_name": "18, Bruchsaler Straße, Wilmersdorf, Charlottenburg-Wilmersdorf, Berlin, 10715, Germany",
+  "address": {
+   "house_number": "18",
+   "road": "Bruchsaler Straße",
+   "suburb": "Wilmersdorf",
+   "borough": "Charlottenburg-Wilmersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10715",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.560175,
+  "lon": 13.330778,
+  "stratum": "addr",
+  "display_name": "26, Ghanastraße, Friedrich-Ebert-Siedlung, Wedding, Mitte, Berlin, 13351, Germany",
+  "address": {
+   "house_number": "26",
+   "road": "Ghanastraße",
+   "quarter": "Friedrich-Ebert-Siedlung",
+   "suburb": "Wedding",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13351",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.473051,
+  "lon": 13.44314,
+  "stratum": "addr",
+  "display_name": "5, Kirchhofstraße, Richardkiez, Körnerkiez, Neukölln, Berlin, 12055, Germany",
+  "address": {
+   "house_number": "5",
+   "road": "Kirchhofstraße",
+   "neighbourhood": "Richardkiez",
+   "quarter": "Körnerkiez",
+   "suburb": "Neukölln",
+   "borough": "Neukölln",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12055",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.496629,
+  "lon": 13.553444,
+  "stratum": "addr",
+  "display_name": "37A, Arnsberger Straße, Biesdorf-Süd, Biesdorf, Marzahn-Hellersdorf, Berlin, 12683, Germany",
+  "address": {
+   "house_number": "37A",
+   "road": "Arnsberger Straße",
+   "quarter": "Biesdorf-Süd",
+   "suburb": "Biesdorf",
+   "borough": "Marzahn-Hellersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12683",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.544539,
+  "lon": 13.370555,
+  "stratum": "addr",
+  "display_name": "Gerichtstraße, Gesundbrunnen, Mitte, Berlin, 13347, Germany",
+  "address": {
+   "road": "Gerichtstraße",
+   "suburb": "Gesundbrunnen",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13347",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.487858,
+  "lon": 13.53165,
+  "stratum": "addr",
+  "display_name": "30, Köpenicker Allee, Rheinisches Viertel, Karlshorst, Lichtenberg, Berlin, 10318, Germany",
+  "address": {
+   "house_number": "30",
+   "road": "Köpenicker Allee",
+   "quarter": "Rheinisches Viertel",
+   "suburb": "Karlshorst",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10318",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.468308,
+  "lon": 13.494061,
+  "stratum": "road",
+  "display_name": "230, Neue Krugallee, Baumschulenweg, Treptow-Köpenick, Berlin, 12437, Germany",
+  "address": {
+   "house_number": "230",
+   "road": "Neue Krugallee",
+   "suburb": "Baumschulenweg",
+   "borough": "Treptow-Köpenick",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12437",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.556073,
+  "lon": 13.308806,
+  "stratum": "road",
+  "display_name": "Kölner Straße, Cité Joffre, Wedding, Mitte, Berlin, 13405, Germany",
+  "address": {
+   "road": "Kölner Straße",
+   "neighbourhood": "Cité Joffre",
+   "suburb": "Wedding",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13405",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.55725,
+  "lon": 13.512668,
+  "stratum": "road",
+  "display_name": "Schreberpromenade, Land in Sonne, Alt-Hohenschönhausen, Lichtenberg, Berlin, 13053, Germany",
+  "address": {
+   "road": "Schreberpromenade",
+   "allotments": "Land in Sonne",
+   "suburb": "Alt-Hohenschönhausen",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13053",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.522856,
+  "lon": 13.464157,
+  "stratum": "road",
+  "display_name": "Neue Welt, Eldenaer Viertel, Prenzlauer Berg, Pankow, Berlin, 10247, Germany",
+  "address": {
+   "road": "Neue Welt",
+   "quarter": "Eldenaer Viertel",
+   "suburb": "Prenzlauer Berg",
+   "borough": "Pankow",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10247",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.528261,
+  "lon": 13.544927,
+  "stratum": "road",
+  "display_name": "Allee der Kosmonauten, Springpfuhl, Marzahn, Marzahn-Hellersdorf, Berlin, 12681, Germany",
+  "address": {
+   "road": "Allee der Kosmonauten",
+   "quarter": "Springpfuhl",
+   "suburb": "Marzahn",
+   "borough": "Marzahn-Hellersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12681",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.480853,
+  "lon": 13.332598,
+  "stratum": "road",
+  "display_name": "23, Am Volkspark, Wilhelmsaue, Wilmersdorf, Charlottenburg-Wilmersdorf, Berlin, 10715, Germany",
+  "address": {
+   "house_number": "23",
+   "road": "Am Volkspark",
+   "neighbourhood": "Wilhelmsaue",
+   "suburb": "Wilmersdorf",
+   "borough": "Charlottenburg-Wilmersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10715",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.504805,
+  "lon": 13.382923,
+  "stratum": "road",
+  "display_name": "Anhalter Straße, Zeitungsviertel, Kreuzberg, Friedrichshain-Kreuzberg, Berlin, 10963, Germany",
+  "address": {
+   "road": "Anhalter Straße",
+   "quarter": "Zeitungsviertel",
+   "suburb": "Kreuzberg",
+   "borough": "Friedrichshain-Kreuzberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10963",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.559828,
+  "lon": 13.42224,
+  "stratum": "road",
+  "display_name": "58, Elsa-Brändström-Straße, Vinetakiez, Pankow, Berlin, 13189, Germany",
+  "address": {
+   "house_number": "58",
+   "road": "Elsa-Brändström-Straße",
+   "quarter": "Vinetakiez",
+   "suburb": "Pankow",
+   "borough": "Pankow",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13189",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.559036,
+  "lon": 13.498227,
+  "stratum": "road",
+  "display_name": "49, Drossener Straße, Kleinsiedlung am Malchower Weg, Alt-Hohenschönhausen, Lichtenberg, Berlin, 13053, Germany",
+  "address": {
+   "house_number": "49",
+   "road": "Drossener Straße",
+   "neighbourhood": "Kleinsiedlung am Malchower Weg",
+   "suburb": "Alt-Hohenschönhausen",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13053",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.472229,
+  "lon": 13.328585,
+  "stratum": "road",
+  "display_name": "Friedrich-Wilhelm-Platz, Wagnerviertel, Friedenau, Tempelhof-Schöneberg, Berlin, 12161, Germany",
+  "address": {
+   "road": "Friedrich-Wilhelm-Platz",
+   "neighbourhood": "Wagnerviertel",
+   "suburb": "Friedenau",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12161",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.536172,
+  "lon": 13.366815,
+  "stratum": "road",
+  "display_name": "20, An der Kieler Brücke, Sprengelkiez, Wedding, Mitte, Berlin, 10115, Germany",
+  "address": {
+   "house_number": "20",
+   "road": "An der Kieler Brücke",
+   "quarter": "Sprengelkiez",
+   "suburb": "Wedding",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10115",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.453549,
+  "lon": 13.416078,
+  "stratum": "road",
+  "display_name": "Friedensweg, Kolonie Frieden, Tempelhof, Tempelhof-Schöneberg, Berlin, 12099, Germany",
+  "address": {
+   "road": "Friedensweg",
+   "allotments": "Kolonie Frieden",
+   "suburb": "Tempelhof",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12099",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.528773,
+  "lon": 13.333933,
+  "stratum": "road",
+  "display_name": "Waldenserstraße, Alt-Moabit, Arminiuskiez, Moabit, Mitte, Berlin, 10551, Germany",
+  "address": {
+   "road": "Waldenserstraße",
+   "neighbourhood": "Alt-Moabit",
+   "quarter": "Arminiuskiez",
+   "suburb": "Moabit",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10551",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.482811,
+  "lon": 13.447933,
+  "stratum": "road",
+  "display_name": "2, Truseweg, Harzer Kiez, Weserkiez, Neukölln, Berlin, 12059, Germany",
+  "address": {
+   "house_number": "2",
+   "road": "Truseweg",
+   "neighbourhood": "Harzer Kiez",
+   "quarter": "Weserkiez",
+   "suburb": "Neukölln",
+   "borough": "Neukölln",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12059",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.450543,
+  "lon": 13.408508,
+  "stratum": "road",
+  "display_name": "Dahlienweg, Kleeblatt, Mariendorf, Tempelhof-Schöneberg, Berlin, 12109, Germany",
+  "address": {
+   "road": "Dahlienweg",
+   "allotments": "Kleeblatt",
+   "suburb": "Mariendorf",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12109",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.496923,
+  "lon": 13.485978,
+  "stratum": "road",
+  "display_name": "Hildegard-Marcusson-Straße, Rummelsburger Ufer, Weitlingkiez, Rummelsburg, Lichtenberg, Berlin, 10317, Germany",
+  "address": {
+   "road": "Hildegard-Marcusson-Straße",
+   "neighbourhood": "Rummelsburger Ufer",
+   "quarter": "Weitlingkiez",
+   "suburb": "Rummelsburg",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10317",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.497784,
+  "lon": 13.54455,
+  "stratum": "road",
+  "display_name": "Rägeliner Straße, Biesdorf, Marzahn-Hellersdorf, Berlin, 12683, Germany",
+  "address": {
+   "road": "Rägeliner Straße",
+   "suburb": "Biesdorf",
+   "borough": "Marzahn-Hellersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12683",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.547852,
+  "lon": 13.346552,
+  "stratum": "road",
+  "display_name": "112, Seestraße, Brüsseler Kiez, Wedding, Mitte, Berlin, 13353, Germany",
+  "address": {
+   "house_number": "112",
+   "road": "Seestraße",
+   "quarter": "Brüsseler Kiez",
+   "suburb": "Wedding",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13353",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.555985,
+  "lon": 13.374605,
+  "stratum": "road",
+  "display_name": "12, Schwedenstraße, Soldiner Kiez, Gesundbrunnen, Mitte, Berlin, 13357, Germany",
+  "address": {
+   "house_number": "12",
+   "road": "Schwedenstraße",
+   "quarter": "Soldiner Kiez",
+   "suburb": "Gesundbrunnen",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13357",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.538568,
+  "lon": 13.326214,
+  "stratum": "road",
+  "display_name": "Saatwinkler Damm, Charlottenburg-Nord, Charlottenburg-Wilmersdorf, Berlin, 13627, Germany",
+  "address": {
+   "road": "Saatwinkler Damm",
+   "suburb": "Charlottenburg-Nord",
+   "borough": "Charlottenburg-Wilmersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13627",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.537474,
+  "lon": 13.497955,
+  "stratum": "plain",
+  "display_name": "77, Neustrelitzer Straße, Flusspferdhofsiedlung, Märkisches Viertel, Alt-Hohenschönhausen, Lichtenberg, Berlin, 13055, Germany",
+  "address": {
+   "house_number": "77",
+   "road": "Neustrelitzer Straße",
+   "neighbourhood": "Flusspferdhofsiedlung",
+   "quarter": "Märkisches Viertel",
+   "suburb": "Alt-Hohenschönhausen",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13055",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.474289,
+  "lon": 13.324066,
+  "stratum": "plain",
+  "display_name": "47, Stubenrauchstraße, Wagnerviertel, Friedenau, Tempelhof-Schöneberg, Berlin, 12161, Germany",
+  "address": {
+   "house_number": "47",
+   "road": "Stubenrauchstraße",
+   "neighbourhood": "Wagnerviertel",
+   "suburb": "Friedenau",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12161",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.466405,
+  "lon": 13.402166,
+  "stratum": "plain",
+  "display_name": "Platz Für Akustische Musik, AS Oberlandstraße Einfahrt Ost, Tempelhof, Tempelhof-Schöneberg, Berlin, 12099, Germany",
+  "address": {
+   "leisure": "Platz Für Akustische Musik",
+   "road": "AS Oberlandstraße Einfahrt Ost",
+   "suburb": "Tempelhof",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12099",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.509681,
+  "lon": 13.371824,
+  "stratum": "plain",
+  "display_name": "Das Center am Potsdamer Platz, Potsdamer Platz, Tiergarten, Mitte, Berlin, 10785, Germany",
+  "address": {
+   "tourism": "Das Center am Potsdamer Platz",
+   "road": "Potsdamer Platz",
+   "suburb": "Tiergarten",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10785",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.547299,
+  "lon": 13.37805,
+  "stratum": "plain",
+  "display_name": "26A, Hochstraße, Brunnenviertel, Gesundbrunnen, Mitte, Berlin, 13357, Germany",
+  "address": {
+   "house_number": "26A",
+   "road": "Hochstraße",
+   "quarter": "Brunnenviertel",
+   "suburb": "Gesundbrunnen",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13357",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.550002,
+  "lon": 13.515439,
+  "stratum": "plain",
+  "display_name": "11, Gehrenseestraße, Gartenstadt, Alt-Hohenschönhausen, Lichtenberg, Berlin, 13053, Germany",
+  "address": {
+   "house_number": "11",
+   "road": "Gehrenseestraße",
+   "neighbourhood": "Gartenstadt",
+   "suburb": "Alt-Hohenschönhausen",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13053",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.519627,
+  "lon": 13.467266,
+  "stratum": "plain",
+  "display_name": "Samariterstraße, Samariterviertel, Friedrichshain, Friedrichshain-Kreuzberg, Berlin, 10247, Germany",
+  "address": {
+   "road": "Samariterstraße",
+   "quarter": "Samariterviertel",
+   "suburb": "Friedrichshain",
+   "borough": "Friedrichshain-Kreuzberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10247",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.475801,
+  "lon": 13.395912,
+  "stratum": "plain",
+  "display_name": "Nordbahn, Tempelhof, Tempelhof-Schöneberg, Berlin, 12099, Germany",
+  "address": {
+   "road": "Nordbahn",
+   "suburb": "Tempelhof",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12099",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.483827,
+  "lon": 13.351153,
+  "stratum": "plain",
+  "display_name": "40, Hauptstraße, Schöneberger Dreieck, Akazienkiez, Schöneberg, Tempelhof-Schöneberg, Berlin, 10827, Germany",
+  "address": {
+   "house_number": "40",
+   "road": "Hauptstraße",
+   "neighbourhood": "Schöneberger Dreieck",
+   "quarter": "Akazienkiez",
+   "suburb": "Schöneberg",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10827",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.479143,
+  "lon": 13.532743,
+  "stratum": "plain",
+  "display_name": "4, Loreleystraße, Rheinisches Viertel, Carlsgarten, Karlshorst, Lichtenberg, Berlin, 10318, Germany",
+  "address": {
+   "house_number": "4",
+   "road": "Loreleystraße",
+   "neighbourhood": "Rheinisches Viertel",
+   "quarter": "Carlsgarten",
+   "suburb": "Karlshorst",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10318",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.556287,
+  "lon": 13.339965,
+  "stratum": "plain",
+  "display_name": "Weg 6, Kleingartenanlage Togo, Afrikanisches Viertel, Wedding, Mitte, Berlin, 13351, Germany",
+  "address": {
+   "road": "Weg 6",
+   "allotments": "Kleingartenanlage Togo",
+   "quarter": "Afrikanisches Viertel",
+   "suburb": "Wedding",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "13351",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.486263,
+  "lon": 13.319164,
+  "stratum": "plain",
+  "display_name": "125, Berliner Straße, Jesselkiez, Güntzelkiez, Wilmersdorf, Charlottenburg-Wilmersdorf, Berlin, 10713, Germany",
+  "address": {
+   "house_number": "125",
+   "road": "Berliner Straße",
+   "neighbourhood": "Jesselkiez",
+   "quarter": "Güntzelkiez",
+   "suburb": "Wilmersdorf",
+   "borough": "Charlottenburg-Wilmersdorf",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10713",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.454025,
+  "lon": 13.495909,
+  "stratum": "plain",
+  "display_name": "Südostallee, Johannisthal, Treptow-Köpenick, Berlin, 12437, Germany",
+  "address": {
+   "road": "Südostallee",
+   "suburb": "Johannisthal",
+   "borough": "Treptow-Köpenick",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12437",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.492587,
+  "lon": 13.360932,
+  "stratum": "plain",
+  "display_name": "189, Potsdamer Straße, Winterfeldtkiez, Crellekiez, Schöneberg, Tempelhof-Schöneberg, Berlin, 10783, Germany",
+  "address": {
+   "house_number": "189",
+   "road": "Potsdamer Straße",
+   "neighbourhood": "Winterfeldtkiez",
+   "quarter": "Crellekiez",
+   "suburb": "Schöneberg",
+   "borough": "Tempelhof-Schöneberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10783",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.466326,
+  "lon": 13.505295,
+  "stratum": "plain",
+  "display_name": "E. Michaelis & Co., Tabbertstraße, Oberschöneweide, Treptow-Köpenick, Berlin, 12459, Germany",
+  "address": {
+   "shop": "E. Michaelis & Co.",
+   "road": "Tabbertstraße",
+   "suburb": "Oberschöneweide",
+   "borough": "Treptow-Köpenick",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12459",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.483874,
+  "lon": 13.52311,
+  "stratum": "plain",
+  "display_name": "2, Hentigstraße, Heimatviertel, Prinzenviertel, Karlshorst, Lichtenberg, Berlin, 10318, Germany",
+  "address": {
+   "house_number": "2",
+   "road": "Hentigstraße",
+   "neighbourhood": "Heimatviertel",
+   "quarter": "Prinzenviertel",
+   "suburb": "Karlshorst",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10318",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.507847,
+  "lon": 13.406958,
+  "stratum": "plain",
+  "display_name": "26, Stallschreiberstraße, Ritterkiez, Luisenstadt, Mitte, Berlin, 10179, Germany",
+  "address": {
+   "house_number": "26",
+   "road": "Stallschreiberstraße",
+   "neighbourhood": "Ritterkiez",
+   "quarter": "Luisenstadt",
+   "suburb": "Mitte",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10179",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.525501,
+  "lon": 13.38621,
+  "stratum": "plain",
+  "display_name": "Claire-Waldoff-Straße, Dorotheenstadt, Mitte, Berlin, 10117, Germany",
+  "address": {
+   "road": "Claire-Waldoff-Straße",
+   "quarter": "Dorotheenstadt",
+   "suburb": "Mitte",
+   "borough": "Mitte",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10117",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.476978,
+  "lon": 13.43401,
+  "stratum": "plain",
+  "display_name": "33, Kienitzer Straße, Rollbergsiedlung, Flughafenkiez, Neukölln, Berlin, 12053, Germany",
+  "address": {
+   "house_number": "33",
+   "road": "Kienitzer Straße",
+   "neighbourhood": "Rollbergsiedlung",
+   "quarter": "Flughafenkiez",
+   "suburb": "Neukölln",
+   "borough": "Neukölln",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "12053",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ },
+ {
+  "lat": 52.533864,
+  "lon": 13.498584,
+  "stratum": "plain",
+  "display_name": "Landsberger Allee, Lichtenberg, Berlin, 10367, Germany",
+  "address": {
+   "road": "Landsberger Allee",
+   "suburb": "Lichtenberg",
+   "borough": "Lichtenberg",
+   "city": "Berlin",
+   "ISO3166-2-lvl4": "DE-BE",
+   "postcode": "10367",
+   "country": "Germany",
+   "country_code": "de"
+  }
+ }
+]

@@ -1,0 +1,850 @@
+[
+ {
+  "lat": 46.025501,
+  "lon": 8.954127,
+  "stratum": "addr",
+  "display_name": "14, Via Borsari Welti, Porza, Circolo di Vezia, Distretto di Lugano, Ticino, 6948, Switzerland",
+  "address": {
+   "house_number": "14",
+   "road": "Via Borsari Welti",
+   "village": "Porza",
+   "municipality": "Circolo di Vezia",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6948",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.001604,
+  "lon": 8.986769,
+  "stratum": "addr",
+  "display_name": "3, Sentiero di Gandria, Castagnola, Circolo di Lugano est, Lugano, Distretto di Lugano, Ticino, 6976, Switzerland",
+  "address": {
+   "house_number": "3",
+   "road": "Sentiero di Gandria",
+   "suburb": "Castagnola",
+   "city_district": "Circolo di Lugano est",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6976",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.038207,
+  "lon": 8.947661,
+  "stratum": "addr",
+  "display_name": "13, Ronchetto, Cureglia, Circolo di Vezia, Distretto di Lugano, Ticino, 6944, Switzerland",
+  "address": {
+   "house_number": "13",
+   "road": "Ronchetto",
+   "village": "Cureglia",
+   "municipality": "Circolo di Vezia",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6944",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.00541,
+  "lon": 9.001168,
+  "stratum": "addr",
+  "display_name": "9, Via alle Casine, Ruvigliana, Gandria, Lugano, Distretto di Lugano, Ticino, 6978, Switzerland",
+  "address": {
+   "house_number": "9",
+   "road": "Via alle Casine",
+   "suburb": "Ruvigliana",
+   "village": "Gandria",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6978",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.975951,
+  "lon": 8.877909,
+  "stratum": "addr",
+  "display_name": "64j, Via Stazione, Stremadone, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "house_number": "64j",
+   "road": "Via Stazione",
+   "hamlet": "Stremadone",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.971319,
+  "lon": 8.88316,
+  "stratum": "addr",
+  "display_name": "10, Contrada la Torre, Stremadone, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "house_number": "10",
+   "road": "Contrada la Torre",
+   "hamlet": "Stremadone",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.038527,
+  "lon": 8.926544,
+  "stratum": "addr",
+  "display_name": "12, Via Industria, Lamone, Circolo di Vezia, Distretto di Lugano, Ticino, 6814, Switzerland",
+  "address": {
+   "house_number": "12",
+   "road": "Via Industria",
+   "village": "Lamone",
+   "municipality": "Circolo di Vezia",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6814",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.997729,
+  "lon": 8.898925,
+  "stratum": "addr",
+  "display_name": "8, Strada Regina, Cassina d'Agno, Agno, Circolo d'Agno, Distretto di Lugano, Ticino, 6982, Switzerland",
+  "address": {
+   "house_number": "8",
+   "road": "Strada Regina",
+   "hamlet": "Cassina d'Agno",
+   "village": "Agno",
+   "municipality": "Circolo d'Agno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6982",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.058346,
+  "lon": 8.950627,
+  "stratum": "addr",
+  "display_name": "scuola Elementare Ponte Capriasca, 37, Via alle Scuole, Ponte Capriasca, Circolo di Capriasca, Distretto di Lugano, Ticino, 6946, Switzerland",
+  "address": {
+   "building": "scuola Elementare Ponte Capriasca",
+   "house_number": "37",
+   "road": "Via alle Scuole",
+   "village": "Ponte Capriasca",
+   "municipality": "Circolo di Capriasca",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6946",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.993141,
+  "lon": 8.891663,
+  "stratum": "addr",
+  "display_name": "10, Via Svena, Cassina d'Agno, Agno, Circolo d'Agno, Distretto di Lugano, Ticino, 6990, Switzerland",
+  "address": {
+   "house_number": "10",
+   "road": "Via Svena",
+   "residential": "Cassina d'Agno",
+   "hamlet": "Cassina d'Agno",
+   "village": "Agno",
+   "municipality": "Circolo d'Agno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6990",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.007581,
+  "lon": 8.954548,
+  "stratum": "addr",
+  "display_name": "1, Via Alberto Giacometti, Quartiere Maghetti, Ruvigliana, Breganzona, Lugano, Circolo di Lugano ovest, Distretto di Lugano, Ticino, 6900, Switzerland",
+  "address": {
+   "house_number": "1",
+   "road": "Via Alberto Giacometti",
+   "neighbourhood": "Quartiere Maghetti",
+   "suburb": "Ruvigliana",
+   "village": "Breganzona",
+   "city": "Lugano",
+   "municipality": "Circolo di Lugano ovest",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6900",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.054165,
+  "lon": 8.942585,
+  "stratum": "addr",
+  "display_name": "2, Piazzeta dar Torcett, Origlio, Circolo di Capriasca, Distretto di Lugano, Ticino, 6945, Switzerland",
+  "address": {
+   "house_number": "2",
+   "locality": "Piazzeta dar Torcett",
+   "village": "Origlio",
+   "municipality": "Circolo di Capriasca",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6945",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.015326,
+  "lon": 8.907878,
+  "stratum": "addr",
+  "display_name": "4, Contrada Vecchia, Bosco Luganese, Bioggio, Circolo d'Agno, Distretto di Lugano, Ticino, 6934, Switzerland",
+  "address": {
+   "house_number": "4",
+   "road": "Contrada Vecchia",
+   "village": "Bosco Luganese",
+   "municipality": "Circolo d'Agno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6934",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.994559,
+  "lon": 8.920401,
+  "stratum": "addr",
+  "display_name": "3, Via Preda, Agnuzzo, Muzzano, Circolo d'Agno, Distretto di Lugano, Ticino, 6933, Switzerland",
+  "address": {
+   "house_number": "3",
+   "road": "Via Preda",
+   "hamlet": "Agnuzzo",
+   "village": "Muzzano",
+   "municipality": "Circolo d'Agno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6933",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.979138,
+  "lon": 8.878674,
+  "stratum": "addr",
+  "display_name": "17, Via Cantonale, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "house_number": "17",
+   "road": "Via Cantonale",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.040786,
+  "lon": 8.877831,
+  "stratum": "road",
+  "display_name": "2, Bísa, Lod, Fescoggia, Alto Malcantone, Circolo di Breno, Distretto di Lugano, Ticino, 6938, Switzerland",
+  "address": {
+   "house_number": "2",
+   "road": "Bísa",
+   "hamlet": "Lod",
+   "village": "Fescoggia",
+   "municipality": "Circolo di Breno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6938",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.985511,
+  "lon": 8.942796,
+  "stratum": "road",
+  "display_name": "1, Via Levina, Pambio, Pazzallo, Lugano, Circolo di Lugano ovest, Distretto di Lugano, Ticino, 6912, Switzerland",
+  "address": {
+   "house_number": "1",
+   "road": "Via Levina",
+   "hamlet": "Pambio",
+   "village": "Pazzallo",
+   "city": "Lugano",
+   "municipality": "Circolo di Lugano ovest",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6912",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.036222,
+  "lon": 9.049426,
+  "stratum": "road",
+  "display_name": "7, Puria, Albogasio, Valsolda, Como, Lombardy, 22010, Italy",
+  "address": {
+   "road": "7",
+   "hamlet": "Puria",
+   "village": "Albogasio",
+   "city": "Valsolda",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22010",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.99084,
+  "lon": 8.913086,
+  "stratum": "road",
+  "display_name": "102, Riva Cantonetto, Arasio, Montagnola, Collina d'Oro, Circolo di Carona, Distretto di Lugano, Ticino, 6925, Switzerland",
+  "address": {
+   "house_number": "102",
+   "road": "Riva Cantonetto",
+   "hamlet": "Arasio",
+   "village": "Montagnola",
+   "municipality": "Circolo di Carona",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6925",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.95653,
+  "lon": 8.994244,
+  "stratum": "road",
+  "display_name": "Sorgente Bossi-Sorgente Bossi, Stráda da Röv, Canöva, Arogno, Circolo del Ceresio, Distretto di Lugano, Ticino, 6822, Switzerland",
+  "address": {
+   "natural": "Sorgente Bossi-Sorgente Bossi",
+   "road": "Stráda da Röv",
+   "hamlet": "Canöva",
+   "village": "Arogno",
+   "municipality": "Circolo del Ceresio",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6822",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.004663,
+  "lon": 8.984007,
+  "stratum": "road",
+  "display_name": "Sentiero Trona, Aldesago, Ruvigliana, Circolo di Lugano est, Lugano, Distretto di Lugano, Ticino, 6976, Switzerland",
+  "address": {
+   "road": "Sentiero Trona",
+   "neighbourhood": "Aldesago",
+   "suburb": "Ruvigliana",
+   "city_district": "Circolo di Lugano est",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6976",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.011419,
+  "lon": 8.855675,
+  "stratum": "road",
+  "display_name": "3, Al Pissarotino, Novaggio, Lema, Circolo di Breno, Distretto di Lugano, Ticino, 6986, Switzerland",
+  "address": {
+   "house_number": "3",
+   "road": "Al Pissarotino",
+   "village": "Novaggio",
+   "city": "Lema",
+   "municipality": "Circolo di Breno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6986",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.053153,
+  "lon": 8.993102,
+  "stratum": "road",
+  "display_name": "1, ur Cantón, Villa Luganese, Lugano, Circolo di Sonvico, Distretto di Lugano, Ticino, 6966, Switzerland",
+  "address": {
+   "house_number": "1",
+   "road": "ur Cantón",
+   "village": "Villa Luganese",
+   "city": "Lugano",
+   "municipality": "Circolo di Sonvico",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6966",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.061365,
+  "lon": 8.973199,
+  "stratum": "road",
+  "display_name": "6, ra Stráda dar Tramín, Lugaggia, Cagiallo, Capriasca, Circolo di Capriasca, Distretto di Lugano, Ticino, 6953, Switzerland",
+  "address": {
+   "house_number": "6",
+   "road": "ra Stráda dar Tramín",
+   "hamlet": "Lugaggia",
+   "village": "Cagiallo",
+   "municipality": "Circolo di Capriasca",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6953",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.036042,
+  "lon": 9.017497,
+  "stratum": "road",
+  "display_name": "Strada Forestale per Alpe Boglia (sentiero 7), Albogasio, Valsolda, Como, Lombardy, 22010, Italy",
+  "address": {
+   "road": "Strada Forestale per Alpe Boglia (sentiero 7)",
+   "village": "Albogasio",
+   "city": "Valsolda",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22010",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.971071,
+  "lon": 8.882994,
+  "stratum": "road",
+  "display_name": "1, Contrada la Torre, Stremadone, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "house_number": "1",
+   "road": "Contrada la Torre",
+   "hamlet": "Stremadone",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.96819,
+  "lon": 8.922356,
+  "stratum": "road",
+  "display_name": "54, Via al Molino, Vignino, Montagnola, Collina d'Oro, Circolo di Carona, Distretto di Lugano, Ticino, 6926, Switzerland",
+  "address": {
+   "house_number": "54",
+   "road": "Via al Molino",
+   "hamlet": "Vignino",
+   "village": "Montagnola",
+   "municipality": "Circolo di Carona",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6926",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.958106,
+  "lon": 8.934521,
+  "stratum": "road",
+  "display_name": "5, Via della Costa, Ciona, Carona, Lugano, Circolo di Lugano ovest, Distretto di Lugano, Ticino, 6914, Switzerland",
+  "address": {
+   "house_number": "5",
+   "road": "Via della Costa",
+   "hamlet": "Ciona",
+   "village": "Carona",
+   "city": "Lugano",
+   "municipality": "Circolo di Lugano ovest",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6914",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.039539,
+  "lon": 8.98197,
+  "stratum": "road",
+  "display_name": "34, Strada Cantonale, Soragno, Circolo di Lugano est, Lugano, Distretto di Lugano, Ticino, 6964, Switzerland",
+  "address": {
+   "house_number": "34",
+   "road": "Strada Cantonale",
+   "suburb": "Soragno",
+   "city_district": "Circolo di Lugano est",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6964",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.966409,
+  "lon": 8.883001,
+  "stratum": "road",
+  "display_name": "35, Via Stremadone, Stremadone, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "house_number": "35",
+   "road": "Via Stremadone",
+   "hamlet": "Stremadone",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.981893,
+  "lon": 8.878746,
+  "stratum": "plain",
+  "display_name": "Strada Cantonale, Magliasina, Caslano, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "road": "Strada Cantonale",
+   "hamlet": "Magliasina",
+   "village": "Caslano",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.022003,
+  "lon": 8.959812,
+  "stratum": "plain",
+  "display_name": "Via Trevano, Molino Nuovo, Lugano, Circolo di Lugano ovest, Distretto di Lugano, Ticino, 6948, Switzerland",
+  "address": {
+   "road": "Via Trevano",
+   "suburb": "Molino Nuovo",
+   "city": "Lugano",
+   "municipality": "Circolo di Lugano ovest",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6948",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.985708,
+  "lon": 8.874033,
+  "stratum": "plain",
+  "display_name": "Sentiero Piscicoltura, Magliasina, Pura, Circolo della Magliasina, Distretto di Lugano, Ticino, 6987, Switzerland",
+  "address": {
+   "road": "Sentiero Piscicoltura",
+   "hamlet": "Magliasina",
+   "village": "Pura",
+   "municipality": "Circolo della Magliasina",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6987",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.965548,
+  "lon": 8.863486,
+  "stratum": "plain",
+  "display_name": "Viale Ungheria, Piacco, Ponte Tresa, Lavena Ponte Tresa, Comunità Montana del Piambello, Varese, Lombardy, 21037, Italy",
+  "address": {
+   "road": "Viale Ungheria",
+   "hamlet": "Piacco",
+   "village": "Ponte Tresa",
+   "city": "Lavena Ponte Tresa",
+   "municipality": "Comunità Montana del Piambello",
+   "county": "Varese",
+   "ISO3166-2-lvl6": "IT-VA",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "21037",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.983091,
+  "lon": 8.985122,
+  "stratum": "plain",
+  "display_name": "Pugerna - Alpetto, Caprino, Circolo di Lugano est, Lugano, Distretto di Lugano, Ticino, 6823, Switzerland",
+  "address": {
+   "road": "Pugerna - Alpetto",
+   "hamlet": "Caprino",
+   "city_district": "Circolo di Lugano est",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6823",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.021659,
+  "lon": 8.873368,
+  "stratum": "plain",
+  "display_name": "3, Ra Stráda da Brén, Prümé, Aranno, Circolo di Breno, Distretto di Lugano, Ticino, 6994, Switzerland",
+  "address": {
+   "house_number": "3",
+   "road": "Ra Stráda da Brén",
+   "hamlet": "Prümé",
+   "village": "Aranno",
+   "municipality": "Circolo di Breno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6994",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.005899,
+  "lon": 8.954647,
+  "stratum": "plain",
+  "display_name": "29, Corso Enrico Pestalozzi, Quartiere Maghetti, Ruvigliana, Breganzona, Lugano, Circolo di Lugano ovest, Distretto di Lugano, Ticino, 6900, Switzerland",
+  "address": {
+   "house_number": "29",
+   "road": "Corso Enrico Pestalozzi",
+   "neighbourhood": "Quartiere Maghetti",
+   "suburb": "Ruvigliana",
+   "village": "Breganzona",
+   "city": "Lugano",
+   "municipality": "Circolo di Lugano ovest",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6900",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.973302,
+  "lon": 9.00844,
+  "stratum": "plain",
+  "display_name": "BTP #8, Lanzo d'Intelvi, Alta Valle Intelvi, Como, Lombardy, 22024, Italy",
+  "address": {
+   "road": "BTP #8",
+   "village": "Lanzo d'Intelvi",
+   "municipality": "Alta Valle Intelvi",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22024",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.977758,
+  "lon": 9.048331,
+  "stratum": "plain",
+  "display_name": "SP13 della Valle Intelvi diramazione per Piano delle Noci, Scaria, Alta Valle Intelvi, Como, Lombardy, 22024, Italy",
+  "address": {
+   "road": "SP13 della Valle Intelvi diramazione per Piano delle Noci",
+   "village": "Scaria",
+   "municipality": "Alta Valle Intelvi",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22024",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 46.054941,
+  "lon": 9.024002,
+  "stratum": "plain",
+  "display_name": "Sentiero per il Passo Streccione, Ciovàsc, Lugano, Circolo di Sonvico, Distretto di Lugano, Ticino, 6968, Switzerland",
+  "address": {
+   "road": "Sentiero per il Passo Streccione",
+   "hamlet": "Ciovàsc",
+   "city": "Lugano",
+   "municipality": "Circolo di Sonvico",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6968",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.950408,
+  "lon": 8.886594,
+  "stratum": "plain",
+  "display_name": "Sentiero Garibaldi, Ardena, Brusimpiano, Comunità Montana del Piambello, Varese, Lombardy, 21037, Italy",
+  "address": {
+   "road": "Sentiero Garibaldi",
+   "hamlet": "Ardena",
+   "village": "Brusimpiano",
+   "municipality": "Comunità Montana del Piambello",
+   "county": "Varese",
+   "ISO3166-2-lvl6": "IT-VA",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "21037",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.953119,
+  "lon": 9.04685,
+  "stratum": "plain",
+  "display_name": "Orimento, Centro Valle Intelvi, Como, Lombardy, 22023, Italy",
+  "address": {
+   "hamlet": "Orimento",
+   "municipality": "Centro Valle Intelvi",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22023",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ },
+ {
+  "lat": 45.986269,
+  "lon": 8.994135,
+  "stratum": "plain",
+  "display_name": "20, Sentiero alla Cava, Caprino, Circolo di Lugano est, Lugano, Distretto di Lugano, Ticino, 6823, Switzerland",
+  "address": {
+   "house_number": "20",
+   "road": "Sentiero alla Cava",
+   "hamlet": "Caprino",
+   "city_district": "Circolo di Lugano est",
+   "city": "Lugano",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6823",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 46.045195,
+  "lon": 8.868771,
+  "stratum": "plain",
+  "display_name": "Estrazione del ferro sul Monte Torri, Stráda da Lótt, Lod, Fescoggia, Alto Malcantone, Circolo di Breno, Distretto di Lugano, Ticino, 6938, Switzerland",
+  "address": {
+   "information": "Estrazione del ferro sul Monte Torri",
+   "road": "Stráda da Lótt",
+   "hamlet": "Lod",
+   "village": "Fescoggia",
+   "municipality": "Circolo di Breno",
+   "county": "Distretto di Lugano",
+   "state": "Ticino",
+   "ISO3166-2-lvl4": "CH-TI",
+   "postcode": "6938",
+   "country": "Switzerland",
+   "country_code": "ch"
+  }
+ },
+ {
+  "lat": 45.977567,
+  "lon": 9.023954,
+  "stratum": "plain",
+  "display_name": "Studio Odontoiatrico Dott. Ferruccio Spazzi, 7a, Via Paraviso, Lanzo d'Intelvi, Alta Valle Intelvi, Como, Lombardy, 22024, Italy",
+  "address": {
+   "amenity": "Studio Odontoiatrico Dott. Ferruccio Spazzi",
+   "house_number": "7a",
+   "road": "Via Paraviso",
+   "village": "Lanzo d'Intelvi",
+   "municipality": "Alta Valle Intelvi",
+   "county": "Como",
+   "ISO3166-2-lvl6": "IT-CO",
+   "state": "Lombardy",
+   "ISO3166-2-lvl4": "IT-25",
+   "postcode": "22024",
+   "country": "Italy",
+   "country_code": "it"
+  }
+ }
+]

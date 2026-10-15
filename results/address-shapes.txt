@@ -1,0 +1,47 @@
+# address shapes, 2026-10-15T14:47:30Z, protomaps build 20261012
+# A z14 2x2 + z15 pin | B z15 2x2 + gazetteer areas | C z15 2x2 only
+
+test/fixtures/jaipur-nominatim-wide.json: 60 points, 274 area labels from z13
+part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
+  road          28/36          28/36           28/36
+  neighbourhood 21/21          21/21           20/21
+  suburb        32/36          32/36           27/36
+  village       2/10           2/10            2/10
+  city          48/56          48/56           48/56
+  housenumber   14/16          14/16           14/16
+  tiles/point   5.0            4.0
+  KiB/point     70.1           40.6
+
+test/fixtures/lugano-nominatim-wide.json: 45 points, 127 area labels from z13
+part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
+  road          36/43          36/43           36/43
+  neighbourhood 3/3            3/3             3/3
+  suburb        4/7            5/7             4/7
+  village       22/37          22/37           22/37
+  city          29/44          29/44           29/44
+  housenumber   19/24          19/24           19/24
+  tiles/point   4.9            3.9
+  KiB/point     124.7          99.4
+
+test/fixtures/berlin-nominatim-wide.json: 60 points, 301 area labels from z13
+part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
+  road          49/60          48/60           48/60
+  neighbourhood 23/25          23/25           22/25
+  suburb        41/60          43/60           36/60
+  village       0/0            0/0             0/0
+  city          60/60          60/60           60/60
+  housenumber   27/34          27/34           27/34
+  tiles/point   4.8            3.8
+  KiB/point     323.1          304.9
+
+test/fixtures/nairobi-nominatim-wide.json: 60 points, 300 area labels from z13
+part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
+  road          44/52          44/52           44/52
+  neighbourhood 7/37           7/37            6/37
+  suburb        17/57          17/57           14/57
+  village       1/1            1/1             0/1
+  city          58/60          58/60           58/60
+  housenumber   14/15          14/15           14/15
+  tiles/point   4.9            3.9
+  KiB/point     242.5          248.5
+
