@@ -1,11 +1,9 @@
 'use strict'
 const fs = require('bare-fs')
-const path = require('bare-path')
 const { buildBee } = require('../scripts/bee-build')
 const { gazKeys } = require('../scripts/gazetteer-lib')
-const { STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
+const { STATE_ARCHIVE, JAIPUR_ARCHIVE, GAZETTEER_JSON: GAZ } = require('./helpers')
 
-const GAZ = path.join(__dirname, '..', 'data', 'gazetteer.json')
 
 function cities (file = GAZ) {
   return JSON.parse(fs.readFileSync(file, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')

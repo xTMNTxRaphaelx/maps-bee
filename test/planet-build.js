@@ -11,10 +11,9 @@ const { buildBee } = require('../scripts/bee-build')
 const { openArchive } = require('../scripts/pmtiles-file')
 const { tileKey, parseTileKey } = require('../scripts/tiles')
 const { decodeGzip } = require('../scripts/mvt')
-const { tmpStore, spyPuts, inlinedValues, STATE_ARCHIVE, JAIPUR_ARCHIVE } = require('./helpers')
+const { tmpStore, spyPuts, inlinedValues, STATE_ARCHIVE, JAIPUR_ARCHIVE, ATLANTIC_ARCHIVE: ATLANTIC } = require('./helpers')
 
 // z10 only, 550 tiles in 239 entries, mostly open Atlantic: extracted from the planet z10 file (README)
-const ATLANTIC = path.join(__dirname, '..', 'data', 'extract', 'atlantic-z10.pmtiles')
 
 const ARCHIVES = [STATE_ARCHIVE, JAIPUR_ARCHIVE]
 const EXPAND = 10

@@ -18,9 +18,20 @@ async function atlas15 (store) {
   return bee
 }
 
+// [minHits, scored] per part, from results/address-accuracy-jaipur.txt (road 5/6, neighbourhood 7/7,
+// suburb 12/12, village 1/2, city 18/19, housenumber 0/0), with a point of slack where there is room
+const FLOORS = {
+  road: [4, 6],
+  neighbourhood: [6, 7],
+  suburb: [11, 12],
+  village: [1, 2],
+  city: [17, 19],
+  housenumber: [0, 0]
+}
+
 test('address accuracy: 20 Jaipur points against Nominatim, hit rate and distances per part', async (t) => {
   const bee = await atlas15(await tmpStore(t, 'address-accuracy'))
   const entries = JSON.parse(fs.readFileSync(FIXTURE, 'utf8'))
   t.is(entries.length, 20)
-  await scoreRegion(t, bee, entries)
+  await scoreRegion(t, bee, entries, FLOORS)
 })

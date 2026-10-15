@@ -1,17 +1,15 @@
 'use strict'
 const test = require('brittle')
 const fs = require('bare-fs')
-const path = require('bare-path')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { lonLatToTile, quadkey, subtreeRange } = require('../scripts/tiles')
 const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer } = require('../scripts/gazetteer-lib')
 const { collect } = require('../scripts/gazetteer')
 const { readLabel } = require('../scripts/preview')
-const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE } = require('./helpers')
+const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE, GAZETTEER_JSON: GAZ } = require('./helpers')
 const { cities } = require('./atlas')
 
-const GAZ = path.join(__dirname, '..', 'data', 'gazetteer.json')
 
 async function buildBee (t, name, kv) {
   const store = await tmpStore(t, name)

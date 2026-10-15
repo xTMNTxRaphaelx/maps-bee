@@ -4,7 +4,7 @@ const { timed, connectLine, prefetchLine, previewLine } = require('../scripts/pr
 
 test('probe helpers: timed deltas and the probe line formats', async (t) => {
   const dl = { blocks: 0, bytes: 0 }
-  const r = await timed(dl, async () => {
+  const r = await timed(dl, () => {
     dl.blocks += 3
     dl.bytes += 100
     return 'v'

@@ -10,6 +10,10 @@ const JAIPUR_ARCHIVE = path.join(DATA, 'extract', 'jaipur-z11-14.pmtiles')
 const JAIPUR_Z15_ARCHIVE = path.join(DATA, 'extract', 'jaipur-z15.pmtiles')
 const LUGANO_ARCHIVE = path.join(DATA, 'extract', 'lugano-z11-14.pmtiles')
 const LUGANO_Z15_ARCHIVE = path.join(DATA, 'extract', 'lugano-z15.pmtiles')
+const ATLANTIC_ARCHIVE = path.join(DATA, 'extract', 'atlantic-z10.pmtiles')
+// gazetteer.js output, not an extract: docs/SETUP.md builds these two from the archives above
+const GAZETTEER_JSON = path.join(DATA, 'gazetteer.json')
+const GAZETTEER_LUGANO_JSON = path.join(DATA, 'gazetteer-lugano.json')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 const SINGLE_STORE = path.join(__dirname, '..', 'store', 'single')
@@ -69,6 +73,9 @@ module.exports = {
   JAIPUR_Z15_ARCHIVE,
   LUGANO_ARCHIVE,
   LUGANO_Z15_ARCHIVE,
+  ATLANTIC_ARCHIVE,
+  GAZETTEER_JSON,
+  GAZETTEER_LUGANO_JSON,
   SINGLE_STORE,
   SIGNED_STORE,
   PUBLISH_OUT,
