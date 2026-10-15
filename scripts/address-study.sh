@@ -1,8 +1,8 @@
 #!/bin/sh
 # Widened address-shape study across four cities.
 #
-#   1. cuts the Berlin and Nairobi extracts if they are not already there
-#   2. builds the city gazetteer for each
+#   1. cuts the z11-14, z15 and z10 extracts for each city if they are not already there
+#   2. builds a city gazetteer per city from its own z10 extract
 #   3. reverse geocodes the committed candidate points with Nominatim
 #   4. scores the three address shapes and writes results/address-shapes.txt
 #
@@ -32,12 +32,10 @@ bbox () {
   esac
 }
 
+# one per city, built from that city's own z10 extract, so the study needs nothing from the
+# quick start. Not data/gazetteer.json: that one is the suite's and is built differently.
 gaz () {
-  case "$1" in
-    jaipur) echo "data/gazetteer.json" ;;
-    lugano) echo "data/gazetteer-lugano.json" ;;
-    *)      echo "data/gazetteer-$1.json" ;;
-  esac
+  echo "data/gazetteer-study-$1.json"
 }
 
 [ -x "$B" ] || { echo "$B missing; run npm install" >&2; exit 1; }
@@ -67,7 +65,7 @@ command -v node >/dev/null || { echo "node is needed for the Nominatim fetch" >&
 mkdir -p data/extract results
 
 echo "== 1/3 extracts and gazetteers =="
-for C in berlin nairobi; do
+for C in $CITIES; do
   BB=$(bbox "$C")
   if [ -f "data/extract/$C-z11-14.pmtiles" ]; then echo "  have $C z11-14"; else
     need_pmtiles
