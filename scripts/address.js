@@ -83,6 +83,19 @@ function nearest (tiles, layer, type, keep, metres, o, max) {
   return nearestEach(tiles, layer, type, [{ keep, max }], metres, o)[0]
 }
 
+// The nearest a/ gazetteer entry of one class. Measured on the same ruler as everything else, and
+// against the same threshold, so swapping the source cannot quietly change the metric. A label
+// beyond the threshold is dropped rather than clamped, as with the tile path.
+function nearestLabel (areas, o, cls, max) {
+  let best = null
+  for (const a of areas) {
+    if (a.kind_detail !== cls) continue
+    const m = o.ruler.distance(o.p, [a.lon, a.lat])
+    if (m <= max && (!best || m < best.metres)) best = { name: a.name, metres: m }
+  }
+  return best
+}
+
 // At most three parts, like a short map label: one specific feature when it is close (house number
 // within HOUSE_M plus the road if within ROAD_ON_M; else that road; else a poi within NEAR_M), then
 // one area label, or two in small-to-large order when there is no specific part, then the city. The
@@ -101,23 +114,46 @@ function display (a) {
   return parts.filter(Boolean).join(', ')
 }
 
-// tiles: decoded tiles placed on the globe, [{ vt, x, y, zoom }]; label: the gazetteer place or null
-function deriveAddress ({ point, tiles, label }) {
-  const o = origin(point)
-  const hn = nearest(tiles, 'buildings', 1, (p) => p.kind === 'address' && Boolean(p.addr_housenumber), pointMetres, o, HOUSE_M)
-  const road = nearest(tiles, 'roads', 2, (p) => Boolean(p.name), lineMetres, o, ROAD_M)
+// Area labels from the a/ gazetteer when the bee holds it, else from the places layer of the tiles.
+// The gazetteer is a radius query, so SUBURB_M means 3 km rather than "whatever fell inside the
+// fetched tiles"; the tile path stays for a bee without a/ keys, and for tests that drive this
+// without one. Measured over 225 points in four cities: the gazetteer wins 20 hits, nearly all
+// suburb (results/address-shapes.txt).
+function areaParts (areas, tiles, o) {
+  if (areas) {
+    return [
+      nearestLabel(areas, o, 'neighbourhood', NEIGHBOURHOOD_M),
+      nearestLabel(areas, o, 'suburb', SUBURB_M),
+      nearestLabel(areas, o, 'village', VILLAGE_M)
+    ]
+  }
   const [nb, sub, vil] = nearestEach(tiles, 'places', 1, [
     { keep: (p) => Boolean(p.name) && p.kind === 'neighbourhood' && p.kind_detail === 'neighbourhood', max: NEIGHBOURHOOD_M },
     { keep: (p) => Boolean(p.name) && ((p.kind === 'neighbourhood' && p.kind_detail === 'suburb') || p.kind === 'macrohood'), max: SUBURB_M },
     { keep: (p) => Boolean(p.name) && p.kind === 'locality' && p.kind_detail === 'village', max: VILLAGE_M }
   ], pointMetres, o)
+  const of = (e, extra) => e && { name: e.f.properties.name, ...extra(e), metres: e.metres }
+  return [
+    of(nb, () => ({})),
+    of(sub, () => ({})),
+    of(vil, (e) => ({ kind: e.f.properties.kind_detail }))
+  ]
+}
+
+// tiles: decoded tiles placed on the globe, [{ vt, x, y, zoom }]; label: the gazetteer place or
+// null; areas: a/ gazetteer entries near the point, or null to read them from the tiles
+function deriveAddress ({ point, tiles, label, areas = null }) {
+  const o = origin(point)
+  const hn = nearest(tiles, 'buildings', 1, (p) => p.kind === 'address' && Boolean(p.addr_housenumber), pointMetres, o, HOUSE_M)
+  const road = nearest(tiles, 'roads', 2, (p) => Boolean(p.name), lineMetres, o, ROAD_M)
+  const [nb, sub, vil] = areaParts(areas, tiles, o)
   const near = nearest(tiles, 'pois', 1, (p) => Boolean(p.name), pointMetres, o, NEAR_M)
   const a = {
     housenumber: hn && { value: hn.f.properties.addr_housenumber, metres: hn.metres },
     road: road && { name: road.f.properties.name, kind: road.f.properties.kind, metres: road.metres },
-    neighbourhood: nb && { name: nb.f.properties.name, metres: nb.metres },
-    suburb: sub && { name: sub.f.properties.name, metres: sub.metres },
-    village: vil && { name: vil.f.properties.name, kind: vil.f.properties.kind_detail, metres: vil.metres },
+    neighbourhood: nb,
+    suburb: sub,
+    village: vil,
     city: label,
     region: null,
     country: null,

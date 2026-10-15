@@ -40,6 +40,7 @@ require('./value-size')
 require('./probe-helpers')
 require('./address-derive')
 require('./file-source')
+require('./areas')
 
 const missing = FIXTURES.filter((p) => !fs.existsSync(p))
 
