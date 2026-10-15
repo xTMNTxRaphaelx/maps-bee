@@ -71,17 +71,17 @@ for C in berlin nairobi; do
   if [ -f "data/extract/$C-z11-14.pmtiles" ]; then echo "  have $C z11-14"; else
     need_pmtiles
     echo "  cutting $C z11-14"
-    ./tools/pmtiles -q extract "$S" "data/extract/$C-z11-14.pmtiles" --bbox="$BB" --minzoom=11 --maxzoom=14
+    ./tools/pmtiles extract "$S" "data/extract/$C-z11-14.pmtiles" --bbox="$BB" --minzoom=11 --maxzoom=14
   fi
   if [ -f "data/extract/$C-z15.pmtiles" ]; then echo "  have $C z15"; else
     need_pmtiles
     echo "  cutting $C z15"
-    ./tools/pmtiles -q extract "$S" "data/extract/$C-z15.pmtiles" --bbox="$BB" --minzoom=15 --maxzoom=15
+    ./tools/pmtiles extract "$S" "data/extract/$C-z15.pmtiles" --bbox="$BB" --minzoom=15 --maxzoom=15
   fi
   if [ -f "data/extract/$C-z10.pmtiles" ]; then echo "  have $C z10"; else
     need_pmtiles
     echo "  cutting $C z10"
-    ./tools/pmtiles -q extract "$S" "data/extract/$C-z10.pmtiles" --bbox="$BB" --maxzoom=10
+    ./tools/pmtiles extract "$S" "data/extract/$C-z10.pmtiles" --bbox="$BB" --maxzoom=10
   fi
   G=$(gaz "$C")
   if [ -f "$G" ]; then echo "  have $G"; else
