@@ -15,8 +15,8 @@ const PIN_ZOOM = 15
 const NO_TILES = { zoom: null, origin: null, tiles: null }
 
 // The replicator requests of one call, so a failed call leaves nothing in flight. A hyperbee2 range
-// stream marks its own request list dead when it ends (hyperbee2/lib/ranges.js:204), so each stream
-// gets a list of its own and the parallel gets share one.
+// stream kills its own list when it ends (hyperbee2/lib/ranges.js:204), so each stream gets a list
+// of its own and the parallel gets share one.
 class Requests {
   constructor () {
     this.lists = []
@@ -37,11 +37,9 @@ function readOpts (opts, list) {
   return { timeout: opts.timeout, wait: opts.wait, activeRequests: list }
 }
 
-// Tiles contract: zoom z with the 4 tiles of the pin's 2x2 (scripts/tiles.js pinTiles), row-major
-// from origin, the top-left tile. When at least one tile is present the result stays at zoom z and
-// each missing tile is null, which the client draws blank. When all 4 are missing the result is
-// null: outside the atlas, or a filler 2x2 the builder skipped. The pin's own z15 tile is read
-// apart by readPinTile.
+// The 4 tiles of the pin's 2x2 (tiles.js pinTiles), row-major from origin. With at least one tile
+// present the result stays at zoom z and each missing tile is null, drawn blank; with all 4 missing
+// it is null — outside the atlas, or a filler 2x2 the builder skipped.
 async function readTiles (bee, point, z, opts = {}, requests = new Requests()) {
   const { origin, tiles } = pinTiles(point.lon, point.lat, z)
   const o = readOpts(opts, requests.list())
@@ -50,7 +48,6 @@ async function readTiles (bee, point, z, opts = {}, requests = new Requests()) {
   return { zoom: z, origin, tiles: entries.map((e) => (e ? e.value : null)) }
 }
 
-// The single PIN_ZOOM tile under the pin, or null when the bee does not hold it.
 async function readPinTile (bee, point, opts = {}, requests = new Requests()) {
   const { x, y } = lonLatToTile(point.lon, point.lat, PIN_ZOOM)
   const e = await bee.get(tileKey(PIN_ZOOM, x, y), readOpts(opts, requests.list()))
@@ -69,8 +66,8 @@ function parsePlace (value) {
   return p
 }
 
-// nearest city or town in the z8 cell of the point and its 8 neighbours;
-// one cell alone misses a nearer place across its edge (test/gazetteer.js)
+// nearest city or town in the point's z8 cell and its 8 neighbours; one cell alone misses a nearer
+// place across its edge (test/gazetteer.js)
 async function readLabel (bee, point, opts = {}, requests = new Requests()) {
   const c = lonLatToTile(point.lon, point.lat, LABEL_ZOOM)
   const n = 2 ** LABEL_ZOOM
@@ -100,9 +97,9 @@ async function readLabel (bee, point, opts = {}, requests = new Requests()) {
   return best
 }
 
-// Inflates the top `levels` levels of the tree, one level at a time with its nodes in parallel, so
-// later reads walk them from local blocks. Inflating a node fetches the block of every key it
-// references (hyperbee2/lib/inflate.js:18-31). Returns the node count per level reached.
+// Inflates the top `levels` tree levels, a level at a time with its nodes in parallel, so later
+// reads walk them locally. Inflating a node fetches the block of every key it references
+// (hyperbee2/lib/inflate.js:18-31). Returns the node count per level.
 async function prefetchTop (bee, levels, opts) {
   const list = []
   const config = bee.config.options(readOpts(opts, list))
@@ -146,11 +143,10 @@ function placeCell (point, cell) {
   return placed
 }
 
-// One call per shared location: the z14 2x2, else the z10 2x2, plus the pin's z15 tile, plus the
-// nearest place, all three read in parallel; the address is derived from what they return.
-// opts.timeout (required) bounds each block read and opts.deadline bounds the whole call; on either
-// the call rejects with REQUEST_TIMEOUT and destroys every request it made, so the caller shows text
-// instead. The label is best effort: its failure gives label null and never rejects the call.
+// One call per shared location: the z14 2x2 (else z10), the pin's z15 tile and the nearest place,
+// read in parallel; the address is derived from what they return. opts.timeout bounds each block
+// read, opts.deadline the whole call; on either it rejects with REQUEST_TIMEOUT and destroys its own
+// requests. The label is best effort — its failure gives label null and never rejects.
 async function readPreview (bee, point, opts) {
   checkOpts(opts)
   const requests = new Requests()

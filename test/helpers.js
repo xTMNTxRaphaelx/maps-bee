@@ -55,7 +55,6 @@ function spyPuts (bee) {
   return keys
 }
 
-// key records across the whole core that carry their value inline
 async function inlinedValues (core) {
   let n = 0
   for (let i = 0; i < core.length; i++) {

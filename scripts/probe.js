@@ -20,7 +20,6 @@ function counter (core) {
   return dl
 }
 
-// fn's result with its wall time and the blocks and bytes dl counted while it ran
 async function timed (dl, fn) {
   const b = dl.blocks
   const by = dl.bytes

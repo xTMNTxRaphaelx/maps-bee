@@ -16,8 +16,8 @@ const ROADS = {
 }
 const LAYERS = ['earth', 'landuse', 'water', 'buildings', 'roads', 'places']
 
-// The pin in tile units from the 2x2 origin. origin.x has wrapped at the antimeridian
-// (scripts/tiles.js pinTiles), so a negative x is the pin one world width to the right.
+// The pin in tile units from the 2x2 origin. origin.x has wrapped at the antimeridian, so a
+// negative x is the pin one world width to the right.
 function pinOffset (point, origin, zoom) {
   const f = lonLatToTileFraction(point.lon, point.lat, zoom)
   let x = f.x - origin.x
@@ -78,11 +78,9 @@ function layers (vt, ox, oy, size) {
   return body
 }
 
-// tiles: the 4 decoded tiles of a pinTiles 2x2, row-major, null where missing; pin: pinOffset.
-// The pin sits in [0.5, 1.5] tile units on both axes (pinTiles), so the 640x360 window centred on it
-// stays inside the 2x2 at 640 px per tile. pinTile: null or { tile, x, y }, the decoded z15 tile
-// under the pin at pinTileOffset; drawn last so it paints over its z14 quarter, which its earth
-// polygon covers fully.
+// tiles: the 4 decoded tiles of a pinTiles 2x2, row-major, null where missing; pin: pinOffset. The
+// pin sits in [0.5, 1.5] tile units on both axes, so the 640x360 window centred on it stays inside
+// the 2x2 at 640 px per tile. pinTile is drawn last, painting over the z14 quarter it covers.
 function renderThumbnail (tiles, pin, pinTile = null) {
   let clips = ''
   let body = ''

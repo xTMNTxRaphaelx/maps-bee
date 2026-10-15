@@ -27,7 +27,6 @@ function gazKeys (entries) {
   })
 }
 
-// puts the entries' g/ keys in key order, flushPuts per write batch; returns the number of puts.
 // inlineValueSize goes to every write batch (hyperbee2/lib/write.js:22).
 async function putGazetteer (bee, entries, { flushPuts = 20000, inlineValueSize } = {}) {
   const kv = gazKeys(entries).sort((a, b) => b4a.compare(a.key, b.key))

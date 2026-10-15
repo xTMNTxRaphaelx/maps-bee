@@ -11,10 +11,9 @@ const { load } = require('../scripts/keys')
 const { manifestFor } = require('../scripts/sign')
 const { tmpStore, SIGNED_STORE, KEYS_DIR } = require('./helpers')
 
-// scripts/publish.js opens the core as store.get({ manifest: manifestFor(publicKeys) }), so the
-// published key is a pure function of the three public keys in keys/ — derive it rather than
-// scraping it out of results/publish.txt, which is a log of whoever ran the setup last and so has
-// to be locally modified, and never committed, for this to pass.
+// publish.js opens the core as store.get({ manifest: manifestFor(publicKeys) }), so the published
+// key is a pure function of the public keys in keys/. Derive it rather than scraping a log that
+// belongs to whoever ran the setup last.
 const PUBLISHED_LENGTH = 1076
 
 function publishedRef () {
@@ -28,8 +27,7 @@ async function openSeeder (t) {
   const store = new Corestore(SIGNED_STORE, { readOnly: true })
   const core = store.get({ key: ref.key, writable: false })
   await core.ready()
-  // the build is deterministic, so this is a real check of store/signed against a known length,
-  // not the tautology it would be if both sides came out of the same run's log
+  // the build is deterministic, so this checks store/signed against a known length
   t.is(core.length, ref.length, `seeder holds the published length ${ref.length}`)
   t.teardown(() => store.close())
   return { store, core, ref }

@@ -61,7 +61,6 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.is(first.result.zoom, DETAIL_ZOOM)
   t.comment(h.fmt('warm', 'read-cold-v1', first, L1))
 
-  // second draft starts at the published length; rewrite 3 of the 4 tiles of the 2x2
   const draft2 = m.session({ name: 'draft2' })
   await draft2.ready()
   t.is(draft2.length, L1, 'new draft resumes at the published length')
@@ -97,13 +96,11 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.is(m.signedLength, L2)
   t.comment(`second publish length ${L2} (+${L2 - L1})`)
 
-  // a cold client reads the changed value under the same key
   const cold = await h.coldClient(t, store, key, 0)
   t.is(cold.core.length, L2)
   const got = await cold.bee.get(changed[0])
   t.is(got.value.byteLength, before[0].byteLength + 1, 'cold client reads the rewritten tile')
 
-  // the warm client updates and re-reads the same 2x2
   const upd = await h.measure(warm.core, warm.wire, () => warm.core.update({ wait: true }))
   t.is(warm.core.length, L2)
   t.comment(h.fmt('warm', 'update-v2', upd, L2))

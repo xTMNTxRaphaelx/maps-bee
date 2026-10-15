@@ -29,10 +29,9 @@ function lonLatToTile(lon, lat, z) {
   };
 }
 
-// The pin's tile plus the column and row neighbours on the side the pin leans to, so a view
-// centred on the pin never runs off the tiles. Row-major from the top-left (origin); x wraps at
-// the antimeridian, and a row above 0 or below n - 1 has no tiles, so its slots are null and
-// origin.y is -1 when the pin leans above row 0.
+// The pin's tile plus the neighbours on the side it leans to, so a view centred on the pin never
+// runs off the tiles. Row-major from the top-left (origin); x wraps at the antimeridian, and a row
+// outside 0..n-1 has no tiles, so its slots are null and origin.y is -1 above row 0.
 function pinTiles(lon, lat, z) {
   const n = 2 ** z;
   const f = lonLatToTileFraction(lon, lat, z);

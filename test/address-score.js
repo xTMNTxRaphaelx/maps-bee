@@ -8,11 +8,10 @@ const norm = (s) => String(s).toLowerCase().trim()
 const metresOf = (p) => (p ? `${p.name} (${Math.round(p.metres)}m)` : '-')
 const mark = (scored, hit) => (scored ? (hit ? 'HIT' : 'miss') : 'n/a')
 
-// A part whose feature failed its predicate but still won on distance shows up as a nameless part
-// and the string "undefined" in the display. No hit rate can see that — a nameless part simply
-// misses, and a floor absorbs it — so assert it directly, once per point. The roads and pois
-// predicates are what this reaches on real data; the extracts carry no nameless place and no
-// number-less address, so those two are covered synthetically in test/address-derive.js.
+// A feature that failed its predicate but still won on distance shows up as a nameless part and
+// "undefined" in the display. No hit rate sees that — a nameless part just misses, and a floor
+// absorbs it — so assert it directly. On real data this reaches the roads and pois predicates; the
+// extracts carry no nameless place or number-less address, so those are in test/address-derive.js.
 const NAMED_PARTS = ['road', 'neighbourhood', 'suburb', 'village', 'near']
 
 function usableParts (a) {
@@ -29,13 +28,12 @@ function usableParts (a) {
   return bad
 }
 
-// One row per fixture point, then a hit rate per part over the points where Nominatim has that part,
-// and the distances of the chosen parts. A neighbourhood or suburb hits when it equals any of Nominatim's
-// neighbourhood, suburb or quarter (their order comes from polygons, ours from label distance); the city
-// hits on Nominatim's city, town or village, or when Nominatim's city starts with ours, or when our
-// village is that locality: a municipality tagged as a village is the right place in a different slot.
-// floors: { part: [minHits, scored] } — the denominator is asserted too, because a part that stops
-// being scored at all (n drops to 0) would otherwise satisfy any floor on hits vacuously
+// One row per fixture point, then a hit rate per part over the points Nominatim has it for, and the
+// chosen distances. A neighbourhood or suburb hits against any of their neighbourhood, suburb or
+// quarter (their order comes from polygons, ours from label distance); the city hits on their city,
+// town or village, on a prefix match, or when our village is that locality — a municipality tagged
+// as a village is the right place in a different slot. floors: { part: [minHits, scored] }, with the
+// denominator asserted too, since a part that stops being scored would satisfy any floor vacuously.
 async function scoreRegion (t, bee, entries, floors) {
   const hits = {}
   const n = {}
@@ -102,8 +100,7 @@ async function scoreRegion (t, bee, entries, floors) {
     t.comment(`dist ${part}: ${dist[part].map(Math.round).sort((x, y) => x - y).join(' ')}`)
   }
 
-  // the regression check the README's numbers imply: these rates are the measurement this suite
-  // exists to defend, so they are assertions, not comments
+  // these rates are the measurement this suite exists to defend, so they are assertions
   for (const part of PARTS) {
     const [minHits, scored] = floors[part]
     t.is(n[part], scored, `${part} scored on ${scored} points`)

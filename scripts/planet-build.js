@@ -14,8 +14,8 @@ const FLUSH_PUTS = 20000
 const FLUSH_BYTES = 64 * 1024 * 1024
 const STALL_MS = 60000
 
-// one BigUint64 per tile: zoom in bits 58-63, the quadkey as a number in bits 26-57 (z <= 16) and
-// the directory entry index in bits 0-25, so a numeric sort is key order (keys are zz/quadkey)
+// one BigUint64 per tile: zoom in bits 58-63, quadkey in 26-57 (z <= 16), entry index in 0-25,
+// so a numeric sort is key order (keys are zz/quadkey)
 const Z_SHIFT = 58n
 const MORTON_SHIFT = 26n
 const MAX_SORTED_ZOOM = 16
@@ -23,8 +23,8 @@ const MAX_SORTED_ENTRIES = 2 ** 26
 const MORTON_MASK = (1n << (Z_SHIFT - MORTON_SHIFT)) - 1n
 const ENTRY_MASK = (1n << MORTON_SHIFT) - 1n
 
-// Every directory of the archive in depth-first order: index 0 is the root's own tile entries,
-// then each leaf as the root lists it (pmtiles getZxyAttempt follows runLength 0 entries the same way).
+// Every directory depth-first: index 0 is the root's own entries, then each leaf as the root
+// lists it, the order pmtiles getZxyAttempt follows.
 async function * directories (archive, header) {
   const walk = async function * (offset, length, isRoot) {
     const entries = await archive.cache.getDirectory(archive.source, offset, length, header)
@@ -48,9 +48,8 @@ async function readValues (archive, header, tiles) {
     if (e.offset + e.length > hi) hi = e.offset + e.length
     sum += e.length
   }
-  // A short read here is corruption, not a probe: every length below comes from a directory entry,
-  // so bytes we did not get are tiles we would otherwise write empty — and subarray clamps rather
-  // than throwing, so without this check a truncated archive publishes blank tiles under a signature
+  // A short read here is corruption, not a probe: every length comes from a directory entry, and
+  // subarray clamps rather than throwing, so unchecked it publishes blank tiles under a signature
   if (header.clustered && hi - lo <= 2 * sum + 65536) {
     const { data } = await archive.source.getBytes(header.tileDataOffset + lo, hi - lo)
     if (data.byteLength !== hi - lo) throw new Error(`short read: wanted ${hi - lo} bytes at ${header.tileDataOffset + lo}, got ${data.byteLength}`)
@@ -66,8 +65,8 @@ async function readValues (archive, header, tiles) {
   return out
 }
 
-// Every tile the directory walk would put, packed and sorted into key order, with the offset and
-// length of each tile entry so values can be read in chunks of that order.
+// Every tile the directory walk would put, in key order, with each entry's offset and length so
+// values can be read in chunks of that order.
 async function collectSorted (archive, header, expandRunsUpToZoom) {
   if (header.maxZoom > MAX_SORTED_ZOOM) throw new Error(`sorted build packs zooms up to ${MAX_SORTED_ZOOM}, archive has ${header.maxZoom}`)
   if (header.numTileEntries >= MAX_SORTED_ENTRIES) throw new Error(`sorted build packs up to ${MAX_SORTED_ENTRIES} entries, archive has ${header.numTileEntries}`)
@@ -115,8 +114,8 @@ function unpack (v) {
   return { z, x, y, entry: Number(v & ENTRY_MASK) }
 }
 
-// logs the phase each tick it has not changed since the last, to name the await a hung build is
-// stuck on (results/planet-c1-sorted.txt run 1 went idle with no error); returns the stop function
+// logs the phase on each tick it has not changed, to name the await a hung build is stuck on
+// (results/planet-c1-sorted.txt run 1 went idle with no error); returns the stop function
 function stallWatch (phase, ms, log) {
   let last = phase()
   const timer = setInterval(() => {
@@ -135,16 +134,12 @@ function readProgress (file) {
   }
 }
 
-// Writes every unique tile of the archives into bee as gzip bytes copied raw from the archive.
-// A run of identical tiles (runLength > 1) is expanded to one key per tile at zooms up to
-// expandRunsUpToZoom, so those zooms are complete and the client can tell land from ocean; at
-// deeper zooms the run is filler and skipped, so a missing key there means blank.
-// Puts go to the core in batches of flushPuts or flushBytes; progressFile records the last
-// directory whose puts are all flushed, and resume skips directories at or before it. A directory
-// interrupted mid-batch is redone from its start, which rewrites the same values.
-// sorted: puts each archive's tiles in key order (collectSorted) instead of the directory walk's
-// Hilbert order, so consecutive puts share leaves; the archives must not overlap in zoom and the
-// run has no checkpoint. inlineValueSize goes to every write batch (hyperbee2/lib/write.js:22).
+// Every unique tile of the archives, as gzip bytes copied raw from the archive.
+// A run of identical tiles expands to one key per tile up to expandRunsUpToZoom, so those zooms are
+// complete and the client can tell land from ocean; deeper runs are filler, and a missing key there
+// means blank. progressFile records the last fully flushed directory; resume skips to it, redoing an
+// interrupted directory from its start. sorted puts each archive in key order so consecutive puts
+// share leaves — archives must not overlap in zoom, and the run has no checkpoint.
 async function buildPlanet (bee, archives, opts = {}) {
   const {
     expandRunsUpToZoom,
@@ -192,8 +187,7 @@ async function buildPlanet (bee, archives, opts = {}) {
     totals.lastKey = key
   }
 
-  // one batch per chunk of the sorted order, cut where the walk would flush; each chunk reads its
-  // distinct entries in file order, then puts in key order
+  // one batch per chunk of the sorted order; each chunk reads its entries in file order, puts in key order
   const putSorted = async (archive, header, a) => {
     const tc = perf.now()
     const { packed, offsets, lengths, stats } = await collectSorted(archive, header, expandRunsUpToZoom)
@@ -225,8 +219,8 @@ async function buildPlanet (bee, archives, opts = {}) {
   for (let a = 0; a < archives.length; a++) {
     if (done && a < done.archive) continue
     const archive = openArchive(archives[a])
-    // the fd goes back in a finally like stallWatch's stop() does: the gzip check below, readValues
-    // and every put can throw, and a planet build walks hundreds of archives
+    // the fd goes back in a finally: the gzip check, readValues and every put can throw, and a
+    // planet build walks hundreds of archives
     try {
       const header = await archive.getHeader()
       if (header.tileCompression !== Compression.Gzip) {

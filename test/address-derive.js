@@ -3,8 +3,8 @@ const test = require('brittle')
 const { lonLatToTile } = require('../scripts/tiles')
 const { deriveAddress } = require('../scripts/address')
 
-// Synthetic vector tiles, so deriveAddress can be driven without the data/ extracts. The features
-// are the minimum surface it touches: type, properties, extent and loadGeometry.
+// Synthetic tiles, so deriveAddress runs without the data/ extracts: type, properties, extent and
+// loadGeometry are the whole surface it touches.
 const EXTENT = 4096
 const POINT = { lon: 75.8, lat: 26.9 }
 const TILE = { ...lonLatToTile(POINT.lon, POINT.lat, 14), zoom: 14 }
@@ -17,11 +17,10 @@ function local (lon, lat, tile) {
   return { x, y }
 }
 
-// metres north of POINT, as a lon/lat. The conversion is the exact WGS84 meridional degree length
-// at this latitude, written out rather than imported: if the harness placed features with the same
-// constant the code measures them with, any error in that constant would cancel and the assertions
-// below would read clean while being wrong. It did, before cheap-ruler — the road case measured a
-// suspiciously exact 12.000000002 m because address.js and this helper shared 110574.
+// metres north of POINT, as a lon/lat, using the WGS84 meridional degree length written out rather
+// than imported: sharing a constant with the code under test makes its error cancel, so the
+// assertions read clean while being wrong. That happened — the road case measured a suspiciously
+// exact 12.000000002 m when address.js and this helper both used 110574.
 const A = 6378137
 const E2 = (1 / 298.257223563) * (2 - 1 / 298.257223563)
 
@@ -40,7 +39,6 @@ function point (properties, metres, tile = TILE) {
   return { type: 1, extent: EXTENT, properties, loadGeometry: () => [[local(lon, lat, tile)]] }
 }
 
-// a road running east-west, `metres` north of POINT
 function road (properties, metres, tile = TILE) {
   const { lat } = north(metres)
   return {
@@ -67,8 +65,8 @@ test('the synthetic harness places a feature where it says it does', (t) => {
     tiles: tiles({ places: [point({ name: 'Nbhd', kind: 'neighbourhood', kind_detail: 'neighbourhood' }, 100)] }),
     label: CITY
   })
-  // 1 mm, not 1 m: the placement above is exact and cheap-ruler's flat projection is good to well
-  // under a millimetre at this range, so a loose bound here would hide a real change in the metric
+  // 1 mm, not 1 m: the placement is exact and cheap-ruler is good to well under a millimetre here,
+  // so a loose bound would hide a real change in the metric
   t.ok(Math.abs(a.neighbourhood.metres - 100) < 0.001, `placed at 100 m, measured ${a.neighbourhood.metres}`)
 })
 
@@ -138,7 +136,6 @@ test('a nameless poi does not become the "near" part', (t) => {
   t.is(a.display, 'near Real Cafe, Jaipur')
 })
 
-// the three places parts come out of one walk of the layer, not one walk each
 test('one places pass still resolves neighbourhood, suburb and village independently', (t) => {
   let reads = 0
   const features = [
@@ -166,7 +163,6 @@ test('a place beyond its threshold is dropped, not clamped to the threshold', (t
   t.is(a.village, null, 'VILLAGE_M is 700 m')
 })
 
-// a malformed tile must degrade, not throw out of readPreview
 test('a feature carrying no geometry is out of range rather than an error', (t) => {
   const empty = { type: 1, extent: EXTENT, properties: { name: 'Ghost', kind: 'neighbourhood', kind_detail: 'neighbourhood' }, loadGeometry: () => [] }
   const emptyRing = { type: 1, extent: EXTENT, properties: { name: 'Ghost2', kind: 'locality', kind_detail: 'village' }, loadGeometry: () => [[]] }

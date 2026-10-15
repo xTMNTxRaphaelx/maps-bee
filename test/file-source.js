@@ -15,9 +15,9 @@ function tmpFile (t, bytes) {
   return file
 }
 
-// One read can return less than asked for. A short buffer here is silent corruption downstream:
-// planet-build slices tiles out of the span by absolute offset, and subarray clamps rather than
-// throwing, so an entry past the end yields 0 bytes and decodes to a valid tile with no layers.
+// One read can return less than asked for, and a short buffer is silent corruption downstream:
+// planet-build slices by absolute offset and subarray clamps, so an entry past the end yields 0
+// bytes and decodes to a valid tile with no layers.
 test('getBytes fills the buffer when the bytes are there', async (t) => {
   const file = tmpFile(t, Buffer.alloc(1000, 7))
   const src = new FileSource(file)
@@ -36,8 +36,8 @@ test('a read past the end of the file is short, and says so by its length', asyn
   const src = new FileSource(file)
   t.teardown(() => src.close())
 
-  // pmtiles probes getBytes(0, 16384) for the header, so a short result here is not an error in
-  // itself — it is the caller that knows the exact length (planet-build readValues) that must check
+  // pmtiles probes getBytes(0, 16384) for the header, so a short result is not an error in itself;
+  // the caller that knows the exact length (planet-build readValues) is the one that must check
   const { data } = await src.getBytes(0, 64)
   t.is(data.byteLength, 10, 'what was actually there, not a 64-byte buffer of mostly zeros')
 

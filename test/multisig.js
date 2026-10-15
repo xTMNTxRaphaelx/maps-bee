@@ -53,7 +53,6 @@ test('2-of-3 multisig publish from a named draft session', async (t) => {
   t.is(m.length, draft.length)
   t.is(m.signedLength, m.length)
 
-  // a replica accepts the signed core and serves a tile
   const client = await tmpStore(t, 'multisig-client')
   const s1 = store.replicate(true)
   const s2 = client.replicate(false)

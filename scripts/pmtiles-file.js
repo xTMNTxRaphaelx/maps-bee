@@ -21,8 +21,8 @@ class FileSource {
     return this.opening
   }
 
-  // Reads until the buffer is full or the file ends: one read may return less than asked for.
-  // A short result is not an error here — pmtiles probes getBytes(0, 16384) for the header, so any
+  // Reads until the buffer is full or the file ends: one read may return less than asked for. A
+  // short result is not an error here — pmtiles probes getBytes(0, 16384) for the header, so any
   // archive under 16 KiB reads short by design. Callers needing an exact length check it themselves.
   async getBytes (offset, length) {
     const fh = await this.open()
@@ -53,9 +53,9 @@ function openArchive (path) {
   return archive
 }
 
-// getZxy returns the tile already gunzipped (fflate on bare); the bee stores it re-gzipped.
-// gz is a lazy getter, not a field: the gazetteer pass reads t.raw for every tile on the planet and
-// never touches t.gz, and level 9 synchronously on each of those is most of that pass's runtime
+// getZxy returns the tile already gunzipped (fflate on bare); the bee stores it re-gzipped. gz is a
+// lazy getter because the gazetteer pass reads t.raw for every tile on the planet and never touches
+// t.gz, where level 9 on each would be most of that pass's runtime.
 async function readTile (archive, z, x, y) {
   const res = await archive.getZxy(z, x, y)
   if (!res) return null
