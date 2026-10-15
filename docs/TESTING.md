@@ -16,15 +16,12 @@ node --version                # >= 22.12
 sw_vers -productVersion; uname -m
 ```
 
-**File descriptors.** macOS defaults `ulimit -n` to 256. A planet build walks hundreds of archive
-directories while corestore holds RocksDB handles open, so raise it in the shell you run stage 4 in:
-
-```sh
-ulimit -n 10240
-```
-
-If stage 4 dies with `EMFILE` or `too many open files`, this is why. It is also the one thing most
-likely to differ from the Linux box the suite was verified on.
+**File descriptors.** No action needed. `planet-build.js` opens one archive at a time and closes it
+in a `finally` before the next, and the publisher command passes two, so archive fds peak at one
+alongside corestore's RocksDB handles. Earlier planet runs completed at the macOS default of 256,
+and the changes since then only reduce fd pressure: `FileSource` no longer opens the file twice and
+leaks the first handle, and the archive now closes on a throw as well as on success. Raise it with
+`ulimit -n 10240` only if a run actually reports `EMFILE` or `too many open files`.
 
 **pmtiles binary.** Take the `darwin_arm64` build (or `darwin_amd64` on Intel) from
 https://github.com/protomaps/go-pmtiles/releases, into `tools/pmtiles`, then `chmod +x tools/pmtiles`
@@ -106,10 +103,9 @@ far likelier, so check that `20261012` is still the build you cut from.
 ## Stage 4 — planet scale
 
 The part no machine has run since the fixes. Budget ~3 h wall clock, mostly the zoom 14 extract.
-Run it in a shell where you have already raised `ulimit -n`.
+Nothing special is needed beyond disk space.
 
 ```sh
-ulimit -n 10240
 B=node_modules/bare-runtime/bin/bare
 S=https://build.protomaps.com/20261012.pmtiles
 
@@ -145,8 +141,10 @@ Four things the small fixtures cannot reach. Each has a specific expected outcom
    **expect it to come in meaningfully under 2 min**. This is the one performance fix with a
    measurable prediction — record the `time` output either way.
 
-4. **Handle and store cleanup.** The build walks hundreds of archive directories; fds and the store
-   now close in `finally`. A clean exit, and no `EMFILE`, is the result.
+4. **Handle and store cleanup.** The archive fd and the store now close in `finally` rather than as
+   the last statement of the happy path, so an interrupted or failed build releases them too. Kill
+   the build partway with Ctrl-C once and confirm it exits without leaving the store locked — the
+   next run should open `store/planet` with `--resume` instead of refusing it.
 
 ### Gate
 

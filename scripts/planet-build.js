@@ -219,8 +219,7 @@ async function buildPlanet (bee, archives, opts = {}) {
   for (let a = 0; a < archives.length; a++) {
     if (done && a < done.archive) continue
     const archive = openArchive(archives[a])
-    // the fd goes back in a finally: the gzip check, readValues and every put can throw, and a
-    // planet build walks hundreds of archives
+    // the fd goes back in a finally: the gzip check, readValues and every put can throw
     try {
       const header = await archive.getHeader()
       if (header.tileCompression !== Compression.Gzip) {
