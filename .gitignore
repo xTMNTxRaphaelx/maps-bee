@@ -3,5 +3,6 @@ tools/
 store/
 keys/
 node_modules/
-TUTORIAL.md
-REVIEW.md
+
+# bare writes core.<pid> here on SIGABRT; they are sparse, so size them with du, not ls
+core.*
