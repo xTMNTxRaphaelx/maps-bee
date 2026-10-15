@@ -5,16 +5,22 @@ const { bboxTiles, tileKey } = require("./tiles");
 
 // Writes every present tile of the archives into bee, one write batch per zoom.
 async function buildBee(bee, paths, log = console.log) {
-  const archives = [];
-  for (const path of paths) {
-    const archive = openArchive(path);
-    const h = await archive.getHeader();
-    archives.push({
-      archive,
-      bbox: [h.minLon, h.minLat, h.maxLon, h.maxLat],
-      minZoom: h.minZoom,
-      maxZoom: h.maxZoom,
-    });
+  // opened up front so the finally below closes every fd on any throw, including one from
+  // getHeader partway through the list; openArchive itself touches no fd until the first read
+  const archives = paths.map((path) => ({ archive: openArchive(path) }));
+  try {
+    return await build(bee, archives, log);
+  } finally {
+    for (const a of archives) await a.archive.close();
+  }
+}
+
+async function build(bee, archives, log) {
+  for (const a of archives) {
+    const h = await a.archive.getHeader();
+    a.bbox = [h.minLon, h.minLat, h.maxLon, h.maxLat];
+    a.minZoom = h.minZoom;
+    a.maxZoom = h.maxZoom;
   }
   const minZ = Math.min(...archives.map((a) => a.minZoom));
   const maxZ = Math.max(...archives.map((a) => a.maxZoom));
@@ -51,7 +57,6 @@ async function buildBee(bee, paths, log = console.log) {
     totals.puts += puts;
     totals.gzip += gzip;
   }
-  for (const a of archives) await a.archive.close();
   log(
     `total puts ${totals.puts} dupesSkipped ${totals.dupes} gzipBytes ${totals.gzip} core.length ${core.length} core.byteLength ${core.byteLength}`,
   );

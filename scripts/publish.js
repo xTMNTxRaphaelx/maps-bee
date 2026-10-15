@@ -42,14 +42,21 @@ async function main () {
   const [storeDir, keysDir, ...archives] = Bare.argv.slice(2)
   const keyPairs = load(keysDir)
   const store = new Corestore(storeDir)
-  const { m, draft, bee } = await openDraft(store, keyPairs)
-  if (m.length > 0) throw new Error(`core already has ${m.length} blocks; use an empty store dir`)
-  await buildBee(bee, archives)
-  const res = await commitDraft(m, draft, keyPairs)
-  console.log(`commit ${JSON.stringify(res)} draft.length ${draft.length} m.length ${m.length} m.signedLength ${m.signedLength}`)
-  console.log(mapsLine(m))
-  await draft.close()
-  await store.close()
+  // the "already has N blocks" throw lands after openDraft has opened the store and the draft
+  try {
+    const { m, draft, bee } = await openDraft(store, keyPairs)
+    try {
+      if (m.length > 0) throw new Error(`core already has ${m.length} blocks; use an empty store dir`)
+      await buildBee(bee, archives)
+      const res = await commitDraft(m, draft, keyPairs)
+      console.log(`commit ${JSON.stringify(res)} draft.length ${draft.length} m.length ${m.length} m.signedLength ${m.signedLength}`)
+      console.log(mapsLine(m))
+    } finally {
+      await draft.close()
+    }
+  } finally {
+    await store.close()
+  }
 }
 
 module.exports = { openDraft, commitDraft, mapsLine }
