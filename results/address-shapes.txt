@@ -60,3 +60,12 @@ part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
 #   The byte saving is uneven: Jaipur -42%, Lugano -20%, Berlin -6%, Nairobi +2.5%.
 #
 # Housenumber, which the planet bee cannot serve at all today: 74/89 (83%).
+
+# Correction, measured afterwards on a real bee (test/z15.js)
+#
+# The KiB/point above is raw tile payload. In a hyperbee the tree walk and block packing dominate,
+# and a like-for-like cold read of the two cells plus the label comes out at
+#   z15/z14  blocks 0.93-1.00x   bytes 0.95-1.09x
+# over three Jaipur points at two latencies. So the client cost of moving the detail cell to z15 is
+# a wash, not the 8-42% saving the payload table suggests. The case for z15 is house numbers and
+# the complete road network, not bandwidth.

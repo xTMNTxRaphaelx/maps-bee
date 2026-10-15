@@ -7,8 +7,17 @@ const { GAZ_ZOOM, AREA_ZOOM, AREA_QUERY_ZOOM, haversineKm } = require('./gazette
 const { decodeGzip } = require('./mvt')
 const { deriveAddress } = require('./address')
 
-const DETAIL_ZOOM = 14
-const FALLBACK_ZOOM = 10
+// The 2x2 is read at the first of these that has a tile. z15 carries the complete road network and
+// the address points, and its tiles are smaller than z14's because the same features spread over
+// four times as many — one 2x2 now serves the thumbnail and the near address together, where it
+// used to take a z14 2x2 plus a separate z15 pin tile (results/address-shapes.txt).
+// z14 stays as the tier between: a z15 run is filler in open country, and without z14 such a pin
+// would fall straight to a 35 km view. It costs the client nothing — the walk stops at the first
+// zoom that answers, so a pin with z15 never reads z14 at all — and it only costs the publisher
+// storage, which is not the constrained resource here.
+const ZOOMS = [15, 14, 10]
+const DETAIL_ZOOM = ZOOMS[0]
+const FALLBACK_ZOOM = ZOOMS[ZOOMS.length - 1]
 const LABEL_ZOOM = 8
 const PIN_ZOOM = 15
 
@@ -161,6 +170,15 @@ function checkOpts (opts) {
 
 function noop () {}
 
+// the 2x2 at the first zoom in ZOOMS that has one; null when none do
+async function readFirst (bee, point, opts, requests) {
+  for (const z of ZOOMS) {
+    const r = await readTiles(bee, point, z, opts, requests)
+    if (r) return r
+  }
+  return null
+}
+
 // the 2x2 of readTiles as decoded tiles placed on the globe, for deriveAddress
 function placeCell (point, cell) {
   const placed = []
@@ -171,8 +189,8 @@ function placeCell (point, cell) {
   return placed
 }
 
-// One call per shared location: the z14 2x2 (else z10), the pin's z15 tile and the nearest place,
-// read in parallel; the address is derived from what they return. opts.timeout bounds each block
+// One call per shared location: the 2x2 at the first zoom that has one, the nearest city and the
+// area labels, read in parallel; the address is derived from what they return. opts.timeout bounds each block
 // read, opts.deadline the whole call; on either it rejects with REQUEST_TIMEOUT and destroys its own
 // requests. The label is best effort — its failure gives label null and never rejects.
 async function readPreview (bee, point, opts) {
@@ -186,23 +204,20 @@ async function readPreview (bee, point, opts) {
     })
   try {
     const work = Promise.all([
-      readTiles(bee, point, DETAIL_ZOOM, opts, requests)
-        .then((r) => r || readTiles(bee, point, FALLBACK_ZOOM, opts, requests)),
-      readPinTile(bee, point, opts, requests),
+      readFirst(bee, point, opts, requests),
       readLabel(bee, point, opts, requests).catch(() => null),
       readAreas(bee, point, opts, requests).catch(() => [])
     ])
     work.catch(noop) // when the deadline wins, the cancelled work rejects later with nobody waiting
-    const [tiles, pinTile, label, areas] = await (deadline ? Promise.race([work, deadline]) : work)
+    const [tiles, label, areas] = await (deadline ? Promise.race([work, deadline]) : work)
     const placed = tiles ? placeCell(point, tiles) : []
-    if (pinTile) placed.push({ vt: decodeGzip(pinTile.tile), x: pinTile.x, y: pinTile.y, zoom: PIN_ZOOM })
     // null outside the atlas, where no tile and no label exist
     // no a/ keys, or none near, means null rather than an empty list: deriveAddress reads the
     // places layer of the tiles instead of concluding there is no area
     const address = placed.length > 0 || label
       ? deriveAddress({ point, tiles: placed, label, areas: areas.length > 0 ? areas : null })
       : null
-    return { ...(tiles || NO_TILES), pinTile, address, label }
+    return { ...(tiles || NO_TILES), address, label }
   } catch (err) {
     requests.destroy(err)
     throw err
@@ -211,4 +226,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readAreas, readPreview, prefetchTop }
+module.exports = { ZOOMS, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readAreas, readPreview, prefetchTop }

@@ -4,10 +4,11 @@ const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { decodeBlock } = require('hyperbee2/lib/encoding.js')
 const { pinTiles, quadkey } = require('../scripts/tiles')
-const { readPreview, DETAIL_ZOOM } = require('../scripts/preview')
+const { readPreview } = require('../scripts/preview')
 const { tmpStore, JAIPUR_CENTRE } = require('./helpers')
 const { fillAtlas } = require('./atlas')
 const h = require('./sparse-harness')
+const { SIGNED_ZOOM } = h
 
 const { lon, lat } = JAIPUR_CENTRE
 
@@ -41,13 +42,13 @@ test('what a seeder sees: uploaded blocks name the z12 cells of the pin\'s 2x2',
   const { core, bee, wire } = await h.coldClient(t, seederStore, seedCore.key, 0)
 
   const r = await h.measure(core, wire, () => readPreview(bee, { lat, lon }, { timeout: 5000 }))
-  t.is(r.result.zoom, DETAIL_ZOOM)
+  t.is(r.result.zoom, SIGNED_ZOOM)
   t.comment(h.fmt('seeder-sees', 'read-cold', r, L))
   uploads.sort((a, b) => a.index - b.index)
   t.alike(uploads.map((u) => u.index), r.indices, 'seeder upload events match the client downloads')
 
   // the 2x2 can straddle z12 cells; a z14 quadkey's first 12 digits name its z12 cell
-  const prefixes = [...new Set(pinTiles(lon, lat, DETAIL_ZOOM).tiles.map(([x, y]) => `${DETAIL_ZOOM}/${quadkey(x >> 2, y >> 2, DETAIL_ZOOM - 2)}`))]
+  const prefixes = [...new Set(pinTiles(lon, lat, SIGNED_ZOOM).tiles.map(([x, y]) => `${SIGNED_ZOOM}/${quadkey(x >> 2, y >> 2, SIGNED_ZOOM - 2)}`))]
   const owners = await valueOwners(seedCore)
   const counts = { value: 0, values: 0, keys: 0 }
   let foreign = 0

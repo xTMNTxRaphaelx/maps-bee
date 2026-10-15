@@ -3,7 +3,7 @@ const test = require('brittle')
 const fs = require('bare-fs')
 const path = require('bare-path')
 const Hyperbee = require('hyperbee2')
-const { tmpStore, LUGANO_ARCHIVE, LUGANO_Z15_ARCHIVE, GAZETTEER_LUGANO_JSON: GAZETTEER } = require('./helpers')
+const { tmpStore, LUGANO_ARCHIVE, LUGANO_Z15_ARCHIVE, GAZETTEER_LUGANO_JSON: GAZETTEER, AREAS_LUGANO_JSON: AREAS } = require('./helpers')
 const { fillAtlas } = require('./atlas')
 const { scoreRegion } = require('./address-score')
 
@@ -13,17 +13,17 @@ async function atlasLugano (store) {
   const core = store.get({ name: 'atlas' })
   const bee = new Hyperbee(store, { core, writable: true })
   await bee.ready()
-  await fillAtlas(bee, [LUGANO_ARCHIVE, LUGANO_Z15_ARCHIVE], GAZETTEER)
+  await fillAtlas(bee, [LUGANO_ARCHIVE, LUGANO_Z15_ARCHIVE], GAZETTEER, AREAS)
   return bee
 }
 
 // [minHits, scored] per part, from results/address-accuracy-lugano.txt (road 36/43,
-// neighbourhood 3/3, suburb 4/7, village 22/37, city 29/44, housenumber 19/24), with a point of
+// neighbourhood 3/3, suburb 5/7, village 22/37, city 29/44, housenumber 19/24), with a point of
 // slack where there is room.
 const FLOORS = {
   road: [35, 43],
   neighbourhood: [2, 3],
-  suburb: [3, 7],
+  suburb: [4, 7],
   village: [21, 37],
   city: [28, 44],
   housenumber: [18, 24]

@@ -14,6 +14,9 @@ const ATLANTIC_ARCHIVE = path.join(DATA, 'extract', 'atlantic-z10.pmtiles')
 // gazetteer.js output, not an extract: docs/SETUP.md builds these two from the archives above
 const GAZETTEER_JSON = path.join(DATA, 'gazetteer.json')
 const GAZETTEER_LUGANO_JSON = path.join(DATA, 'gazetteer-lugano.json')
+// gazetteer.js --areas output: the a/ keys the client reads area parts from
+const AREAS_JSON = path.join(DATA, 'areas.json')
+const AREAS_LUGANO_JSON = path.join(DATA, 'areas-lugano.json')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 const SINGLE_STORE = path.join(__dirname, '..', 'store', 'single')
@@ -77,6 +80,8 @@ module.exports = {
   ATLANTIC_ARCHIVE,
   GAZETTEER_JSON,
   GAZETTEER_LUGANO_JSON,
+  AREAS_JSON,
+  AREAS_LUGANO_JSON,
   SINGLE_STORE,
   SIGNED_STORE,
   KEYS_DIR,

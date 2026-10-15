@@ -3,7 +3,7 @@ const test = require('brittle')
 const { pinTiles } = require('../scripts/tiles')
 const { decode } = require('../scripts/mvt')
 const { openArchive, readTile } = require('../scripts/pmtiles-file')
-const { renderThumbnail, pinOffset, pinTileOffset } = require('../scripts/render-svg')
+const { renderThumbnail, pinOffset } = require('../scripts/render-svg')
 const { JAIPUR_ARCHIVE, JAIPUR_Z15_ARCHIVE, JAIPUR_CENTRE } = require('./helpers')
 
 function count (s, sub) {
@@ -55,28 +55,24 @@ test('renderThumbnail: 640x360, one path per feature, pin at the centre, attribu
   t.ok(half.includes('© OpenStreetMap contributors'))
 })
 
-test('renderThumbnail draws the z15 pin tile over its z14 quarter', async (t) => {
-  const { origin, tiles: xy } = pinTiles(JAIPUR_CENTRE.lon, JAIPUR_CENTRE.lat, 14)
-  const archive = openArchive(JAIPUR_ARCHIVE)
+test('renderThumbnail draws a z15 2x2, the cell the client now fetches', async (t) => {
+  const { origin, tiles: xy } = pinTiles(JAIPUR_CENTRE.lon, JAIPUR_CENTRE.lat, 15)
+  const archive = openArchive(JAIPUR_Z15_ARCHIVE)
   const tiles = []
-  for (const [x, y] of xy) tiles.push(decode((await readTile(archive, 14, x, y)).raw))
+  for (const [x, y] of xy) {
+    const tile = await readTile(archive, 15, x, y)
+    tiles.push(tile ? decode(tile.raw) : null)
+  }
   await archive.close()
-  const archive15 = openArchive(JAIPUR_Z15_ARCHIVE)
-  const z15 = decode((await readTile(archive15, 15, 23283, 13840)).raw)
-  await archive15.close()
-  const pin = pinOffset(JAIPUR_CENTRE, origin, 14)
-  const counts = tiles.map(drawn)
-  const z14paths = counts.reduce((n, c) => n + c.paths, 0)
-  const z14places = counts.reduce((n, c) => n + c.places, 0)
+  t.is(tiles.filter(Boolean).length, 4, 'the z15 extract holds all four')
 
-  const at = pinTileOffset({ x: 23283, y: 13840 }, origin)
-  t.alike(at, { x: 0.5, y: 1 })
-  const svg = renderThumbnail(tiles, pin, { tile: z15, ...at })
-  t.is(count(svg, '<clipPath '), 5)
-  t.ok(svg.includes('<clipPath id="p"><rect x="320" y="640" width="320" height="320"/>'))
-  t.is(count(svg, '<path '), z14paths + drawn(z15).paths + 1)
-  t.is(count(svg, '<text '), z14places + drawn(z15).places + 1)
-  t.is(count(renderThumbnail(tiles, pin), '<clipPath '), 4)
+  const pin = pinOffset(JAIPUR_CENTRE, origin, 15)
+  const counts = tiles.map(drawn)
+  const svg = renderThumbnail(tiles, pin)
+  t.is(count(svg, '<clipPath '), 4, 'one clip per tile, no pin-tile overlay any more')
+  t.is(count(svg, '<path '), counts.reduce((n, c) => n + c.paths, 0) + 1, 'every tile path plus the pin')
+  t.is(count(svg, '<text '), counts.reduce((n, c) => n + c.places, 0) + 1, 'every label plus the attribution')
+  t.ok(svg.includes('© OpenStreetMap contributors'))
 })
 
 test('pinOffset unwraps the antimeridian and the row above 0', (t) => {

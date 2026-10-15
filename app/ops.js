@@ -1,9 +1,9 @@
 'use strict'
 const HypercoreId = require('hypercore-id-encoding')
-const { readPreview, prefetchTop, DETAIL_ZOOM } = require('../scripts/preview')
+const { readPreview, prefetchTop } = require('../scripts/preview')
 const { openClient, timed, tilesPresent, labelText, connectLine, prefetchLine, previewLine } = require('../scripts/probe')
 const { decodeGzip } = require('../scripts/mvt')
-const { renderThumbnail, pinOffset, pinTileOffset } = require('../scripts/render-svg')
+const { renderThumbnail, pinOffset } = require('../scripts/render-svg')
 
 const PREFETCH_LEVELS = 2
 const TIMEOUT = 10000
@@ -40,8 +40,7 @@ function createOps ({ bootstrap } = {}) {
     session.seen.add(`${lat},${lon}`)
     lines.push(previewLine(phase, point, r))
     const v = r.value
-    const pinTile = v.pinTile && v.zoom === DETAIL_ZOOM ? { tile: decodeGzip(v.pinTile.tile), ...pinTileOffset(v.pinTile, v.origin) } : null
-    const svg = v.tiles ? renderThumbnail(v.tiles.map((gz) => gz && decodeGzip(gz)), pinOffset(point, v.origin, v.zoom), pinTile) : null
+    const svg = v.tiles ? renderThumbnail(v.tiles.map((gz) => gz && decodeGzip(gz)), pinOffset(point, v.origin, v.zoom)) : null
     return { lines, svg, label: labelText(v.label), address: v.address, zoom: v.zoom, present: tilesPresent(v), ms: r.ms, blocks: r.blocks, bytes: r.bytes }
   }
 

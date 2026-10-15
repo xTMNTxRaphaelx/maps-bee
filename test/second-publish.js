@@ -6,10 +6,11 @@ const Hyperbee = require('hyperbee2')
 const { decodeBlock } = require('hyperbee2/lib/encoding.js')
 const { pinTiles, tileKey } = require('../scripts/tiles')
 const { manifestFor, publishDraft } = require('../scripts/sign')
-const { readPreview, DETAIL_ZOOM } = require('../scripts/preview')
+const { readPreview } = require('../scripts/preview')
 const { tmpStore, JAIPUR_CENTRE } = require('./helpers')
 const { fillAtlas } = require('./atlas')
 const h = require('./sparse-harness')
+const { SIGNED_ZOOM } = h
 
 const { lon, lat } = JAIPUR_CENTRE
 const POINT = { lat, lon }
@@ -17,7 +18,7 @@ const OPTS = { timeout: 5000 }
 
 // the keys of the 2x2 readPreview reads, in its tiles order
 function pinKeys () {
-  return pinTiles(lon, lat, DETAIL_ZOOM).tiles.map(([x, y]) => tileKey(DETAIL_ZOOM, x, y))
+  return pinTiles(lon, lat, SIGNED_ZOOM).tiles.map(([x, y]) => tileKey(SIGNED_ZOOM, x, y))
 }
 
 // value blocks hold tile bytes; every other block is keys and tree nodes
@@ -58,7 +59,7 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   const warm = await h.coldClient(t, store, key, 0)
   t.is(warm.core.length, L1)
   const first = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, POINT, OPTS))
-  t.is(first.result.zoom, DETAIL_ZOOM)
+  t.is(first.result.zoom, SIGNED_ZOOM)
   t.comment(h.fmt('warm', 'read-cold-v1', first, L1))
 
   const draft2 = m.session({ name: 'draft2' })
@@ -105,7 +106,7 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.is(warm.core.length, L2)
   t.comment(h.fmt('warm', 'update-v2', upd, L2))
   const again = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, POINT, OPTS))
-  t.is(again.result.zoom, DETAIL_ZOOM)
+  t.is(again.result.zoom, SIGNED_ZOOM)
   t.is(again.result.tiles[0].byteLength, before[0].byteLength + 1, 'warm client sees the rewritten tile')
   t.ok(again.indices.every((i) => i >= L1), 'nothing below the first publish is fetched again')
   t.comment(h.fmt('warm', 'read-v2', again, L2))

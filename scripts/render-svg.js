@@ -25,13 +25,6 @@ function pinOffset (point, origin, zoom) {
   return { x, y: f.y - origin.y }
 }
 
-// The top-left corner of a z15 tile in z14 tile units from the 2x2 origin, wrapped as in pinOffset.
-function pinTileOffset (pinTile, origin) {
-  let x = pinTile.x / 2 - origin.x
-  if (x < 0) x += 2 ** 14
-  return { x, y: pinTile.y / 2 - origin.y }
-}
-
 function pathFor (rings, ox, oy, s, close) {
   let d = ''
   for (const ring of rings) {
@@ -80,8 +73,8 @@ function layers (vt, ox, oy, size) {
 
 // tiles: the 4 decoded tiles of a pinTiles 2x2, row-major, null where missing; pin: pinOffset. The
 // pin sits in [0.5, 1.5] tile units on both axes, so the 640x360 window centred on it stays inside
-// the 2x2 at 640 px per tile. pinTile is drawn last, painting over the z14 quarter it covers.
-function renderThumbnail (tiles, pin, pinTile = null) {
+// the 2x2 at 640 px per tile.
+function renderThumbnail (tiles, pin) {
   let clips = ''
   let body = ''
   for (let i = 0; i < tiles.length; i++) {
@@ -91,12 +84,6 @@ function renderThumbnail (tiles, pin, pinTile = null) {
     const oy = (i >> 1) * TILE
     clips += `<clipPath id="t${i}"><rect x="${ox}" y="${oy}" width="${TILE}" height="${TILE}"/></clipPath>`
     body += `<g clip-path="url(#t${i})">` + layers(vt, ox, oy, TILE) + '</g>'
-  }
-  if (pinTile) {
-    const ox = pinTile.x * TILE
-    const oy = pinTile.y * TILE
-    clips += `<clipPath id="p"><rect x="${ox}" y="${oy}" width="${TILE / 2}" height="${TILE / 2}"/></clipPath>`
-    body += '<g clip-path="url(#p)">' + layers(pinTile.tile, ox, oy, TILE / 2) + '</g>'
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">` +
     `<rect width="${W}" height="${H}" fill="#eef0ee"/>` +
@@ -109,4 +96,4 @@ function renderThumbnail (tiles, pin, pinTile = null) {
     '</svg>'
 }
 
-module.exports = { TILE, W, H, pinOffset, pinTileOffset, renderThumbnail }
+module.exports = { TILE, W, H, pinOffset, renderThumbnail }

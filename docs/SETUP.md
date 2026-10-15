@@ -31,6 +31,8 @@ $B scripts/build-bee.js store/single data/extract/rajasthan-z10.pmtiles data/ext
 $B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/publish.txt
 $B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee results/gazetteer.txt
 $B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
+$B scripts/gazetteer.js data/areas.json --areas data/extract/jaipur-z11-14.pmtiles 75.55,26.65,76.05,27.15 13 13          # a/ keys; bbox widened by 0.1 deg, see below
+$B scripts/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pmtiles 8.75,45.85,9.15,46.16 13 13
 npm test
 PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy.js > results/address-accuracy-jaipur.txt
 PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-lugano.js > results/address-accuracy-lugano.txt
@@ -40,7 +42,7 @@ Expected tail of `npm test`:
 
 ```
 # tests = 82/82 pass
-# asserts = 880/880 pass
+# asserts = 867/867 pass
 # ok
 ```
 
@@ -48,7 +50,8 @@ Notes:
 
 - The Jaipur zoom 15 extract is 2.8 MB and cuts in seconds; only the z15 tests (`test/address.js`, `test/z15.js`, `test/address-accuracy.js`, `test/render-svg.js`) read it.
 - The Atlantic extract is cut straight from the remote build, so the quick start needs nothing from the planet section. It is zoom 10 over open ocean, and `test/planet-build.js` asserts its exact `addressed tiles count: 550` — check that with `./tools/pmtiles show` if that test fails.
-- `test/index.js` preflights all ten fixture paths and skips the data-dependent suite with one `# SKIP` line if any is absent, so a partial run of this section fails loudly rather than aborting the process.
+- The two `--areas` passes harvest with a **wider bbox than the extract**. An area gazetteer must cover a margin around the region it serves, or a pin near the edge takes the nearest label that happened to survive the clip rather than the true nearest. Clipping Lugano to its own bbox cost 97 labels instead of 129 and two village hits.
+- `test/index.js` preflights all twelve fixture paths and skips the data-dependent suite with one `# SKIP` line if any is absent, so a partial run of this section fails loudly rather than aborting the process.
 - The setup rewrites `results/build-bee.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified. They are measurement logs, not test input — restore them with `git checkout -- results/` and nothing breaks.
 - The sparse tests derive the published key from `keys/` (the same manifest `scripts/publish.js` publishes under) and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
 - `keys/` holds test-only keys and is never committed.

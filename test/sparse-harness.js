@@ -15,6 +15,9 @@ const { tmpStore, SIGNED_STORE, KEYS_DIR } = require('./helpers')
 // key is a pure function of the public keys in keys/. Derive it rather than scraping a log that
 // belongs to whoever ran the setup last.
 const PUBLISHED_LENGTH = 1076
+// store/signed is published from the z10 and z11-14 extracts, so its detail cell is z14. Not
+// DETAIL_ZOOM: that is the zoom a client prefers, this is the deepest one this store can answer at.
+const SIGNED_ZOOM = 14
 
 function publishedRef () {
   const key = Hypercore.key(manifestFor(load(KEYS_DIR).map((k) => k.publicKey)))
@@ -179,6 +182,7 @@ function fmt (name, phase, m, seederLength) {
 
 module.exports = {
   Hyperbee,
+  SIGNED_ZOOM,
   publishedRef,
   perf,
   tmpStore,

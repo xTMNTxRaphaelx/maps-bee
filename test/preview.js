@@ -5,7 +5,12 @@ const { haversineKm } = require('../scripts/gazetteer-lib')
 const { lonLatToTile, pinTiles } = require('../scripts/tiles')
 const { decodeGzip } = require('../scripts/mvt')
 const { openArchive, readTile } = require('../scripts/pmtiles-file')
-const { readPreview, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM } = require('../scripts/preview')
+const { readPreview, FALLBACK_ZOOM, LABEL_ZOOM } = require('../scripts/preview')
+
+// This atlas is built from the z11-14 extract alone, so the ZOOMS walk skips z15 and serves z14.
+// Named here rather than taken from DETAIL_ZOOM: the zoom this fixture can answer at is a property
+// of the fixture, not of whichever zoom the client happens to prefer.
+const ATLAS_ZOOM = 14
 const { tmpStore, JAIPUR_ARCHIVE, JAIPUR_CENTRE } = require('./helpers')
 const { cities, fillAtlas } = require('./atlas')
 const h = require('./sparse-harness')
@@ -32,11 +37,11 @@ async function atlas (store) {
   return bee
 }
 
-// which of the 4 z14 tiles of the point's 2x2 the extract holds, in pinTiles order
+// which of the 4 tiles of the point's 2x2 the extract holds, in pinTiles order
 async function presentInArchive (point) {
   const archive = openArchive(JAIPUR_ARCHIVE)
   const present = []
-  for (const [x, y] of pinTiles(point.lon, point.lat, DETAIL_ZOOM).tiles) present.push(Boolean(await readTile(archive, DETAIL_ZOOM, x, y)))
+  for (const [x, y] of pinTiles(point.lon, point.lat, ATLAS_ZOOM).tiles) present.push(Boolean(await readTile(archive, ATLAS_ZOOM, x, y)))
   await archive.close()
   return present
 }
@@ -62,9 +67,8 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   t.comment(`atlas core.length ${bee.core.length}`)
 
   const jaipur = await readPreview(bee, POINTS.jaipur, OPTS)
-  assertCell(t, jaipur, DETAIL_ZOOM, POINTS.jaipur)
+  assertCell(t, jaipur, ATLAS_ZOOM, POINTS.jaipur)
   assertLabel(t, jaipur, places, POINTS.jaipur)
-  t.is(jaipur.pinTile, null, 'no z15 in this atlas')
   t.is(jaipur.address.housenumber, null)
   t.is(jaipur.address.road.name, 'Elevated Hawa Sadak')
   t.ok(Math.abs(jaipur.address.road.metres - 112) < 1, `road ${jaipur.address.road.metres} m`)
@@ -78,7 +82,7 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   const expected = await presentInArchive(POINTS.partial)
   const n = expected.filter(Boolean).length
   t.ok(n > 0 && n < 4, `the extract holds ${n} of the 4 tiles of this 2x2`)
-  t.is(partial.zoom, DETAIL_ZOOM, 'a partly published 2x2 stays at z14, no fallback')
+  t.is(partial.zoom, ATLAS_ZOOM, 'a partly published 2x2 stays at its zoom, no fallback')
   t.alike(partial.tiles.map(Boolean), expected, 'missing tiles are null, present ones in place')
   t.is(partial.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, n, 'present tiles decode as MVT')
 
@@ -100,7 +104,6 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   t.is(mumbai.origin, null)
   t.is(mumbai.tiles, null)
   t.is(mumbai.label, null)
-  t.is(mumbai.pinTile, null)
   t.is(mumbai.address, null)
 })
 
@@ -123,7 +126,7 @@ test('readPreview over a piped link: one call per message, then served locally',
     t.comment(h.fmt(tag, 'update', upd, L))
 
     const cold = await h.measure(core, wire, () => readPreview(bee, POINTS.jaipur, OPTS))
-    t.is(cold.result.zoom, DETAIL_ZOOM)
+    t.is(cold.result.zoom, ATLAS_ZOOM)
     t.is(cold.result.label.name, 'Jaipur')
     t.ok(cold.blocks < L, 'sparse: fewer blocks than the core')
     t.comment(h.fmt(tag + '-jaipur', 'read-cold', cold, L))
