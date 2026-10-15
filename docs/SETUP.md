@@ -40,7 +40,7 @@ Expected tail of `npm test`:
 
 ```
 # tests = 82/82 pass
-# asserts = 732/732 pass
+# asserts = 880/880 pass
 # ok
 ```
 

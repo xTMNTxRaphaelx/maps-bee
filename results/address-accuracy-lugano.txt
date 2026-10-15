@@ -1,69 +1,171 @@
 TAP version 13
 
-# address accuracy: 11 Lugano points against Nominatim, hit rate and distances per part
+# address accuracy: 45 Lugano points against Nominatim, hit rate and distances per part
     ok 1 - should be equal
-    ok 2 - city at 46.006005,8.952766
-    ok 3 - every part usable at 46.006005,8.952766
-    # 46.006005,8.952766	road Corso Enrico Pestalozzi (5m)|Corso Enrico Pestalozzi HIT	nb Quartiere Maghetti (121m)|Quartiere Maghetti	sub Molino Nuovo (837m)|Castagnola HIT	vil -|Breganzona miss	city Lugano (0.3km)|Lugano HIT	hn 9|9 HIT	display 9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano
-    ok 4 - city at 46.0036,8.9511
-    ok 5 - every part usable at 46.0036,8.9511
-    # 46.0036,8.9511	road piazza Rizziero Rezzonico (10m)|Piazza della Riforma miss	nb Quartiere Maghetti (291m)|Quartiere Maghetti	sub Molino Nuovo (1133m)|Pregassona HIT	vil -|Breganzona miss	city Lugano (0.0km)|Lugano HIT	hn 10B|1 miss	display 10B piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
-    ok 6 - city at 46.0056,8.947
-    ok 7 - every part usable at 46.0056,8.947
-    # 46.0056,8.947	road Lugano Stazione (11m)|Piazzale della Stazione miss	nb Quartiere Maghetti (540m)|-	sub Molino Nuovo (1127m)|Cassarate miss	vil -|Breganzona miss	city Lugano (0.4km)|Lugano HIT	hn 2|2 HIT	display 2 Lugano Stazione, Quartiere Maghetti, Lugano
-    ok 8 - city at 46.005,8.957
-    ok 9 - every part usable at 46.005,8.957
-    # 46.005,8.957	road Viale Carlo Cattaneo (72m)|Piazza dell'Indipendenza miss	nb Quartiere Maghetti (238m)|Quartiere Maghetti	sub Molino Nuovo (878m)|Molino Nuovo HIT	vil -|- n/a	city Lugano (0.5km)|Lugano HIT	hn -|4 n/a	display near Palazzo dei Congressi, Quartiere Maghetti, Lugano
-    ok 10 - city at 45.991,8.947
-    ok 11 - every part usable at 45.991,8.947
-    # 45.991,8.947	road Via General Guisan (1m)|Via General Guisan HIT	nb -|-	sub Molino Nuovo (2557m)|- n/a	vil Paradiso (154m)|Paradiso HIT	city Lugano (1.5km)|Paradiso HIT	hn 14|16 miss	display 14 Via General Guisan, Paradiso, Lugano
-    ok 12 - city at 46.007,8.975
-    ok 13 - every part usable at 46.007,8.975
-    # 46.007,8.975	road Via Noseda (70m)|Via Noseda HIT	nb Aldesago (361m)|Aldesago	sub Cassarate (358m)|Ruvigliana HIT	vil -|- n/a	city Lugano (1.9km)|Lugano HIT	hn -|4a n/a	display Aldesago, Cassarate, Lugano
-    ok 14 - city at 46.011,8.942
-    ok 15 - every part usable at 46.011,8.942
-    # 46.011,8.942	road Via Madonna della Salute (14m)|Via Madonna della Salute HIT	nb Besso (574m)|-	sub Molino Nuovo (1189m)|- n/a	vil Massagno (263m)|Massagno HIT	city Lugano (1.1km)|Massagno HIT	hn 18|18 HIT	display 18 Via Madonna della Salute, Massagno, Lugano
-    ok 16 - city at 46.01,8.97
-    ok 17 - every part usable at 46.01,8.97
-    # 46.01,8.97	road Via Collina (38m)|Via Collina HIT	nb Aldesago (739m)|-	sub Cassarate (306m)|Viganello miss	vil -|- n/a	city Lugano (1.6km)|Lugano HIT	hn -|35 n/a	display Via Collina, Cassarate, Lugano
-    ok 18 - city at 46.019,8.977
-    ok 19 - every part usable at 46.019,8.977
-    # 46.019,8.977	road Via Probello (13m)|Via Probello HIT	nb -|-	sub Pregassona (199m)|Pregassona HIT	vil -|- n/a	city Lugano (2.6km)|Lugano HIT	hn 7|- n/a	display 7 Via Probello, Pregassona, Lugano
-    ok 20 - city at 46.004,8.91
-    ok 21 - every part usable at 46.004,8.91
-    # 46.004,8.91	road Sentiero Vedeggio (122m)|Via Aeroporto miss	nb -|-	sub -|- n/a	vil -|Cimo miss	city Lugano (3.2km)|Cimo miss	hn -|- n/a	display near Aeroporto di Lugano-Agno, Lugano
-    ok 22 - city at 46.012,8.989
-    ok 23 - every part usable at 46.012,8.989
-    # 46.012,8.989	road Sentiero Arcate (35m)|Sentiero Arcate HIT	nb -|Aldesago	sub Albonago (1155m)|- n/a	vil Brè sopra Lugano (608m)|- n/a	city Lugano (3.1km)|Lugano HIT	hn -|- n/a	display Sentiero Arcate, Brè sopra Lugano, Lugano
-    # rate road 7/11
-    # rate neighbourhood 4/5
-    # rate suburb 5/7
-    # rate village 2/6
-    # rate city 10/11
-    # rate housenumber 3/5
-    # dist road: 1 5 10 11 13 14 35 38 70 72 122
-    # dist neighbourhood: 121 238 291 361 540 574 739
-    # dist suburb: 199 306 358 837 878 1127 1133 1155 1189 2557
-    # dist village: 154 263 608
-    # dist city: 26 271 380 467 1069 1462 1606 1872 2611 3058 3182
-    # dist housenumber: 9 10 11 16 22 24
-    ok 24 - road scored on 11 points
-    ok 25 - road hit 7/11, floor 6
-    ok 26 - neighbourhood scored on 5 points
-    ok 27 - neighbourhood hit 4/5, floor 3
-    ok 28 - suburb scored on 7 points
-    ok 29 - suburb hit 5/7, floor 4
-    ok 30 - village scored on 6 points
-    ok 31 - village hit 2/6, floor 1
-    ok 32 - city scored on 11 points
-    ok 33 - city hit 10/11, floor 9
-    ok 34 - housenumber scored on 5 points
-    ok 35 - housenumber hit 3/5, floor 2
-ok 1 - address accuracy: 11 Lugano points against Nominatim, hit rate and distances per part # time = 442ms
+    ok 2 - city at 46.025501,8.954127
+    ok 3 - every part usable at 46.025501,8.954127
+    # 46.025501,8.954127	road Via Borsari Welti (18m)|Via Borsari Welti HIT	nb -|-	sub Molino Nuovo (1420m)|- n/a	vil Porza (182m)|Porza HIT	city Lugano (2.4km)|Porza HIT	hn 12|14 miss	display 12 Via Borsari Welti, Porza, Lugano
+    ok 4 - city at 46.001604,8.986769
+    ok 5 - every part usable at 46.001604,8.986769
+    # 46.001604,8.986769	road Sentiero di Gandria (4m)|Sentiero di Gandria HIT	nb -|-	sub Ruvigliana (652m)|Castagnola miss	vil -|- n/a	city Lugano (2.8km)|Lugano HIT	hn 3|3 HIT	display 3 Sentiero di Gandria, Ruvigliana, Lugano
+    ok 6 - city at 46.038207,8.947661
+    ok 7 - every part usable at 46.038207,8.947661
+    # 46.038207,8.947661	road Ronchetto (18m)|Ronchetto HIT	nb -|-	sub -|- n/a	vil Cureglia (261m)|Cureglia HIT	city Lugano (3.8km)|Cureglia HIT	hn 13|13 HIT	display 13 Ronchetto, Cureglia, Lugano
+    ok 8 - city at 46.00541,9.001168
+    ok 9 - every part usable at 46.00541,9.001168
+    # 46.00541,9.001168	road Via alle Casine (4m)|Via alle Casine HIT	nb -|-	sub -|Ruvigliana miss	vil Gandria (130m)|Gandria HIT	city Lugano (3.9km)|Lugano HIT	hn 9|9 HIT	display 9 Via alle Casine, Gandria, Lugano
+    ok 10 - city at 45.975951,8.877909
+    ok 11 - every part usable at 45.975951,8.877909
+    # 45.975951,8.877909	road Via Stazione (23m)|Via Stazione HIT	nb -|-	sub -|- n/a	vil -|Caslano miss	city Lugano (6.5km)|Caslano miss	hn 64j|64j HIT	display 64j Via Stazione, Lugano
+    ok 12 - city at 45.971319,8.88316
+    ok 13 - every part usable at 45.971319,8.88316
+    # 45.971319,8.88316	road Contrada la Torre (31m)|Contrada la Torre HIT	nb -|-	sub -|- n/a	vil Caslano (63m)|Caslano HIT	city Lugano (6.4km)|Caslano HIT	hn 10|10 HIT	display 10 Contrada la Torre, Caslano, Lugano
+    ok 14 - city at 46.038527,8.926544
+    ok 15 - every part usable at 46.038527,8.926544
+    # 46.038527,8.926544	road Via Industria (13m)|Via Industria HIT	nb -|-	sub -|- n/a	vil Gravesano (628m)|Lamone miss	city Lugano (4.3km)|Lamone miss	hn 12|12 HIT	display 12 Via Industria, Gravesano, Lugano
+    ok 16 - city at 45.997729,8.898925
+    ok 17 - every part usable at 45.997729,8.898925
+    # 45.997729,8.898925	road Strada Regina (29m)|Strada Regina HIT	nb -|-	sub -|- n/a	vil Agno (139m)|Agno HIT	city Lugano (4.1km)|Agno HIT	hn 10|8 miss	display 10 Strada Regina, Agno, Lugano
+    ok 18 - city at 46.058346,8.950627
+    ok 19 - every part usable at 46.058346,8.950627
+    # 46.058346,8.950627	road Via alle Scuole (32m)|Via alle Scuole HIT	nb -|-	sub -|- n/a	vil Ponte Capriasca (198m)|Ponte Capriasca HIT	city Lugano (6.1km)|Ponte Capriasca HIT	hn 37|37 HIT	display 37 Via alle Scuole, Ponte Capriasca, Lugano
+    ok 20 - city at 45.993141,8.891663
+    ok 21 - every part usable at 45.993141,8.891663
+    # 45.993141,8.891663	road Via Svena (24m)|Via Svena HIT	nb Al Portico (405m)|-	sub -|- n/a	vil Vernate (372m)|Agno miss	city Lugano (4.7km)|Agno miss	hn 10|10 HIT	display 10 Via Svena, Vernate, Lugano
+    ok 22 - city at 46.007581,8.954548
+    ok 23 - every part usable at 46.007581,8.954548
+    # 46.007581,8.954548	road Via Alberto Giacometti (4m)|Via Alberto Giacometti HIT	nb Quartiere Maghetti (258m)|Quartiere Maghetti	sub Molino Nuovo (623m)|Ruvigliana HIT	vil -|Breganzona miss	city Lugano (0.5km)|Lugano HIT	hn 12|1 miss	display 12 Via Alberto Giacometti, Quartiere Maghetti, Lugano
+    ok 24 - city at 46.054165,8.942585
+    ok 25 - every part usable at 46.054165,8.942585
+    # 46.054165,8.942585	road Piazzeta dar Torcett (12m)|- n/a	nb -|-	sub -|- n/a	vil Origlio (468m)|Origlio HIT	city Lugano (5.6km)|Origlio HIT	hn 3|2 miss	display 3 Piazzeta dar Torcett, Origlio, Lugano
+    ok 26 - city at 46.015326,8.907878
+    ok 27 - every part usable at 46.015326,8.907878
+    # 46.015326,8.907878	road Contrada Vecchia (2m)|Contrada Vecchia HIT	nb -|-	sub -|- n/a	vil Bioggio (137m)|Bosco Luganese miss	city Lugano (3.6km)|Bosco Luganese miss	hn 4|4 HIT	display 4 Contrada Vecchia, Bioggio, Lugano
+    ok 28 - city at 45.994559,8.920401
+    ok 29 - every part usable at 45.994559,8.920401
+    # 45.994559,8.920401	road Via Preda (22m)|Via Preda HIT	nb -|-	sub -|- n/a	vil Muzzano (405m)|Muzzano HIT	city Lugano (2.6km)|Muzzano HIT	hn 3|3 HIT	display 3 Via Preda, Muzzano, Lugano
+    ok 30 - city at 45.979138,8.878674
+    ok 31 - every part usable at 45.979138,8.878674
+    # 45.979138,8.878674	road Via Muraccio (14m)|Via Cantonale miss	nb -|-	sub -|- n/a	vil -|Caslano miss	city Lugano (6.2km)|Caslano miss	hn 17|17 HIT	display 17 Via Muraccio, Lugano
+    ok 32 - city at 46.040786,8.877831
+    ok 33 - every part usable at 46.040786,8.877831
+    # 46.040786,8.877831	road Bísa (1m)|Bísa HIT	nb -|-	sub -|- n/a	vil Fescoggia (71m)|Fescoggia HIT	city Lugano (7.0km)|Fescoggia HIT	hn 2|2 HIT	display 2 Bísa, Fescoggia, Lugano
+    ok 34 - city at 45.985511,8.942796
+    ok 35 - every part usable at 45.985511,8.942796
+    # 45.985511,8.942796	road Via Levina (2m)|Via Levina HIT	nb -|-	sub -|- n/a	vil Pazzallo (195m)|Pazzallo HIT	city Lugano (2.1km)|Lugano HIT	hn 1|1 HIT	display 1 Via Levina, Pazzallo, Lugano
+    ok 36 - city at 46.036222,9.049426
+    ok 37 - every part usable at 46.036222,9.049426
+    # 46.036222,9.049426	road 7 (7m)|7 HIT	nb -|-	sub -|- n/a	vil -|Albogasio miss	city Lugano (8.4km)|Valsolda miss	hn -|- n/a	display 7, Lugano
+    ok 38 - city at 45.99084,8.913086
+    ok 39 - every part usable at 45.99084,8.913086
+    # 45.99084,8.913086	road Riva Cantonetto (6m)|Riva Cantonetto HIT	nb -|-	sub -|- n/a	vil -|Montagnola miss	city Lugano (3.3km)|Montagnola miss	hn 102|102 HIT	display 102 Riva Cantonetto, Lugano
+    ok 40 - city at 45.95653,8.994244
+    ok 41 - every part usable at 45.95653,8.994244
+    # 45.95653,8.994244	road Stráda dal Sass Gróss (15m)|Stráda da Röv miss	nb -|-	sub -|- n/a	vil Arogno (692m)|Arogno HIT	city Lugano (6.2km)|Arogno HIT	hn -|- n/a	display Stráda dal Sass Gróss, Arogno, Lugano
+    ok 42 - city at 46.004663,8.984007
+    ok 43 - every part usable at 46.004663,8.984007
+    # 46.004663,8.984007	road Sentiero Trona (2m)|Sentiero Trona HIT	nb Aldesago (551m)|Aldesago	sub Ruvigliana (405m)|Ruvigliana HIT	vil -|- n/a	city Lugano (2.5km)|Lugano HIT	hn 17|- n/a	display 17 Sentiero Trona, Ruvigliana, Lugano
+    ok 44 - city at 46.011419,8.855675
+    ok 45 - every part usable at 46.011419,8.855675
+    # 46.011419,8.855675	road Al Pissarotino (4m)|Al Pissarotino HIT	nb -|-	sub -|- n/a	vil Novaggio (67m)|Novaggio HIT	city Lugano (7.4km)|Lema miss	hn 3|3 HIT	display 3 Al Pissarotino, Novaggio, Lugano
+    ok 46 - city at 46.053153,8.993102
+    ok 47 - every part usable at 46.053153,8.993102
+    # 46.053153,8.993102	road ur Cantón (2m)|ur Cantón HIT	nb -|-	sub -|- n/a	vil Villa Luganese (171m)|Villa Luganese HIT	city Lugano (6.4km)|Lugano HIT	hn 1|1 HIT	display 1 ur Cantón, Villa Luganese, Lugano
+    ok 48 - city at 46.061365,8.973199
+    ok 49 - every part usable at 46.061365,8.973199
+    # 46.061365,8.973199	road ra Stráda dar Tramín (16m)|ra Stráda dar Tramín HIT	nb -|-	sub -|- n/a	vil Cagiallo (533m)|Cagiallo HIT	city Lugano (6.6km)|Cagiallo HIT	hn -|6 n/a	display ra Stráda dar Tramín, Cagiallo, Lugano
+    ok 50 - city at 46.036042,9.017497
+    ok 51 - every part usable at 46.036042,9.017497
+    # 46.036042,9.017497	road Strada Forestale per Alpe Boglia (sentiero 7) (22m)|Strada Forestale per Alpe Boglia (sentiero 7) HIT	nb -|-	sub -|- n/a	vil -|Albogasio miss	city Lugano (6.2km)|Valsolda miss	hn -|- n/a	display Strada Forestale per Alpe Boglia (sentiero 7), Lugano
+    ok 52 - city at 45.971071,8.882994
+    ok 53 - every part usable at 45.971071,8.882994
+    # 45.971071,8.882994	road Contrada la Torre (3m)|Contrada la Torre HIT	nb -|-	sub -|- n/a	vil Caslano (56m)|Caslano HIT	city Lugano (6.4km)|Caslano HIT	hn 1|1 HIT	display 1 Contrada la Torre, Caslano, Lugano
+    ok 54 - city at 45.96819,8.922356
+    ok 55 - every part usable at 45.96819,8.922356
+    # 45.96819,8.922356	road Via al Molino (14m)|Via al Molino HIT	nb -|-	sub -|- n/a	vil Grancia (406m)|Montagnola miss	city Lugano (4.5km)|Montagnola miss	hn -|54 n/a	display Via al Molino, Grancia, Lugano
+    ok 56 - city at 45.958106,8.934521
+    ok 57 - every part usable at 45.958106,8.934521
+    # 45.958106,8.934521	road Via della Costa (2m)|Via della Costa HIT	nb -|-	sub -|- n/a	vil Carona (122m)|Carona HIT	city Lugano (5.2km)|Lugano HIT	hn 5|5 HIT	display 5 Via della Costa, Carona, Lugano
+    ok 58 - city at 46.039539,8.98197
+    ok 59 - every part usable at 46.039539,8.98197
+    # 46.039539,8.98197	road Strada Cantonale (5m)|Strada Cantonale HIT	nb -|-	sub Davesco (330m)|Soragno miss	vil Cadro (624m)|- n/a	city Lugano (4.6km)|Lugano HIT	hn 1|34 miss	display 1 Strada Cantonale, Davesco, Lugano
+    ok 60 - city at 45.966409,8.883001
+    ok 61 - every part usable at 45.966409,8.883001
+    # 45.966409,8.883001	road Via Stremadone (11m)|Via Stremadone HIT	nb -|-	sub -|- n/a	vil Caslano (499m)|Caslano HIT	city Lugano (6.7km)|Caslano HIT	hn -|35 n/a	display Via Stremadone, Caslano, Lugano
+    ok 62 - city at 45.981893,8.878746
+    ok 63 - every part usable at 45.981893,8.878746
+    # 45.981893,8.878746	road Via Cantonale (25m)|Strada Cantonale miss	nb -|-	sub -|- n/a	vil Neggio (584m)|Caslano miss	city Lugano (6.1km)|Caslano miss	hn 2|- n/a	display 2 Via Cantonale, Neggio, Lugano
+    ok 64 - city at 46.022003,8.959812
+    ok 65 - every part usable at 46.022003,8.959812
+    # 46.022003,8.959812	road Via Trevano (60m)|Via Trevano HIT	nb -|-	sub Molino Nuovo (1034m)|Molino Nuovo HIT	vil -|- n/a	city Lugano (2.1km)|Lugano HIT	hn -|- n/a	display near SkatePark Lugano, Molino Nuovo, Lugano
+    ok 66 - city at 45.985708,8.874033
+    ok 67 - every part usable at 45.985708,8.874033
+    # 45.985708,8.874033	road Sentiero Piscicoltura (18m)|Sentiero Piscicoltura HIT	nb -|-	sub -|- n/a	vil Pura (387m)|Pura HIT	city Lugano (6.3km)|Pura HIT	hn -|- n/a	display Sentiero Piscicoltura, Pura, Lugano
+    ok 68 - city at 45.965548,8.863486
+    ok 69 - every part usable at 45.965548,8.863486
+    # 45.965548,8.863486	road ->Ponte Tresa CH (49m)|Viale Ungheria miss	nb -|-	sub -|- n/a	vil Ponte Tresa (516m)|Ponte Tresa HIT	city Lugano (8.0km)|Lavena Ponte Tresa miss	hn -|- n/a	display ->Ponte Tresa CH, Ponte Tresa, Lugano
+    ok 70 - city at 45.983091,8.985122
+    ok 71 - every part usable at 45.983091,8.985122
+    # 45.983091,8.985122	road Pugerna - Alpetto (170m)|Pugerna - Alpetto HIT	nb -|-	sub -|- n/a	vil -|- n/a	city Lugano (3.5km)|Lugano HIT	hn -|- n/a	display Lugano
+    ok 72 - city at 46.021659,8.873368
+    ok 73 - every part usable at 46.021659,8.873368
+    # 46.021659,8.873368	road Ra Stráda da Brén (60m)|Ra Stráda da Brén HIT	nb -|-	sub -|- n/a	vil Aranno (563m)|Aranno HIT	city Lugano (6.3km)|Aranno HIT	hn -|3 n/a	display near Aranno, Cappella di Aranno, Aranno, Lugano
+    ok 74 - city at 46.005899,8.954647
+    ok 75 - every part usable at 46.005899,8.954647
+    # 46.005899,8.954647	road Via Pietro Bianchi (22m)|Corso Enrico Pestalozzi miss	nb Quartiere Maghetti (85m)|Quartiere Maghetti	sub Molino Nuovo (801m)|Ruvigliana HIT	vil -|Breganzona miss	city Lugano (0.4km)|Lugano HIT	hn 29|29 HIT	display 29 Via Pietro Bianchi, Quartiere Maghetti, Lugano
+    ok 76 - city at 45.973302,9.00844
+    ok 77 - every part usable at 45.973302,9.00844
+    # 45.973302,9.00844	road BTP #8 (6m)|BTP #8 HIT	nb -|-	sub -|- n/a	vil -|Lanzo d'Intelvi miss	city Lugano (5.6km)|Lanzo d'Intelvi miss	hn -|- n/a	display BTP #8, Lugano
+    ok 78 - city at 45.977758,9.048331
+    ok 79 - every part usable at 45.977758,9.048331
+    # 45.977758,9.048331	road SP13 della Valle Intelvi diramazione per Piano delle Noci (213m)|SP13 della Valle Intelvi diramazione per Piano delle Noci HIT	nb -|-	sub -|- n/a	vil -|Scaria miss	city Lugano (8.0km)|Scaria miss	hn -|- n/a	display Lugano
+    ok 80 - city at 46.054941,9.024002
+    ok 81 - every part usable at 46.054941,9.024002
+    # 46.054941,9.024002	road Sentiero per il Passo Streccione (136m)|Sentiero per il Passo Streccione HIT	nb -|-	sub -|- n/a	vil -|- n/a	city Lugano (8.0km)|Lugano HIT	hn -|- n/a	display near Gemelli, Lugano
+    ok 82 - city at 45.950408,8.886594
+    ok 83 - every part usable at 45.950408,8.886594
+    # 45.950408,8.886594	road Sentiero Garibaldi (9m)|Sentiero Garibaldi HIT	nb -|-	sub -|- n/a	vil Brusimpiano (358m)|Brusimpiano HIT	city Lugano (7.8km)|Brusimpiano HIT	hn -|- n/a	display Sentiero Garibaldi, Brusimpiano, Lugano
+    ok 84 - city at 45.953119,9.04685
+    ok 85 - every part usable at 45.953119,9.04685
+    # 45.953119,9.04685	road -|- n/a	nb -|-	sub -|- n/a	vil -|- n/a	city Lugano (9.3km)|- n/a	hn -|- n/a	display Lugano
+    ok 86 - city at 45.986269,8.994135
+    ok 87 - every part usable at 45.986269,8.994135
+    # 45.986269,8.994135	road -|Sentiero alla Cava miss	nb -|-	sub -|- n/a	vil -|- n/a	city Lugano (3.8km)|Lugano HIT	hn -|20 n/a	display Lugano
+    ok 88 - city at 46.045195,8.868771
+    ok 89 - every part usable at 46.045195,8.868771
+    # 46.045195,8.868771	road -|Stráda da Lótt miss	nb -|-	sub -|- n/a	vil -|Fescoggia miss	city Lugano (7.9km)|Fescoggia miss	hn -|- n/a	display Lugano
+    ok 90 - city at 45.977567,9.023954
+    ok 91 - every part usable at 45.977567,9.023954
+    # 45.977567,9.023954	road Via Paraviso (13m)|Via Paraviso HIT	nb -|-	sub -|- n/a	vil Lanzo d'Intelvi (302m)|Lanzo d'Intelvi HIT	city Lugano (6.3km)|Lanzo d'Intelvi HIT	hn -|7a n/a	display Via Paraviso, Lanzo d'Intelvi, Lugano
+    # rate road 36/43
+    # rate neighbourhood 3/3
+    # rate suburb 4/7
+    # rate village 22/37
+    # rate city 29/44
+    # rate housenumber 19/24
+    # dist road: 1 2 2 2 2 2 3 4 4 4 4 5 6 6 7 9 11 12 13 13 14 14 15 16 18 18 18 22 22 22 23 24 25 29 31 32 49 60 60 136 170 213
+    # dist neighbourhood: 85 258 405 551
+    # dist suburb: 330 405 623 652 801 1034 1420
+    # dist village: 56 63 67 71 122 130 137 139 171 182 195 198 261 302 358 372 387 405 406 468 499 516 533 563 584 624 628 692
+    # dist city: 353 492 2128 2137 2421 2536 2592 2758 3279 3490 3582 3833 3848 3863 4094 4303 4546 4628 4750 5244 5574 5637 6063 6105 6222 6239 6248 6292 6329 6334 6368 6379 6405 6455 6620 6713 6999 7426 7759 7853 7994 8002 8044 8397 9296
+    # dist housenumber: 2 2 3 3 4 5 5 6 7 7 7 8 9 9 9 11 11 11 11 13 13 14 18 18 25 28
+    ok 92 - road scored on 43 points
+    ok 93 - road hit 36/43, floor 35
+    ok 94 - neighbourhood scored on 3 points
+    ok 95 - neighbourhood hit 3/3, floor 2
+    ok 96 - suburb scored on 7 points
+    ok 97 - suburb hit 4/7, floor 3
+    ok 98 - village scored on 37 points
+    ok 99 - village hit 22/37, floor 21
+    ok 100 - city scored on 44 points
+    ok 101 - city hit 29/44, floor 28
+    ok 102 - housenumber scored on 24 points
+    ok 103 - housenumber hit 19/24, floor 18
+ok 1 - address accuracy: 45 Lugano points against Nominatim, hit rate and distances per part # time = 483ms
 
 1..1
 # tests = 1/1 pass
-# asserts = 35/35 pass
-# time = 486ms
+# asserts = 103/103 pass
+# time = 528ms
 
 # ok
