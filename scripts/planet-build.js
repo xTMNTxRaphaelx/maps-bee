@@ -48,14 +48,19 @@ async function readValues (archive, header, tiles) {
     if (e.offset + e.length > hi) hi = e.offset + e.length
     sum += e.length
   }
+  // A short read here is corruption, not a probe: every length below comes from a directory entry,
+  // so bytes we did not get are tiles we would otherwise write empty — and subarray clamps rather
+  // than throwing, so without this check a truncated archive publishes blank tiles under a signature
   if (header.clustered && hi - lo <= 2 * sum + 65536) {
     const { data } = await archive.source.getBytes(header.tileDataOffset + lo, hi - lo)
+    if (data.byteLength !== hi - lo) throw new Error(`short read: wanted ${hi - lo} bytes at ${header.tileDataOffset + lo}, got ${data.byteLength}`)
     const span = Buffer.from(data)
     return tiles.map((e) => Buffer.from(span.subarray(e.offset - lo, e.offset - lo + e.length)))
   }
   const out = []
   for (const e of tiles) {
     const { data } = await archive.source.getBytes(header.tileDataOffset + e.offset, e.length)
+    if (data.byteLength !== e.length) throw new Error(`short read: wanted ${e.length} bytes at ${header.tileDataOffset + e.offset}, got ${data.byteLength}`)
     out.push(Buffer.from(data))
   }
   return out
@@ -220,54 +225,58 @@ async function buildPlanet (bee, archives, opts = {}) {
   for (let a = 0; a < archives.length; a++) {
     if (done && a < done.archive) continue
     const archive = openArchive(archives[a])
-    const header = await archive.getHeader()
-    if (header.tileCompression !== Compression.Gzip) {
-      throw new Error(`${archives[a]}: tileCompression ${header.tileCompression} is not gzip`)
-    }
-    if (sorted) {
-      phase = `collect archive ${a + 1}`
-      const stop = stallWatch(() => phase, STALL_MS, log)
-      try {
-        await putSorted(archive, header, a)
-      } finally {
-        stop()
+    // the fd goes back in a finally like stallWatch's stop() does: the gzip check below, readValues
+    // and every put can throw, and a planet build walks hundreds of archives
+    try {
+      const header = await archive.getHeader()
+      if (header.tileCompression !== Compression.Gzip) {
+        throw new Error(`${archives[a]}: tileCompression ${header.tileCompression} is not gzip`)
       }
-      await archive.close()
-      continue
-    }
-    let dir = 0
-    let total = 1
-    for await (const { tiles, pending } of directories(archive, header)) {
-      total += pending
-      if (totals.dirs >= maxDirs) break
-      if (done && a === done.archive && dir <= done.dir) {
-        dir++
+      if (sorted) {
+        phase = `collect archive ${a + 1}`
+        const stop = stallWatch(() => phase, STALL_MS, log)
+        try {
+          await putSorted(archive, header, a)
+        } finally {
+          stop()
+        }
         continue
       }
-      const values = await readValues(archive, header, tiles)
-      for (let i = 0; i < tiles.length; i++) {
-        const e = tiles[i]
-        const [z, x, y] = tileIdToZxy(e.tileId)
-        if (e.runLength === 1) {
-          put(tileKey(z, x, y), values[i])
-        } else if (z <= expandRunsUpToZoom) {
-          for (let r = 0; r < e.runLength; r++) {
-            const [rz, rx, ry] = tileIdToZxy(e.tileId + r)
-            put(tileKey(rz, rx, ry), values[i])
-          }
-        } else {
-          totals.fillerRuns++
-          totals.fillerTiles += e.runLength
+      let dir = 0
+      let total = 1
+      for await (const { tiles, pending } of directories(archive, header)) {
+        total += pending
+        if (totals.dirs >= maxDirs) break
+        if (done && a === done.archive && dir <= done.dir) {
+          dir++
+          continue
         }
-        if (batchPuts >= flushPuts || batchBytes >= flushBytes) await flush(a, `dir ${dir}/${total}`)
+        const values = await readValues(archive, header, tiles)
+        for (let i = 0; i < tiles.length; i++) {
+          const e = tiles[i]
+          const [z, x, y] = tileIdToZxy(e.tileId)
+          if (e.runLength === 1) {
+            put(tileKey(z, x, y), values[i])
+          } else if (z <= expandRunsUpToZoom) {
+            for (let r = 0; r < e.runLength; r++) {
+              const [rz, rx, ry] = tileIdToZxy(e.tileId + r)
+              put(tileKey(rz, rx, ry), values[i])
+            }
+          } else {
+            totals.fillerRuns++
+            totals.fillerTiles += e.runLength
+          }
+          if (batchPuts >= flushPuts || batchBytes >= flushBytes) await flush(a, `dir ${dir}/${total}`)
+        }
+        completed = { archive: a, dir }
+        totals.dirs++
+        dir++
       }
-      completed = { archive: a, dir }
-      totals.dirs++
-      dir++
+      if (batchPuts > 0) await flush(a, `dir ${dir}/${total}`)
+      else checkpoint()
+    } finally {
+      await archive.close()
     }
-    if (batchPuts > 0) await flush(a, `dir ${dir}/${total}`)
-    else checkpoint()
-    await archive.close()
     if (totals.dirs >= maxDirs) break
   }
   totals.elapsedMs = perf.now() - t0
@@ -291,8 +300,8 @@ async function checkZoomOrder (archives) {
 const FLAGS = ['--resume', '--sorted', '--inline-value-size', '--flush-puts', '--flush-bytes']
 
 function parseArgs (argv) {
-  const flags = parseFlags(argv, FLAGS)
-  const [storeDir, keysDir, name, zoom, ...archives] = argv.filter((a) => !a.startsWith('--'))
+  const { flags, args } = parseFlags(argv, FLAGS)
+  const [storeDir, keysDir, name, zoom, ...archives] = args
   if (!storeDir || !keysDir || !name || !zoom || archives.length === 0) {
     throw new Error('usage: planet-build.js [--resume] [--sorted] [--inline-value-size=N] [--flush-puts=N] [--flush-bytes=N] <storeDir> <keysDir> <draftName> <expandRunsUpToZoom> <archive.pmtiles>...')
   }
@@ -313,15 +322,22 @@ function parseArgs (argv) {
 async function main () {
   const args = parseArgs(Bare.argv.slice(2))
   const store = new Corestore(args.storeDir)
-  const { draft, bee } = await openDraft(store, load(args.keysDir), args.name)
-  const progressFile = path.join(args.storeDir, 'planet-build.progress')
-  console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} sorted ${args.sorted} inlineValueSize ${args.inlineValueSize ?? 'default'} flushPuts ${args.flushPuts ?? FLUSH_PUTS} flushBytes ${args.flushBytes ?? FLUSH_BYTES} progress ${progressFile}`)
-  const totals = await buildPlanet(bee, args.archives, { ...args, progressFile })
-  const last = totals.lastKey ? await bee.get(totals.lastKey) : null
-  console.log(`done puts ${totals.puts} bytes ${totals.bytes} flushes ${totals.flushes} fillerRuns ${totals.fillerRuns} fillerTiles ${totals.fillerTiles} elapsed ${(totals.elapsedMs / 1000).toFixed(1)} s`)
-  console.log(`draft.length ${draft.length} byteLength ${draft.byteLength} lastKey ${totals.lastKey ? totals.lastKey.toString() : null} readable ${!!last}`)
-  await draft.close()
-  await store.close()
+  // a planet build runs for hours; a throw partway must still put the draft and the store down
+  try {
+    const { draft, bee } = await openDraft(store, load(args.keysDir), args.name)
+    try {
+      const progressFile = path.join(args.storeDir, 'planet-build.progress')
+      console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} sorted ${args.sorted} inlineValueSize ${args.inlineValueSize ?? 'default'} flushPuts ${args.flushPuts ?? FLUSH_PUTS} flushBytes ${args.flushBytes ?? FLUSH_BYTES} progress ${progressFile}`)
+      const totals = await buildPlanet(bee, args.archives, { ...args, progressFile })
+      const last = totals.lastKey ? await bee.get(totals.lastKey) : null
+      console.log(`done puts ${totals.puts} bytes ${totals.bytes} flushes ${totals.flushes} fillerRuns ${totals.fillerRuns} fillerTiles ${totals.fillerTiles} elapsed ${(totals.elapsedMs / 1000).toFixed(1)} s`)
+      console.log(`draft.length ${draft.length} byteLength ${draft.byteLength} lastKey ${totals.lastKey ? totals.lastKey.toString() : null} readable ${!!last}`)
+    } finally {
+      await draft.close()
+    }
+  } finally {
+    await store.close()
+  }
 }
 
 module.exports = { buildPlanet, directories, stallWatch, FLUSH_PUTS, FLUSH_BYTES }
