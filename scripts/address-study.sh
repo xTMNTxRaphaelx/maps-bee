@@ -7,10 +7,14 @@
 #   4. scores the three address shapes and writes results/address-shapes.txt
 #
 # Nominatim allows one request a second for automated use. scripts/fetch-nominatim.js sleeps
-# 1100 ms between requests and sends a real User-Agent; do not run two copies of this at once.
-# A city whose fixture already exists is skipped, so re-running does not refetch.
+# 1100 ms between requests; do not run two copies of this at once. A city whose fixture already
+# exists is skipped, so re-running does not refetch.
 #
-# usage: sh scripts/address-study.sh [contact-url-or-email]
+# The optional contact goes in the User-Agent, which is what Nominatim's policy asks for so they
+# can reach whoever is running a misbehaving client. Pass a URL or an email if you want to give
+# one; leave it off and the User-Agent names the application only.
+#
+# usage: sh scripts/address-study.sh [contact]
 set -e
 
 B=node_modules/bare-runtime/bin/bare

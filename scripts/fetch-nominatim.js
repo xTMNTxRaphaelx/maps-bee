@@ -28,7 +28,11 @@ async function main () {
   if (!candFile || !outFile) {
     throw new Error('usage: node scripts/fetch-nominatim.js <candidates.json> <out.json> [contact]')
   }
-  const ua = `maps-bee-fixture/1.0 (${contact || 'https://github.com/xTMNTxRaphaelx/maps-bee'})`
+  // Nominatim's policy wants a User-Agent naming the application, and a way to reach whoever is
+  // running it if a client misbehaves. `contact` is whatever you are willing to hand a third party
+  // — a URL, an email, or nothing. It is not defaulted: that is your choice to make, not this
+  // script's.
+  const ua = contact ? `maps-bee-fixture/1.0 (${contact})` : 'maps-bee-fixture/1.0'
   const candidates = JSON.parse(fs.readFileSync(candFile, 'utf8'))
   const out = []
   let failed = 0
