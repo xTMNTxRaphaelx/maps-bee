@@ -3,7 +3,7 @@ const b4a = require('b4a')
 const Hypercore = require('hypercore')
 const { REQUEST_TIMEOUT } = require('hypercore-errors')
 const { lonLatToTile, pinTiles, quadkey, tileKey, subtreeRange } = require('./tiles')
-const { GAZ_ZOOM, haversineKm } = require('./gazetteer-lib')
+const { GAZ_ZOOM, AREA_ZOOM, AREA_QUERY_ZOOM, haversineKm } = require('./gazetteer-lib')
 const { decodeGzip } = require('./mvt')
 const { deriveAddress } = require('./address')
 
@@ -66,19 +66,47 @@ function parsePlace (value) {
   return p
 }
 
-// nearest city or town in the point's z8 cell and its 8 neighbours; one cell alone misses a nearer
-// place across its edge (test/gazetteer.js)
-async function readLabel (bee, point, opts = {}, requests = new Requests()) {
-  const c = lonLatToTile(point.lon, point.lat, LABEL_ZOOM)
-  const n = 2 ** LABEL_ZOOM
+// The cell the point is in and its 8 neighbours: one cell alone misses a nearer place across its
+// edge (test/gazetteer.js). x wraps at the antimeridian; rows outside the world are skipped.
+function cellRanges (point, queryZoom, keyZoom, prefix) {
+  const c = lonLatToTile(point.lon, point.lat, queryZoom)
+  const n = 2 ** queryZoom
   const ranges = []
   for (let dy = -1; dy <= 1; dy++) {
     const y = c.y + dy
     if (y < 0 || y >= n) continue
     for (let dx = -1; dx <= 1; dx++) {
-      ranges.push(subtreeRange(GAZ_ZOOM, quadkey((c.x + dx + n) % n, y, LABEL_ZOOM), 'g/'))
+      ranges.push(subtreeRange(keyZoom, quadkey((c.x + dx + n) % n, y, queryZoom), prefix))
     }
   }
+  return ranges
+}
+
+// Every a/ area label near the point, for deriveAddress to measure and threshold. Queried over a
+// 3x3 of AREA_QUERY_ZOOM rather than the z8 sweep readLabel uses: the area thresholds top out at
+// 3 km, so a wide sweep would read every neighbourhood for hundreds of km in a dense city.
+// Empty means the bee has no a/ keys, or none near: deriveAddress falls back to the tiles either way.
+async function readAreas (bee, point, opts = {}, requests = new Requests()) {
+  const ranges = cellRanges(point, AREA_QUERY_ZOOM, AREA_ZOOM, 'a/')
+  const lists = ranges.map(() => requests.list())
+  const out = []
+  try {
+    await Promise.all(ranges.map(async (range, i) => {
+      for await (const e of bee.createReadStream({ ...range, ...readOpts(opts, lists[i]) })) {
+        const p = parsePlace(e.value)
+        if (p) out.push(p)
+      }
+    }))
+  } catch (err) {
+    for (const l of lists) Hypercore.destroyRequests(l, err)
+    throw err
+  }
+  return out
+}
+
+// nearest city or town in the point's z8 cell and its 8 neighbours
+async function readLabel (bee, point, opts = {}, requests = new Requests()) {
+  const ranges = cellRanges(point, LABEL_ZOOM, GAZ_ZOOM, 'g/')
   const lists = ranges.map(() => requests.list())
   let best = null
   try {
@@ -161,14 +189,19 @@ async function readPreview (bee, point, opts) {
       readTiles(bee, point, DETAIL_ZOOM, opts, requests)
         .then((r) => r || readTiles(bee, point, FALLBACK_ZOOM, opts, requests)),
       readPinTile(bee, point, opts, requests),
-      readLabel(bee, point, opts, requests).catch(() => null)
+      readLabel(bee, point, opts, requests).catch(() => null),
+      readAreas(bee, point, opts, requests).catch(() => [])
     ])
     work.catch(noop) // when the deadline wins, the cancelled work rejects later with nobody waiting
-    const [tiles, pinTile, label] = await (deadline ? Promise.race([work, deadline]) : work)
+    const [tiles, pinTile, label, areas] = await (deadline ? Promise.race([work, deadline]) : work)
     const placed = tiles ? placeCell(point, tiles) : []
     if (pinTile) placed.push({ vt: decodeGzip(pinTile.tile), x: pinTile.x, y: pinTile.y, zoom: PIN_ZOOM })
     // null outside the atlas, where no tile and no label exist
-    const address = placed.length > 0 || label ? deriveAddress({ point, tiles: placed, label }) : null
+    // no a/ keys, or none near, means null rather than an empty list: deriveAddress reads the
+    // places layer of the tiles instead of concluding there is no area
+    const address = placed.length > 0 || label
+      ? deriveAddress({ point, tiles: placed, label, areas: areas.length > 0 ? areas : null })
+      : null
     return { ...(tiles || NO_TILES), pinTile, address, label }
   } catch (err) {
     requests.destroy(err)
@@ -178,4 +211,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readPreview, prefetchTop }
+module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readAreas, readPreview, prefetchTop }

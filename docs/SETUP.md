@@ -39,8 +39,8 @@ PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-
 Expected tail of `npm test`:
 
 ```
-# tests = 77/77 pass
-# asserts = 713/713 pass
+# tests = 82/82 pass
+# asserts = 732/732 pass
 # ok
 ```
 
@@ -63,6 +63,7 @@ zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe.
 | zoom 14 extract | about 2.5 h | 31 GB |
 | build, publisher flags | about 7 min | 35 GB store |
 | gazetteer pass over zoom 10 | about 2 min | 12 MB |
+| area pass over zoom 13 | hours, it walks the z13 rectangle | about 100 MB |
 | signed commit | about 2 min | |
 
 ```sh
@@ -71,6 +72,8 @@ zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe.
 $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # publisher path, into an empty store dir: key-order puts, no value inlined with its key, no --resume
 $B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10 | tee results/planet-gazetteer.txt
 $B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json   # g/ keys after the tiles, before the commit; --inline-value-size=N as in planet-build.js
+$B scripts/gazetteer.js data/planet-areas.json --areas data/planet-z13.pmtiles -180,-85.05,180,85.05 13 13 | tee results/planet-areas.txt   # neighbourhood, suburb and village labels
+$B scripts/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json   # a/ keys
 $B scripts/planet-commit.js store/planet keys atlas   # optional 4th arg: blocks per signed commit, default 20000; resumable
 $B scripts/seed.js store/planet <key from the maps line>
 $B scripts/probe.js <key> 26.9,75.8 51.5,-0.12
