@@ -1,7 +1,7 @@
 "use strict";
 const b4a = require("b4a");
 
-const MAX_LAT = 85.0511;
+const MAX_LAT = 85.05112877980659;
 
 // NaN masks to tile column 0 and 200 clamps to the last column, both real keys for the wrong place
 function lonLatToTileFraction(lon, lat, z) {
@@ -102,6 +102,11 @@ function parseTileKey(key) {
 // bbox = [minLon, minLat, maxLon, maxLat]
 function* bboxTiles(bbox, z) {
   const [minLon, minLat, maxLon, maxLat] = bbox;
+  // an inverted bbox walks an empty range and yields nothing, which reads as an archive with no
+  // tiles; a bbox crossing the antimeridian is inverted in lon and is not supported
+  if (minLon > maxLon || minLat > maxLat) {
+    throw new RangeError(`bbox is inverted: ${bbox.join(",")}`);
+  }
   const tl = lonLatToTile(minLon, maxLat, z);
   const br = lonLatToTile(maxLon, minLat, z);
   for (let y = tl.y; y <= br.y; y++) {

@@ -35,6 +35,15 @@ test('lonLatToTile clamps at the mercator edges', (t) => {
   t.alike(lonLatToTile(-180, -85.0511, 3), { x: 0, y: 7 })
 })
 
+// the exact value protomaps whole-world headers carry; a guard one ulp inside it rejects every
+// planet-wide archive bbox, and 85.0511 is inside, so only the true limit catches that
+test('lonLatToTile accepts the true mercator limit a planet header carries', (t) => {
+  const LIMIT = 85.05112877980659
+  t.alike(lonLatToTile(-180, LIMIT, 0), { x: 0, y: 0 })
+  t.alike(lonLatToTile(180, -LIMIT, 0), { x: 0, y: 0 })
+  t.alike(lonLatToTile(-180, LIMIT, 10), { x: 0, y: 0 })
+})
+
 test('lonLatToTile rejects input that would key the wrong place', (t) => {
   t.exception.all(() => lonLatToTile(NaN, lat, 14), /out of range/)
   t.exception.all(() => lonLatToTile(200, lat, 14), /out of range/)
