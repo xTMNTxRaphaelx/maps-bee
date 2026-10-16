@@ -219,4 +219,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { ZOOMS, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readTiles, readLabel, readAreas, readPreview, prefetchTop }
+module.exports = { DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readTiles, readLabel, readAreas, readPreview, prefetchTop }

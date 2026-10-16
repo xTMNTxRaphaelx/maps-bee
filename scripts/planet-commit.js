@@ -39,5 +39,3 @@ if (require.main === module) {
     Bare.exitCode = 1
   })
 }
-
-module.exports = { main }

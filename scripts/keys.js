@@ -31,6 +31,6 @@ function load (dir) {
   })
 }
 
-module.exports = { generate, load, NAMES }
+module.exports = { load }
 
 if (require.main === module) generate(Bare.argv[2])

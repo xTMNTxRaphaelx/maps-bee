@@ -163,4 +163,4 @@ function deriveAddress ({ point, tiles, label, areas = null }) {
   return a
 }
 
-module.exports = { HOUSE_M, ROAD_M, ROAD_ON_M, NEAR_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, deriveAddress }
+module.exports = { HOUSE_M, ROAD_ON_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, deriveAddress }

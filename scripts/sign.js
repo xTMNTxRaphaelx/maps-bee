@@ -29,4 +29,4 @@ async function publishDraft(m, draft, signers, length = draft.length) {
   return m.commit(draft, { length, signature });
 }
 
-module.exports = { manifestFor, signDraft, publishDraft };
+module.exports = { manifestFor, publishDraft };

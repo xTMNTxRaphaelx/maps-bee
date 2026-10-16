@@ -135,7 +135,6 @@ module.exports = {
   quadkey,
   mortonCode,
   mortonToXY,
-  zz,
   tileKey,
   parseTileKey,
   assertBbox,

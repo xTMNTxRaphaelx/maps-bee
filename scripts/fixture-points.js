@@ -121,8 +121,6 @@ async function main () {
   console.log(JSON.stringify(out, null, 1))
 }
 
-module.exports = { rng }
-
 if (require.main === module) {
   main().catch((err) => {
     console.error(err)

@@ -96,4 +96,4 @@ function renderThumbnail (tiles, pin) {
     '</svg>'
 }
 
-module.exports = { TILE, W, H, pinOffset, renderThumbnail }
+module.exports = { pinOffset, renderThumbnail }

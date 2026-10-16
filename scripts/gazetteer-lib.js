@@ -67,4 +67,4 @@ async function putGazetteer (bee, entries, { flushPuts = 20000, inlineValueSize,
   return kv.length
 }
 
-module.exports = { GAZ_ZOOM, AREA_ZOOM, AREA_QUERY_ZOOM, areaClass, haversineKm, pointKeys, gazKeys, areaKeys, putGazetteer }
+module.exports = { GAZ_ZOOM, AREA_ZOOM, AREA_QUERY_ZOOM, areaClass, haversineKm, gazKeys, areaKeys, putGazetteer }

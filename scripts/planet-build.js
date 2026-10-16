@@ -291,7 +291,7 @@ async function main () {
   }
 }
 
-module.exports = { buildPlanet, stallWatch, FLUSH_PUTS, FLUSH_BYTES }
+module.exports = { buildPlanet, stallWatch }
 
 if (require.main === module) {
   main().catch((err) => {
