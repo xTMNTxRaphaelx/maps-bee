@@ -14,7 +14,9 @@ const { lonLatToTile, pinTiles } = require('./tiles')
 const { parseFlags } = require('./flags')
 const { deriveAddress, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, ROAD_ON_M } = require('./address')
 
-const AREA_ZOOM = 13
+// the zoom the area labels are read out of, not the zoom they are keyed at — gazetteer-lib's
+// AREA_ZOOM is 14 and is the a/ key granularity, a different number for a different thing
+const HARVEST_ZOOM = 13
 const PARTS = ['road', 'neighbourhood', 'suburb', 'village', 'city', 'housenumber']
 const NB = (p) => p.kind === 'neighbourhood' && p.kind_detail === 'neighbourhood'
 const SUB = (p) => (p.kind === 'neighbourhood' && p.kind_detail === 'suburb') || p.kind === 'macrohood'
@@ -47,11 +49,11 @@ async function areaIndex (file, bbox) {
   const archive = openArchive(file)
   const byKey = new Map()
   try {
-    const tl = lonLatToTile(bbox[0], bbox[3], AREA_ZOOM)
-    const br = lonLatToTile(bbox[2], bbox[1], AREA_ZOOM)
+    const tl = lonLatToTile(bbox[0], bbox[3], HARVEST_ZOOM)
+    const br = lonLatToTile(bbox[2], bbox[1], HARVEST_ZOOM)
     for (let x = tl.x; x <= br.x; x++) {
       for (let y = tl.y; y <= br.y; y++) {
-        const t = await readTile(archive, AREA_ZOOM, x, y)
+        const t = await readTile(archive, HARVEST_ZOOM, x, y)
         if (!t) continue
         const l = decode(t.raw).layers.places
         if (!l) continue
@@ -63,7 +65,7 @@ async function areaIndex (file, bbox) {
           if (!cls) continue
           const g = f.loadGeometry()
           if (!g.length || !g[0].length) continue
-          const [lon, lat] = project(f, { x, y, zoom: AREA_ZOOM }, g[0][0])
+          const [lon, lat] = project(f, { x, y, zoom: HARVEST_ZOOM }, g[0][0])
           byKey.set(cls + '|' + p.name, { cls, name: p.name, lon, lat })
         }
       }
@@ -183,7 +185,7 @@ async function main () {
   }
 
   const n = entries.length
-  console.log(`${fixture}: ${n} points, ${index.length} area labels from z${AREA_ZOOM}`)
+  console.log(`${fixture}: ${n} points, ${index.length} area labels from z${HARVEST_ZOOM}`)
   console.log('part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)')
   for (const p of PARTS) {
     const f = (k) => `${acc[k].hits[p]}/${acc[k].n[p]}`
