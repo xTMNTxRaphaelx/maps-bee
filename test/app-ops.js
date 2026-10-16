@@ -26,7 +26,7 @@ test('app ops: run opens a cold client once per key, prefetches once, renders, c
   for (const l of r.lines) t.comment(l)
   t.is(r.lines.length, 3)
   t.ok(r.lines[0].startsWith('connect ms '))
-  t.ok(r.lines[1].startsWith('prefetch levels 2 nodes '))
+  t.ok(r.lines[1].startsWith('prefetch levels 1 nodes '))
   t.ok(/^cold\t26\.9,75\.8\tms [\d.]+\tblocks \d+\tbytes \d+\tzoom 14\ttiles 4\/4\tlabel null\taddress Kachi Basti, Sudarshanpura$/.test(r.lines[2]), r.lines[2])
   t.ok(r.svg.startsWith('<svg '))
   t.is(r.present, 4)

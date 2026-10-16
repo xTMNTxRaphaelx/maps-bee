@@ -5,7 +5,11 @@ const { openClient, timed, tilesPresent, labelText, connectLine, prefetchLine, p
 const { decodeGzip } = require('../scripts/mvt')
 const { renderThumbnail, pinOffset } = require('../scripts/render-svg')
 
-const PREFETCH_LEVELS = 2
+// One level, not two. On the planet atlas level 1 is free to the byte — its 17 blocks are the root
+// the first preview fetches anyway — and only moves ~200 ms off that first read. Level 2 costs
+// 2.77 MB up front to save ~83 KB per preview after the first, so it does not break even until
+// about 18 previews in one session (results/planet-probe-quadrants.txt).
+const PREFETCH_LEVELS = 1
 const TIMEOUT = 10000
 const DEADLINE = 30000
 
