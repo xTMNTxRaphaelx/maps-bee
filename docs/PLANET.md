@@ -57,6 +57,19 @@ $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 
 These two go in one run: their zooms do not overlap. **Measured** on 20261012: `done puts 32888213
 bytes 35221625742`, about 7 minutes. Keep `data/planet-z14.pmtiles` — step 4 harvests from it.
 
+**The z14 extract finishes in two phases, and the second looks like a hang.** **Measured**
+2026-10-16 on a 32 GB cut with the defaults (`--download-threads=4 --overfetch=0.05`): 31 of 32 GB
+arrived in 38 minutes at 13.5 MB/s average, then the last stretch crawled — 1.4 MB/s at 96%, 83
+kB/s at 99%, 67 kB/s three minutes later, still going past 1h20m. Nothing is wrong. The bulk is
+large contiguous chunks that coalesce into few requests; the tail is thousands of tiny scattered
+ones, four at a time, so it is round-trip-bound and the transfer rate stops meaning anything. The
+progress bar's ETA extrapolates from bytes and the bytes are already done, so it reads about
+11 minutes indefinitely — ignore it and watch the output file's size and mtime instead. A real
+hang is both of them frozen for several minutes, not a small nonzero rate.
+
+`pmtiles extract` has no resume, so killing it discards the whole transfer: at fraction `f` done,
+restarting to gain a `k`-times speedup only pays when `f < 1 - 1/k`. Past halfway, finish.
+
 ## 2. Cut each zoom 15 quadrant and check it fits
 
 Cut a hair inside the meridian and the equator so two quadrants never share a tile column or row —
@@ -64,9 +77,15 @@ Cut a hair inside the meridian and the equator so two quadrants never share a ti
 break the ascending order across runs.
 
 ```sh
-./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.0001,-0.0001,85.0511 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.0001,-0.0001,85.0511 \
+  --minzoom=15 --maxzoom=15 --download-threads=16 --overfetch=0.2
 ./tools/pmtiles show data/planet-z15-nw.pmtiles | grep 'tile entries count'
 ```
+
+The two flags are for the tail, not the bulk — see the extract shape under step 1. Measure them on
+NW and carry the better setting to the other three rather than assuming: overfetch buys fewer
+requests with ~20% more bytes, which is the right trade for a tail of 3 KB requests and the wrong
+one for a bulk already running at full bandwidth.
 
 **`tile entries count` must be under 67,108,864.** The land is not spread evenly — NE is Europe and
 Asia and is the one that may not fit. If a quadrant is over, split it in longitude and treat the
