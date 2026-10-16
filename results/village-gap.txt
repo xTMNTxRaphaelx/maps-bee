@@ -47,3 +47,13 @@ hit 22/37  absent 0  beyond 15  outranked 0  no-candidate 0
   2000	34	11	2	6/58
   2500	36	11	0	10/58
   3500	36	11	0	13/58
+
+# 2026-10-16: VILLAGE_M stays at 700
+#
+# Declined on the sweep above. Going to 2000 m lifts the hit rate from 24/47 to 34/47 (51% -> 72%)
+# but takes wrong labels from 5 to 11 (11% -> 23% of scored points) and names a village on 6 of 58
+# unscored points instead of 1. The trade is roughly one new error per 1.7 new hits, and it does
+# not touch the cause: Nominatim names the municipality containing the point, this picks the
+# nearest village point. A fix needs village extent — polygon area or population, neither of which
+# the a/ pass keeps today — so the radius is the wrong lever. Do not re-propose a wider VILLAGE_M
+# on these fixtures.

@@ -14,7 +14,10 @@ const { project } = require('./mvt')
 // Nominatim names the municipality the point lies inside; this picks the nearest village point,
 // which in Ticino is often the neighbouring one. Every one of the 23 misses is a village the a/
 // gazetteer does hold and the threshold excludes, so raising it buys hits and wrong labels
-// together — at 2000 m, right 24 -> 34 and wrong 5 -> 11 (results/village-gap.txt).
+// together — at 2000 m, right 24 -> 34 and wrong 5 -> 11 (results/village-gap.txt). Measured and
+// declined: 700 stands, because the 10 extra hits cost 6 wrong labels plus 5 villages named on
+// points Nominatim names none for, and the containment mismatch survives either number. Moving
+// this needs village extent, not a wider radius.
 const HOUSE_M = 30
 const ROAD_M = 300
 const ROAD_ON_M = 50
