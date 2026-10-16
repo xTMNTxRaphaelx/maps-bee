@@ -1,0 +1,49 @@
+
+=== Jaipur — 60 points, 10 with a village, VILLAGE_M=700 ===
+hit 2/10  absent 0  beyond 8  outranked 0  no-candidate 0
+  beyond:
+    27.046314,75.905225  want "Amer Chak No. 2"  theirs Amer Chak No. 2 1815m  ours -
+    27.030305,75.894553  want "Kukas"  theirs Kukas 1305m  ours -
+    26.988564,75.887547  want "Kunda"  theirs Kunda 1098m  ours -
+    26.829482,75.929292  want "Hingoniya"  theirs Hingoniya 1723m  ours -
+    26.760978,75.885091  want "Goner"  theirs Goner 3308m  ours -
+    26.794525,75.896354  want "Goner"  theirs Goner 2335m  ours -
+    26.842385,75.917732  want "Hingoniya"  theirs Hingoniya 1680m  ours -
+    26.978719,75.8883  want "Kunda"  theirs Kunda 1986m  ours -
+
+=== Lugano — 45 points, 37 with a village, VILLAGE_M=700 ===
+hit 22/37  absent 0  beyond 15  outranked 0  no-candidate 0
+  beyond:
+    45.975951,8.877909  want "Caslano"  theirs Caslano 719m  ours -
+    46.038527,8.926544  want "Lamone"  theirs Lamone 831m  ours Gravesano 628m
+    45.993141,8.891663  want "Agno"  theirs Agno 781m  ours Vernate 371m
+    46.007581,8.954548  want "Breganzona"  theirs Breganzona 2026m  ours -
+    46.015326,8.907878  want "Bosco Luganese"  theirs Bosco Luganese 1172m  ours Bioggio 138m
+    45.979138,8.878674  want "Caslano"  theirs Caslano 997m  ours -
+    46.036222,9.049426  want "Albogasio"  theirs Albogasio 1571m  ours -
+    45.99084,8.913086  want "Montagnola"  theirs Montagnola 967m  ours -
+    46.036042,9.017497  want "Albogasio"  theirs Albogasio 2233m  ours -
+    45.96819,8.922356  want "Montagnola"  theirs Montagnola 1672m  ours Grancia 406m
+    45.981893,8.878746  want "Caslano"  theirs Caslano 1283m  ours Neggio 583m
+    46.005899,8.954647  want "Breganzona"  theirs Breganzona 2031m  ours -
+    45.973302,9.00844  want "Lanzo d'Intelvi"  theirs Lanzo d'Intelvi 1154m  ours -
+    45.977758,9.048331  want "Scaria"  theirs Scaria 968m  ours -
+    46.045195,8.868771  want "Fescoggia"  theirs Fescoggia 823m  ours -
+
+=== at VILLAGE_M=700, the distance of the village we pick ===
+  right (24): 56 63 67 71 122 129 139 171 182 194 198 261 302 358 387 406 468 498 516 534 563 573 669 691
+  wrong (5): 138 371 406 583 628
+
+=== threshold sweep, both cities (105 points: 47 scored, 58 unscored) ===
+  max	right	wrong	blank	label on unscored
+  700	24	5	18	1/58
+  800	25	5	17	2/58
+  900	26	6	15	2/58
+  1000	28	7	12	2/58
+  1100	29	8	10	2/58
+  1200	30	9	8	2/58
+  1400	30	10	7	4/58
+  1700	32	11	4	4/58
+  2000	34	11	2	6/58
+  2500	36	11	0	10/58
+  3500	36	11	0	13/58

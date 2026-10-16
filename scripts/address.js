@@ -5,10 +5,16 @@ const { project } = require('./mvt')
 
 // Thresholds measured against Nominatim (README.md, Address). Named roads: ours <= 223 m, dropped
 // at 408+; theirs <= 47 m, none >= 61 m. Neighbourhood hits <= 623 m, blanks >= 716 m; suburb hits
-// <= 2495 m, first wrong at 3206 m. Villages over 31 points: right to 586 m, wrong from 815 m;
-// hamlets wrong at every distance, so only kind_detail village counts. HOUSE_M and NEAR_M are
-// unmeasured. The figures predate cheap-ruler (0.2-0.5% higher), so each is a metre or two larger
-// now — well inside the gaps above.
+// <= 2495 m, first wrong at 3206 m. Hamlets are wrong at every distance, so only kind_detail
+// village counts. HOUSE_M and NEAR_M are unmeasured. The figures predate cheap-ruler (0.2-0.5%
+// higher), so each is a metre or two larger now — well inside the gaps above.
+//
+// VILLAGE_M is the exception: it separates nothing. Over 105 points in two cities the villages it
+// picks right reach 691 m and the ones it picks wrong start at 138 m, so no threshold splits them.
+// Nominatim names the municipality the point lies inside; this picks the nearest village point,
+// which in Ticino is often the neighbouring one. Every one of the 23 misses is a village the a/
+// gazetteer does hold and the threshold excludes, so raising it buys hits and wrong labels
+// together — at 2000 m, right 24 -> 34 and wrong 5 -> 11 (results/village-gap.txt).
 const HOUSE_M = 30
 const ROAD_M = 300
 const ROAD_ON_M = 50
