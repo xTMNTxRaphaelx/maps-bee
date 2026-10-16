@@ -1,8 +1,6 @@
 'use strict'
 const fs = require('bare-fs')
-const Corestore = require('corestore')
-const { load } = require('./keys')
-const { openDraft } = require('./publish')
+const { withDraft } = require('./publish')
 const { putGazetteer, gazKeys, areaKeys } = require('./gazetteer-lib')
 const { parseFlags, intFlag } = require('./flags')
 
@@ -16,19 +14,11 @@ async function main () {
   const [storeDir, keysDir, name, file] = args
   if (!storeDir || !keysDir || !name || !file) throw new Error('usage: gazetteer-put.js [--inline-value-size=N] [--areas] <storeDir> <keysDir> <draftName> <gazetteer.json>')
   const entries = JSON.parse(fs.readFileSync(file, 'utf8'))
-  const store = new Corestore(storeDir)
-  try {
-    const { draft, bee } = await openDraft(store, load(keysDir), name)
-    try {
-      const before = draft.length
-      const puts = await putGazetteer(bee, entries, { inlineValueSize, keys: areas ? areaKeys : gazKeys })
-      console.log(`${areas ? 'area' : 'gazetteer'} puts ${puts} draft.length ${draft.length} (+${draft.length - before}) byteLength ${draft.byteLength}`)
-    } finally {
-      await draft.close()
-    }
-  } finally {
-    await store.close()
-  }
+  await withDraft({ storeDir, keysDir, name }, async ({ draft, bee }) => {
+    const before = draft.length
+    const puts = await putGazetteer(bee, entries, { inlineValueSize, keys: areas ? areaKeys : gazKeys })
+    console.log(`${areas ? 'area' : 'gazetteer'} puts ${puts} draft.length ${draft.length} (+${draft.length - before}) byteLength ${draft.byteLength}`)
+  })
 }
 
 if (require.main === module) {

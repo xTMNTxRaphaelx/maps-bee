@@ -2,12 +2,10 @@
 const fs = require('bare-fs')
 const path = require('bare-path')
 const perf = require('bare-performance')
-const Corestore = require('corestore')
 const { Compression, tileIdToZxy } = require('pmtiles')
 const { openArchive, directories, readValues, readEntryTable, valueChunks } = require('./pmtiles-file')
 const { tileKey, mortonCode, mortonToXY } = require('./tiles')
-const { load } = require('./keys')
-const { openDraft } = require('./publish')
+const { withDraft } = require('./publish')
 const { parseFlags, intFlag } = require('./flags')
 
 const FLUSH_PUTS = 20000
@@ -257,23 +255,14 @@ function parseArgs (argv) {
 
 async function main () {
   const args = parseArgs(Bare.argv.slice(2))
-  const store = new Corestore(args.storeDir)
-  // a planet build runs for hours; a throw partway must still put the draft and the store down
-  try {
-    const { draft, bee } = await openDraft(store, load(args.keysDir), args.name)
-    try {
-      const progressFile = path.join(args.storeDir, 'planet-build.progress')
-      console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} sorted ${args.sorted} inlineValueSize ${args.inlineValueSize ?? 'default'} flushPuts ${args.flushPuts ?? FLUSH_PUTS} flushBytes ${args.flushBytes ?? FLUSH_BYTES} progress ${progressFile}`)
-      const totals = await buildPlanet(bee, args.archives, { ...args, progressFile })
-      const last = totals.lastKey ? await bee.get(totals.lastKey) : null
-      console.log(`done puts ${totals.puts} bytes ${totals.bytes} flushes ${totals.flushes} fillerRuns ${totals.fillerRuns} fillerTiles ${totals.fillerTiles} elapsed ${(totals.elapsedMs / 1000).toFixed(1)} s`)
-      console.log(`draft.length ${draft.length} byteLength ${draft.byteLength} lastKey ${totals.lastKey ? totals.lastKey.toString() : null} readable ${!!last}`)
-    } finally {
-      await draft.close()
-    }
-  } finally {
-    await store.close()
-  }
+  await withDraft(args, async ({ draft, bee }) => {
+    const progressFile = path.join(args.storeDir, 'planet-build.progress')
+    console.log(`draft ${args.name} length ${draft.length} resume ${args.resume} sorted ${args.sorted} inlineValueSize ${args.inlineValueSize ?? 'default'} flushPuts ${args.flushPuts ?? FLUSH_PUTS} flushBytes ${args.flushBytes ?? FLUSH_BYTES} progress ${progressFile}`)
+    const totals = await buildPlanet(bee, args.archives, { ...args, progressFile })
+    const last = totals.lastKey ? await bee.get(totals.lastKey) : null
+    console.log(`done puts ${totals.puts} bytes ${totals.bytes} flushes ${totals.flushes} fillerRuns ${totals.fillerRuns} fillerTiles ${totals.fillerTiles} elapsed ${(totals.elapsedMs / 1000).toFixed(1)} s`)
+    console.log(`draft.length ${draft.length} byteLength ${draft.byteLength} lastKey ${totals.lastKey ? totals.lastKey.toString() : null} readable ${!!last}`)
+  })
 }
 
 module.exports = { buildPlanet, stallWatch }

@@ -18,6 +18,24 @@ async function openDraft (store, keyPairs, name = 'draft') {
   return { m, draft, bee }
 }
 
+// The draft of a key set with the store around it, put down however fn ends: a planet build or a
+// chunked commit runs for hours, and a throw partway must still close both. fn is handed the
+// key pairs along with the draft, since committing one needs them again.
+async function withDraft ({ storeDir, keysDir, name = 'draft' }, fn) {
+  const keyPairs = load(keysDir)
+  const store = new Corestore(storeDir)
+  try {
+    const open = await openDraft(store, keyPairs, name)
+    try {
+      return await fn({ ...open, keyPairs })
+    } finally {
+      await open.draft.close()
+    }
+  } finally {
+    await store.close()
+  }
+}
+
 // signers a (0) and b (1); c is the spare. A commit reads every block it moves into memory at once
 // (hypercore session-state.js:912-931), so a large draft is committed in chunks of `chunk` blocks,
 // each signed at its own length; the draft's dependency advances with every commit (:1086-1091).
@@ -40,26 +58,17 @@ function mapsLine (m) {
 
 async function main () {
   const [storeDir, keysDir, ...archives] = Bare.argv.slice(2)
-  const keyPairs = load(keysDir)
-  const store = new Corestore(storeDir)
   // the "already has N blocks" throw lands after openDraft has opened the store and the draft
-  try {
-    const { m, draft, bee } = await openDraft(store, keyPairs)
-    try {
-      if (m.length > 0) throw new Error(`core already has ${m.length} blocks; use an empty store dir`)
-      await buildBee(bee, archives)
-      const res = await commitDraft(m, draft, keyPairs)
-      console.log(`commit ${JSON.stringify(res)} draft.length ${draft.length} m.length ${m.length} m.signedLength ${m.signedLength}`)
-      console.log(mapsLine(m))
-    } finally {
-      await draft.close()
-    }
-  } finally {
-    await store.close()
-  }
+  await withDraft({ storeDir, keysDir }, async ({ m, draft, bee, keyPairs }) => {
+    if (m.length > 0) throw new Error(`core already has ${m.length} blocks; use an empty store dir`)
+    await buildBee(bee, archives)
+    const res = await commitDraft(m, draft, keyPairs)
+    console.log(`commit ${JSON.stringify(res)} draft.length ${draft.length} m.length ${m.length} m.signedLength ${m.signedLength}`)
+    console.log(mapsLine(m))
+  })
 }
 
-module.exports = { openDraft, commitDraft, mapsLine }
+module.exports = { openDraft, withDraft, commitDraft, mapsLine }
 
 if (require.main === module) {
   main().catch((err) => {
