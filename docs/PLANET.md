@@ -4,9 +4,16 @@ The runbook for the design the client actually reads: zoom 10 complete, zoom 14 
 15 split into quadrants, plus the `g/` and `a/` gazetteers. `docs/SETUP.md`'s planet section records
 the 20261012 build, which stopped at zoom 14; this supersedes it.
 
-Nothing here has been run end to end. Every number below is marked **measured** (it comes from a
-file in `results/`) or **estimated** (arithmetic from a measured number, with the basis given).
-Record what actually happens — a run that disagrees with an estimate here is the estimate's problem.
+Steps 1, 3 and 4 were run end to end on 2026-10-16, without zoom 15: z10 complete plus z14 in four
+quadrants, then both gazetteers, committed to **5,824,622 blocks / 36,715,803,243 bytes**. z10 put
+1,048,576 tiles, the four z14 quadrants 31,839,926 between them, `g/` 111,548 cities and towns.
+Step 2 and the zoom 15 runs are still only described here. A z14-topped atlas is a working one —
+`preview.js` walks `[15, 14, 10]` and stops at the first tier that answers — it just cannot serve
+house numbers, which only exist at z15.
+
+Every number below is marked **measured** (it comes from a file in `results/`) or **estimated**
+(arithmetic from a measured number, with the basis given). Record what actually happens — a run
+that disagrees with an estimate here is the estimate's problem.
 
 ## Before starting
 
