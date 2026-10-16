@@ -5,7 +5,11 @@
 // that ambiguity cost an hour at the end of a planet build. This resolves it — if the addresses
 // come back here, the atlas is good and the problem is the network.
 //
-// usage: local-check.js <storeDir> <coreKey> <lat,lon>...
+// --json also dumps the whole address object, which is what distinguishes "nothing was found" from
+// "something was found and display() dropped it": a road beyond ROAD_ON_M stays in the object and
+// out of the string, so a pin that is not on a street shows the city alone and looks empty.
+//
+// usage: local-check.js [--json] <storeDir> <coreKey> <lat,lon>...
 const Corestore = require('corestore')
 const Hyperbee = require('hyperbee2')
 const HypercoreId = require('hypercore-id-encoding')
@@ -16,10 +20,10 @@ const { parseFlags } = require('./flags')
 const TIMEOUT = 5000
 
 async function main () {
-  const { args } = parseFlags(Bare.argv.slice(2), [])
+  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--json'])
   const [storeDir, id, ...rest] = args
   if (!storeDir || !id || rest.length === 0) {
-    throw new Error('usage: local-check.js <storeDir> <coreKey> <lat,lon>...')
+    throw new Error('usage: local-check.js [--json] <storeDir> <coreKey> <lat,lon>...')
   }
   const points = parsePoints(rest)
   // read-only, so this runs against a store a seeder already holds open
@@ -35,6 +39,7 @@ async function main () {
     for (const point of points) {
       const r = await readPreview(bee, point, { timeout: TIMEOUT })
       console.log(`${point.lat},${point.lon}\tzoom ${r.zoom}\ttiles ${tilesPresent(r)}/4\tlabel ${labelText(r.label)}\taddress ${r.address ? r.address.display : 'null'}`)
+      if (flags.has('--json')) console.log(JSON.stringify(r.address, null, 1))
     }
   } finally {
     await store.close()
