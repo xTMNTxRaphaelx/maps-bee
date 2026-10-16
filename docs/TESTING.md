@@ -137,9 +137,11 @@ Four things the small fixtures cannot reach. Each has a specific expected outcom
    it must **never fire**. If it does, suspect the download, not the code — re-cut the extract.
 
 3. **The gazetteer pass.** Level-9 gzip on every tile in the world used to run and be discarded
-   here; `gz` is now a lazy getter. SETUP budgets ~2 min for this pass from before that change, so
-   **expect it to come in meaningfully under 2 min**. This is the one performance fix with a
-   measurable prediction — record the `time` output either way.
+   here; `gz` is now a lazy getter. The pass also walks the archive's tile entries now rather than
+   the bbox rectangle, so the 1,048,576-tile z10 rectangle costs the 478,575 entries the archive
+   holds. SETUP budgets ~2 min for this pass from before either change, so **expect it to come in
+   meaningfully under 2 min**. This is the one performance fix with a measurable prediction —
+   record the `time` output either way, and the `walk entries ... fillerRuns ...` line with it.
 
 4. **Handle and store cleanup.** The archive fd and the store now close in `finally` rather than as
    the last statement of the happy path, so an interrupted or failed build releases them too. Kill

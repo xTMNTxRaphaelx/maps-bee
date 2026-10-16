@@ -41,8 +41,8 @@ PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-
 Expected tail of `npm test`:
 
 ```
-# tests = 82/82 pass
-# asserts = 867/867 pass
+# tests = 84/84 pass
+# asserts = 871/871 pass
 # ok
 ```
 
@@ -66,7 +66,7 @@ zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe.
 | zoom 14 extract | about 2.5 h | 31 GB |
 | build, publisher flags | about 7 min | 35 GB store |
 | gazetteer pass over zoom 10 | about 2 min | 12 MB |
-| area pass over zoom 13 | hours, it walks the z13 rectangle | about 100 MB |
+| area pass over zoom 13 | with the z13 tile entries, not the rectangle | about 100 MB |
 | signed commit | about 2 min | |
 
 ```sh

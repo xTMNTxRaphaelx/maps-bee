@@ -1,0 +1,45 @@
+# The gazetteer pass driven by tile entries instead of the bbox rectangle, 2026-10-16
+
+What the rectangle costs when it is empty. Both runs are the same command on the same archive,
+before and after the change; the output JSON is byte-identical across them.
+
+## the z13 world rectangle — 67,108,864 tiles, over an archive holding 64 of them
+
+This is the shape of the planet area pass in docs/SETUP.md, in miniature.
+
+bare scripts/gazetteer.js <out> --areas data/extract/jaipur-z11-14.pmtiles -180,-85.05,180,85.05 13 13
+
+before  real 2m0.658s   user 2m27.315s  sys 0m32.853s   281 areas
+after   real 0m0.099s   user 0m0.057s   sys 0m0.066s    281 areas
+        walk entries 330 tiles 64 dirs 1 fillerRuns 0 fillerTiles 0 runBlobs 0  sort ms 0  ms 1
+
+Two minutes of it was asking for 67.1M tiles that are not there, with every lookup resolving
+against a root directory already in memory. On the planet each miss also has to find and decode a
+leaf directory, so that floor only rises, and the real tiles come on top of it.
+
+## the z10 world rectangle — 1,048,576 tiles, over an archive holding 624 of them
+
+bare scripts/gazetteer.js <out> data/extract/rajasthan-z10.pmtiles -180,-85.05,180,85.05 10 10
+
+before  real 0m2.419s   27,533 localities
+after   real 0m0.279s   27,533 localities, read in 1 coalesced read (test/gazetteer.js)
+
+## why the planet archives are so much smaller than their rectangles
+
+From results/planet-c1-sorted.txt, build 20261012:
+
+| archive | rectangle | tile entries | tiles after runs | filler runs |
+| --- | ---: | ---: | ---: | ---: |
+| planet z10 | 1,048,576 | 478,575 | 1,048,576 | — expanded at z<=10 |
+| planet z14 | 268,435,456 | 39,501,064 | 31,839,637 | 7,661,427 runs / 236,595,819 tiles |
+
+A run is one blob repeated over consecutive tile ids — the empty ocean. The pass probes each
+distinct run blob once and skips the run when it holds no place, so those 236.6M tiles cost 236.6M
+nothing instead of 236.6M decodes.
+
+## unchanged output
+
+The four gazetteer artifacts docs/SETUP.md builds — gazetteer.json, gazetteer-lugano.json,
+areas.json, areas-lugano.json — are byte-identical before and after, which is the point of packing
+the visit order as (deepest zoom, then row-major): the dedupe keeps the first point it sees for a
+name, so the order is part of the output.

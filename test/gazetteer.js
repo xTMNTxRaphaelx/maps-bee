@@ -5,9 +5,10 @@ const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { lonLatToTile, quadkey, subtreeRange } = require('../scripts/tiles')
 const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer } = require('../scripts/gazetteer-lib')
-const { collect } = require('../scripts/gazetteer')
+const { collect, collectFrom } = require('../scripts/gazetteer')
+const { openArchive } = require('../scripts/pmtiles-file')
 const { readLabel } = require('../scripts/preview')
-const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE, GAZETTEER_JSON: GAZ } = require('./helpers')
+const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE, STATE_ARCHIVE, GAZETTEER_JSON: GAZ } = require('./helpers')
 const { cities } = require('./atlas')
 
 
@@ -58,9 +59,39 @@ test('collect keeps only the requested kinds', async (t) => {
   await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), all)
   await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), some, new Set(['city', 'town']))
   t.comment(`localities ${all.entries.length}, city+town ${some.entries.length}`)
-  t.ok(some.entries.length > 0)
+  // this archive on its own; results/gazetteer.txt shows 74 for the same archive because the
+  // Rajasthan pass ran first there and its entries had already claimed the shared names
+  t.is(all.entries.length, 98)
+  t.is(some.entries.length, 1)
   t.ok(some.entries.every((e) => e.kind_detail === 'city' || e.kind_detail === 'town'), 'only city and town')
   t.ok(some.entries.length < all.entries.length, 'fewer than every locality')
+})
+
+// An inverted bbox selects no tiles, which looks exactly like an archive that holds none
+test('collect refuses an inverted bbox', async (t) => {
+  const counts = { regionFeatures: 0, entries: [] }
+  await t.exception.all(collect(JAIPUR_ARCHIVE, [75.95, 26.75, 75.65, 27.05], 11, 14, new Map(), counts), /bbox is inverted/)
+})
+
+// The pass is driven by the archive's tile entries, not by the bbox. This bbox spans the world,
+// so the rectangle it used to walk is 1,048,576 tiles at z10 against the 624 the archive holds —
+// the shape of the planet area pass, where that rectangle is 67.1M tiles. Reads must stay with the
+// entries: a rectangle walk asks for every tile of the world separately.
+test('a world bbox costs the archive, not the rectangle', async (t) => {
+  const archive = openArchive(STATE_ARCHIVE)
+  t.teardown(() => archive.close())
+  const header = await archive.getHeader()
+  const getBytes = archive.source.getBytes.bind(archive.source)
+  let reads = 0
+  archive.source.getBytes = (offset, length) => {
+    reads++
+    return getBytes(offset, length)
+  }
+  const counts = { regionFeatures: 0, entries: [] }
+  await collectFrom(archive, header, [-180, -85.05, 180, 85.05], 10, 10, new Map(), counts)
+  t.comment(`world bbox at z10: ${counts.entries.length} localities in ${reads} reads`)
+  t.is(counts.entries.length, 27533)
+  t.ok(reads < 20, `reads with the entries, not the rectangle (${reads})`)
 })
 
 test('putGazetteer writes sorted g/ keys and readLabel finds Jaipur', async (t) => {

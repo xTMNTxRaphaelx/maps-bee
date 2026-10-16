@@ -98,14 +98,19 @@ function parseTileKey(key) {
   return { z: Number(zs), x, y };
 }
 
-// bbox = [minLon, minLat, maxLon, maxLat]
-function* bboxTiles(bbox, z) {
+// bbox = [minLon, minLat, maxLon, maxLat]. An inverted bbox spans an empty range and selects no
+// tiles, which reads as an archive with none; a bbox crossing the antimeridian is inverted in lon
+// and is not supported.
+function assertBbox(bbox) {
   const [minLon, minLat, maxLon, maxLat] = bbox;
-  // an inverted bbox walks an empty range and yields nothing, which reads as an archive with no
-  // tiles; a bbox crossing the antimeridian is inverted in lon and is not supported
   if (minLon > maxLon || minLat > maxLat) {
     throw new RangeError(`bbox is inverted: ${bbox.join(",")}`);
   }
+}
+
+function* bboxTiles(bbox, z) {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  assertBbox(bbox);
   const tl = lonLatToTile(minLon, maxLat, z);
   const br = lonLatToTile(maxLon, minLat, z);
   for (let y = tl.y; y <= br.y; y++) {
@@ -133,6 +138,7 @@ module.exports = {
   zz,
   tileKey,
   parseTileKey,
+  assertBbox,
   bboxTiles,
   subtreeRange,
   parseBbox,
