@@ -4,6 +4,12 @@ const { openArchive, readTile } = require('./pmtiles-file')
 const { bboxTiles, tileKey } = require('./tiles')
 
 // Writes every present tile of the archives into bee, one write batch per zoom.
+// The bbox rectangle is the right walk here and only here: an extract is clipped to its own bbox,
+// so the rectangle is the data, where on a planet archive it is 67M lookups for a few million tiles
+// (gazetteer.js, planet-build.js both walk the directory entries instead). This path also re-gzips
+// through readTile rather than copying the archive's stored bytes, and the two differ — 40 of 40
+// tiles sampled — so moving it to the entry walk would rewrite every value in store/signed, and
+// with it PUBLISHED_LENGTH and the exact block counts the sparse tests assert.
 async function buildBee (bee, paths, log = console.log) {
   // opened up front so the finally below closes every fd on any throw, including one from
   // getHeader partway through the list; openArchive itself touches no fd until the first read
