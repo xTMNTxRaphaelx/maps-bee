@@ -84,46 +84,41 @@ function cellRanges (point, queryZoom, keyZoom, prefix) {
   return ranges
 }
 
+// Every place in a set of key ranges, the ranges streamed in parallel on a request list each so a
+// throw in any one of them cancels the requests of all of them. A value that is not a place entry
+// is skipped rather than thrown on.
+async function scanPlaces (bee, ranges, opts, requests, onPlace) {
+  const lists = ranges.map(() => requests.list())
+  try {
+    await Promise.all(ranges.map(async (range, i) => {
+      for await (const e of bee.createReadStream({ ...range, ...readOpts(opts, lists[i]) })) {
+        const p = parsePlace(e.value)
+        if (p) onPlace(p)
+      }
+    }))
+  } catch (err) {
+    for (const l of lists) Hypercore.destroyRequests(l, err)
+    throw err
+  }
+}
+
 // Every a/ area label near the point, for deriveAddress to measure and threshold. Queried over a
 // 3x3 of AREA_QUERY_ZOOM rather than the z8 sweep readLabel uses: the area thresholds top out at
 // 3 km, so a wide sweep would read every neighbourhood for hundreds of km in a dense city.
 // Empty means the bee has no a/ keys, or none near: deriveAddress falls back to the tiles either way.
 async function readAreas (bee, point, opts = {}, requests = new Requests()) {
-  const ranges = cellRanges(point, AREA_QUERY_ZOOM, AREA_ZOOM, 'a/')
-  const lists = ranges.map(() => requests.list())
   const out = []
-  try {
-    await Promise.all(ranges.map(async (range, i) => {
-      for await (const e of bee.createReadStream({ ...range, ...readOpts(opts, lists[i]) })) {
-        const p = parsePlace(e.value)
-        if (p) out.push(p)
-      }
-    }))
-  } catch (err) {
-    for (const l of lists) Hypercore.destroyRequests(l, err)
-    throw err
-  }
+  await scanPlaces(bee, cellRanges(point, AREA_QUERY_ZOOM, AREA_ZOOM, 'a/'), opts, requests, (p) => out.push(p))
   return out
 }
 
 // nearest city or town in the point's z8 cell and its 8 neighbours
 async function readLabel (bee, point, opts = {}, requests = new Requests()) {
-  const ranges = cellRanges(point, LABEL_ZOOM, GAZ_ZOOM, 'g/')
-  const lists = ranges.map(() => requests.list())
   let best = null
-  try {
-    await Promise.all(ranges.map(async (range, i) => {
-      for await (const e of bee.createReadStream({ ...range, ...readOpts(opts, lists[i]) })) {
-        const p = parsePlace(e.value)
-        if (!p) continue
-        const km = haversineKm(point, p)
-        if (!best || km < best.km) best = { name: p.name, kind: p.kind_detail, km }
-      }
-    }))
-  } catch (err) {
-    for (const l of lists) Hypercore.destroyRequests(l, err)
-    throw err
-  }
+  await scanPlaces(bee, cellRanges(point, LABEL_ZOOM, GAZ_ZOOM, 'g/'), opts, requests, (p) => {
+    const km = haversineKm(point, p)
+    if (!best || km < best.km) best = { name: p.name, kind: p.kind_detail, km }
+  })
   return best
 }
 
