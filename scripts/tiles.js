@@ -120,8 +120,12 @@ function subtreeRange (z, parentQuadkey, prefix = '') {
   return { gte: b4a.from(p), lt: b4a.from(p + '4') }
 }
 
+// A bbox string from the command line. Unchecked, "26.8,75.7,26.9" and a misspelt filename in the
+// slot both give a bbox of NaNs, which selects no tiles and reports a successful empty run.
 function parseBbox (s) {
-  return s.split(',').map(Number)
+  const bbox = String(s).split(',').map(Number)
+  if (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v))) throw new RangeError(`bad bbox: ${s}`)
+  return bbox
 }
 
 module.exports = {

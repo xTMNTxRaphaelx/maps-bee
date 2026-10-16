@@ -12,7 +12,7 @@
 const CheapRuler = require('cheap-ruler').default
 const { openArchive, readTile } = require('./pmtiles-file')
 const { decode, project } = require('./mvt')
-const { lonLatToTile } = require('./tiles')
+const { lonLatToTile, parseBbox } = require('./tiles')
 const { parseFlags } = require('./flags')
 
 const SPREAD_M = 25
@@ -85,8 +85,7 @@ async function main () {
   if (!file || !bboxArg || !nArg) {
     throw new Error('usage: fixture-points.js <z15 archive> <minLon,minLat,maxLon,maxLat> <n> [seed]')
   }
-  const bbox = bboxArg.split(',').map(Number)
-  if (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v))) throw new Error(`bad bbox: ${bboxArg}`)
+  const bbox = parseBbox(bboxArg)
   const n = Number(nArg)
   if (!Number.isInteger(n) || n < 3) throw new Error(`n must be an integer >= 3, got ${nArg}`)
   const rand = rng(seedArg === undefined ? 1 : Number(seedArg))

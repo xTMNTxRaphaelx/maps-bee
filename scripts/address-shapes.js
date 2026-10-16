@@ -11,7 +11,7 @@
 const fs = require('bare-fs')
 const { openArchive, readTile } = require('./pmtiles-file')
 const { decode, project } = require('./mvt')
-const { lonLatToTile, pinTiles } = require('./tiles')
+const { lonLatToTile, parseBbox, pinTiles } = require('./tiles')
 const { parseFlags } = require('./flags')
 const { areaClass } = require('./gazetteer-lib')
 const { DETAIL_ZOOM } = require('./preview')
@@ -104,8 +104,7 @@ async function main () {
   if (!fixture || !midFile || !z15File || !bboxArg || !gazFile) {
     throw new Error('usage: address-shapes.js <fixture.json> <z11-14 archive> <z15 archive> <bbox> <gazetteer.json>')
   }
-  const bbox = bboxArg.split(',').map(Number)
-  if (bbox.length !== 4 || bbox.some((v) => !Number.isFinite(v))) throw new Error(`bad bbox: ${bboxArg}`)
+  const bbox = parseBbox(bboxArg)
 
   const entries = JSON.parse(fs.readFileSync(fixture, 'utf8'))
   const cities = JSON.parse(fs.readFileSync(gazFile, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')

@@ -1,6 +1,6 @@
 'use strict'
 const test = require('brittle')
-const { pinTiles, mortonCode, mortonToXY, quadkey } = require('../scripts/tiles')
+const { pinTiles, mortonCode, mortonToXY, parseBbox, quadkey } = require('../scripts/tiles')
 
 test('pinTiles: the 2x2 the pin leans into, row-major from the top-left', (t) => {
   t.alike(pinTiles(75.8, 26.9, 14), {
@@ -17,6 +17,14 @@ test('pinTiles: the 2x2 the pin leans into, row-major from the top-left', (t) =>
   t.is(north.tiles[0], null, 'no row above row 0')
   t.is(north.tiles[1], null, 'no row above row 0')
   t.alike(north.tiles.slice(2).map(([, y]) => y), [0, 0])
+})
+
+// a bbox of NaNs selects no tiles, so an unchecked one reports a successful empty run
+test('parseBbox takes four finite numbers and nothing else', async (t) => {
+  t.alike(parseBbox('8.9,45.9,9.1,46.1'), [8.9, 45.9, 9.1, 46.1])
+  for (const s of ['8.9,45.9,9.1', '8.9,45.9,9.1,46.1,0', 'data/lugano.pmtiles', '8.9,45.9,9.1,x', '']) {
+    await t.exception.all(() => parseBbox(s), /bad bbox/, `rejects ${JSON.stringify(s)}`)
+  }
 })
 
 test('mortonCode is the quadkey in base 4 and mortonToXY inverts it', (t) => {
