@@ -45,48 +45,63 @@ Two things follow, and both are silent failures rather than loud ones:
 
 ## 1. Zoom 10 and zoom 14
 
+**Cut z14 in the same four quadrants as z15, each in a retry loop. One 32 GB cut does not
+complete.** The bboxes are in step 2; `--download-threads=8 --overfetch=0.2` and the `until` loop
+are not optional on a home link.
+
 ```sh
-./tools/pmtiles extract $S data/planet-z10.pmtiles --minzoom=10 --maxzoom=10   # measured 2.2 GB, minutes
-./tools/pmtiles extract $S data/planet-z14.pmtiles --minzoom=14 --maxzoom=14   # measured ~31 GB, ~2.5 h
+./tools/pmtiles extract $S data/planet-z10.pmtiles --minzoom=10 --maxzoom=10   # measured 2.2 GB, 2m17s
+
+# then once per quadrant, bboxes from step 2
+until ./tools/pmtiles extract $S data/planet-z14-nw.pmtiles \
+  --bbox=-180,0.0001,-0.0001,85.0511 --minzoom=14 --maxzoom=14 \
+  --download-threads=8 --overfetch=0.2; do echo "reset — retrying in 30s"; sleep 30; done
 
 $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
   --inline-value-size=0 store/planet keys atlas 10 \
-  data/planet-z10.pmtiles data/planet-z14.pmtiles 2>&1 | tee results/planet-build-z10-z14.txt
+  data/planet-z10.pmtiles 2>&1 | tee results/planet-build-z10.txt
+# then one run per z14 quadrant, NW NE SW SE, same store and draft
 ```
 
-These two go in one run: their zooms do not overlap. **Measured** on 20261012: `done puts 32888213
-bytes 35221625742`, about 7 minutes. Keep `data/planet-z14.pmtiles` — step 4 harvests from it.
+z10 goes in on its own and each quadrant follows in NW, NE, SW, SE order: `checkZoomOrder` rejects
+two archives sharing a zoom in one invocation, and the keys still ascend across runs
+(`10/` < `14/0…` < `14/1…` < `14/2…` < `14/3…`). Each quadrant is far under the 67.1M entry cap —
+the whole zoom is 39,501,064 entries (**measured**, 20261012). Keep the quadrants: step 4 harvests
+the areas from them, and `gazetteer.js` takes all four as repeated `<archive> <bbox> <minz> <maxz>`
+groups in one command. **Measured** on 20261012 for the whole zoom in one run: `done puts 32888213
+bytes 35221625742`, about 7 minutes of build time.
 
-**Use `--download-threads=16` on the z14 cut. The default 4 did not finish.** **Measured**
-2026-10-16 on a 32 GB cut with the defaults (`--download-threads=4 --overfetch=0.05`): 31 of 32 GB
-arrived in 38 minutes at 13.5 MB/s, then the tail decayed without converging — 1.4 MB/s at 96%,
-83 kB/s and 67 kB/s at 99%, 3.5 kB/s, 1.7 kB/s at 1h46m, with the bar still on 99% and its ETA
-*growing* from 11 to 23 minutes. Killed there. At 1.7 kB/s the remaining 1% of 32 GB is days away.
+**Measured** 2026-10-16, cutting z14 over a home connection, each line a separate attempt:
 
-The shape itself is normal and the same run appears in miniature on the z10 cut, which decayed to
-1.2 kB/s at 99% and then completed, 2m17s in total. The bulk is large contiguous chunks that
-coalesce into few requests — z10 took 2.2 GB in 416 requests, 5.3 MB each — while the tail is many
-tiny scattered ones, so it is round-trip-bound and the transfer rate stops measuring progress. What
-breaks on a 32 GB cut is that `lsof` showed **one** ESTABLISHED connection: three of the four
-threads had drained their queue and the last one was serialising the remainder. More threads is the
-fix; `--overfetch` is not, since 5.3 MB per request is already well coalesced.
+| cut | threads | overfetch | requests | outcome |
+| --- | ---: | ---: | ---: | --- |
+| z10, 2.2 GB | 4 | 0.05 | 416 | completed, 2m17s |
+| z14 whole, 32 GB | 4 | 0.05 | 49,844 | tail diverged, killed at 1h46m |
+| z14 whole, 32 GB | 16 | 0.05 | 49,844 | connection reset at 83%, 20m |
+| z14 NW, 12 GB | 16 | 0.2 | 12,011 | connection reset at 89%, 7m53s |
+| z14 NW, 12 GB | 8 | 0.2 | 12,016 | tail diverged, then **completed on the loop's retry, 22m31s** |
 
-Reading it while it runs: the ETA extrapolates from bytes, and the bytes finish long before the
-work does, so it is meaningless once the bar reaches 99% — if it starts *growing*, the run is
-diverging. The output file stops growing at that point too, because the remaining writes land
-inside an extent already allocated, so only its mtime moves. A small nonzero rate with a live mtime
-means it is crawling, not frozen; neither tells you it will converge. Give the tail 20 minutes.
+So: 4 threads never gets reset but its tail does not converge on a large cut; 16 gets reset; 8 is
+the setting that finished. Overfetch 0.2 moved 915 KB per request against 642 KB at 0.05, and cost
+13 GB transferred for an 11 GB archive — worth it at this size, pointless on z10, whose 416
+requests already average 5.3 MB.
 
-`pmtiles extract` has no resume, so killing it discards the whole transfer: at fraction `f` done,
-restarting for a `k`-times speedup pays when `f < 1 - 1/k`. That rule assumes the remaining work is
-like the work done, which the tail is not — when it is the tail that has stalled, the restart is
-worth it well past halfway.
+The retry loop is what actually saved the run, so write it into the command rather than babysitting
+one: `pmtiles extract` neither resumes nor retries, so a single reset discards the whole transfer,
+and the quadrant split is what makes a retry cost 22 minutes instead of two hours.
 
-If 16 threads still tails, cut z14 in the four quadrants step 2 uses for z15. Four ~8 GB extracts
-each reach a proportionally shorter tail, a failure costs one of them, and the rest of the runbook
-is unaffected: z10 goes in on its own, the quadrants follow in NW, NE, SW, SE order into the same
-draft (`14/0…` < `14/1…` < `14/2…` < `14/3…`, each far under the 67.1M entry cap), and step 4's
-`gazetteer.js` takes all four as repeated `<archive> <bbox> <minz> <maxz>` groups in one command.
+Reading a run while it goes: the bulk is large contiguous chunks and the tail is thousands of tiny
+scattered ones, so the rate collapses near the end on every healthy run too — z10 fell to 1.2 kB/s
+at 99% and then finished. Rate alone tells you nothing. **The signal is the ETA's direction:** it
+extrapolates from bytes, the bytes finish long before the work does, and if it starts *growing*
+(11 → 23 minutes on the run above) the tail is diverging and will not land. The output file stops
+growing at that point too, since the remaining writes land inside an extent already allocated, so
+only its mtime moves; a small nonzero rate with a live mtime means crawling, not frozen. Give a
+tail 20 minutes, then kill it and let the loop start over.
+
+Not the cause, though both were suspected: the source build's age — the successful run used the
+same four-day-old 20261012 as the failures — and server-side throttling, since a fresh z10 cut hit
+full speed in the middle of it all.
 
 ## 2. Cut each zoom 15 quadrant and check it fits
 
