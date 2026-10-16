@@ -54,9 +54,23 @@ blocks the read fetches anyway for the two it keeps.
 
 Identical at both latencies — the saving is blocks, not round trips.
 
-## So
+## Decided 2026-10-16: not doing it
 
-A real but small saving, for no measured accuracy cost. The case against is coupling: the fetch
-would depend on the renderer's W, H and TILE, so changing the thumbnail's shape would silently
-change what the client downloads and how far the address can see. Undecided; `cropMask` lives in
-scripts/render-svg.js and nothing in the read path calls it yet.
+A real saving, for no measured accuracy cost, and still not worth it. Three reasons, in order:
+
+1. **0.6 blocks.** 4% off a 13-17 block preview, against prefetchTop(2) taking Jaipur from 60 blocks
+   to 13. The trim cannot do better than this: its ceiling is the blocks the dropped tiles do not
+   already share with the two kept, and the table above says that is usually one.
+2. **It would tie the fetch to the renderer.** preview.js would read W, H and TILE from
+   render-svg.js, so changing the thumbnail's shape would silently change what every client
+   downloads and how far deriveAddress can see — a rendering tweak with an accuracy consequence
+   nobody would think to re-measure.
+3. **An unmeasured failure mode at coverage boundaries.** readTiles returns null when every tile it
+   asked for is missing. Trimmed, it asks for two, so where z15 is a filler run on the ocean side of
+   a coastline the crop's two tiles can be absent while the dropped row's two exist, and the walk
+   falls to z14 where it renders z15 today. That may well look better; nothing here measured it.
+
+The code was removed rather than left unused: no `cropMask`, no shape D in address-shapes.js, no
+test/trim-cost.js. This file is the record, so the next person does not re-run it to learn the same
+thing. If client cost ever becomes the binding constraint, the accuracy answer above is already
+banked and the geometry is three lines.

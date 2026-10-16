@@ -73,7 +73,6 @@ if (missing.length > 0) {
   require('./cell-2x2')
   require('./top-levels')
   require('./render-svg')
-  require('./trim-cost')
   require('./app-ops')
 }
 

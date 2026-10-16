@@ -1,11 +1,9 @@
 'use strict'
-// Scores four address shapes on the same fixture points, to decide what the client should read:
-//   A  z14 2x2 + z15 pin tile, every part from tiles          (the shape before preview.js ZOOMS)
-//   B  z15 2x2, area parts from a gazetteer built at z13      (what preview.js reads today)
-//   C  z15 2x2 only, area parts from those tiles              (no gazetteer areas)
-//   D  B, but only the tiles the 640x360 crop covers          (the trim: fewer tiles, less reach)
-// A and B differing says z14 is load-bearing; B and C differing says the gazetteer areas are;
-// B and D differing is what the trim costs the address, against the tiles it saves.
+// Scores three address shapes on the same fixture points, to decide which zooms the bee needs:
+//   A  z14 2x2 + z15 pin tile, every part from tiles          (today's shape, plus z15)
+//   B  z15 2x2, area parts from a gazetteer built at z13      (no z14 in the bee)
+//   C  z15 2x2 only, area parts from those tiles              (no z14, no gazetteer areas)
+// A and B differing says z14 is load-bearing; B and C differing says the gazetteer areas are.
 //
 // usage: address-shapes.js <fixture.json> <z11-14 archive> <z15 archive> <bbox> <city gazetteer.json>
 const fs = require('bare-fs')
@@ -13,7 +11,6 @@ const CheapRuler = require('cheap-ruler').default
 const { openArchive, readTile } = require('./pmtiles-file')
 const { decode } = require('./mvt')
 const { lonLatToTile, pinTiles } = require('./tiles')
-const { pinOffset, cropMask } = require('./render-svg')
 const { parseFlags } = require('./flags')
 const { deriveAddress, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, ROAD_ON_M } = require('./address')
 
@@ -88,17 +85,10 @@ function nearestArea (index, point, cls, max) {
   return best
 }
 
-function maskFor (point, zoom) {
-  const { origin } = pinTiles(point.lon, point.lat, zoom)
-  return cropMask(pinOffset(point, origin, zoom))
-}
-
-async function cell (archive, point, zoom, count, mask = null) {
+async function cell (archive, point, zoom, count) {
   const out = []
-  const tiles = pinTiles(point.lon, point.lat, zoom).tiles
-  for (let i = 0; i < tiles.length; i++) {
-    const t = tiles[i]
-    if (!t || (mask && !mask[i])) continue
+  for (const t of pinTiles(point.lon, point.lat, zoom).tiles) {
+    if (!t) continue
     const tile = await readTile(archive, zoom, t[0], t[1])
     if (!tile) continue
     count.tiles++
@@ -160,9 +150,8 @@ async function main () {
   const index = await areaIndex(midFile, bbox)
   const mid = openArchive(midFile)
   const z15 = openArchive(z15File)
-  const acc = { A: blank(), B: blank(), C: blank(), D: blank() }
-  const cost = { A: { tiles: 0, bytes: 0 }, B: { tiles: 0, bytes: 0 }, D: { tiles: 0, bytes: 0 } }
-  let trimmed = 0
+  const acc = { A: blank(), B: blank(), C: blank() }
+  const cost = { A: { tiles: 0, bytes: 0 }, B: { tiles: 0, bytes: 0 } }
   try {
     for (const e of entries) {
       const point = { lon: e.lon, lat: e.lat }
@@ -187,17 +176,6 @@ async function main () {
       withAreas.display = display(withAreas)
       score(acc.B, withAreas, e.address)
       score(acc.C, base, e.address)
-
-      const mask = maskFor(point, 15)
-      if (mask.filter(Boolean).length < 4) trimmed++
-      const tilesD = await cell(z15, point, 15, cost.D, mask)
-      const trimBase = deriveAddress({ point, tiles: tilesD, label: city })
-      score(acc.D, {
-        ...trimBase,
-        neighbourhood: nearestArea(index, point, 'nb', NEIGHBOURHOOD_M),
-        suburb: nearestArea(index, point, 'sub', SUBURB_M),
-        village: nearestArea(index, point, 'vil', VILLAGE_M)
-      }, e.address)
     }
   } finally {
     await mid.close()
@@ -206,15 +184,13 @@ async function main () {
 
   const n = entries.length
   console.log(`${fixture}: ${n} points, ${index.length} area labels from z${AREA_ZOOM}`)
-  console.log('part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)     D(B trimmed)')
+  console.log('part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)')
   for (const p of PARTS) {
     const f = (k) => `${acc[k].hits[p]}/${acc[k].n[p]}`
-    console.log(`  ${p.padEnd(13)} ${f('A').padEnd(14)} ${f('B').padEnd(15)} ${f('C').padEnd(15)} ${f('D')}`)
+    console.log(`  ${p.padEnd(13)} ${f('A').padEnd(14)} ${f('B').padEnd(15)} ${f('C')}`)
   }
-  const col = (v) => v.padEnd(15)
-  console.log(`  ${'tiles/point'.padEnd(13)} ${col((cost.A.tiles / n).toFixed(1))}${col((cost.B.tiles / n).toFixed(1))}${col('')}${(cost.D.tiles / n).toFixed(1)}`)
-  console.log(`  ${'KiB/point'.padEnd(13)} ${col((cost.A.bytes / n / 1024).toFixed(1))}${col((cost.B.bytes / n / 1024).toFixed(1))}${col('')}${(cost.D.bytes / n / 1024).toFixed(1)}`)
-  console.log(`  ${'trimmed'.padEnd(13)} ${trimmed}/${n} points where the crop left a row out`)
+  console.log(`  ${'tiles/point'.padEnd(13)} ${(cost.A.tiles / n).toFixed(1).padEnd(14)} ${(cost.B.tiles / n).toFixed(1)}`)
+  console.log(`  ${'KiB/point'.padEnd(13)} ${(cost.A.bytes / n / 1024).toFixed(1).padEnd(14)} ${(cost.B.bytes / n / 1024).toFixed(1)}`)
 }
 
 if (require.main === module) {

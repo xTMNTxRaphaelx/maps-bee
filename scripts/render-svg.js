@@ -25,16 +25,6 @@ function pinOffset (point, origin, zoom) {
   return { x, y: f.y - origin.y }
 }
 
-// Which of the 2x2's four slots the W x H crop covers, row-major, given the pin's offset in tile
-// units from the 2x2 origin. The crop reaches half its width and half its height either side of the
-// pin, so a slot across the 1.0 boundary is needed only when the crop reaches into it. At W = TILE
-// the crop is a full tile wide and both columns always qualify; only rows ever drop out.
-function cropMask (offset) {
-  const cols = [offset.x - W / 2 / TILE < 1, offset.x + W / 2 / TILE > 1]
-  const rows = [offset.y - H / 2 / TILE < 1, offset.y + H / 2 / TILE > 1]
-  return [rows[0] && cols[0], rows[0] && cols[1], rows[1] && cols[0], rows[1] && cols[1]]
-}
-
 function pathFor (rings, ox, oy, s, close) {
   let d = ''
   for (const ring of rings) {
@@ -106,4 +96,4 @@ function renderThumbnail (tiles, pin) {
     '</svg>'
 }
 
-module.exports = { TILE, W, H, pinOffset, cropMask, renderThumbnail }
+module.exports = { TILE, W, H, pinOffset, renderThumbnail }
