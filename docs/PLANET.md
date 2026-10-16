@@ -57,18 +57,36 @@ $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 
 These two go in one run: their zooms do not overlap. **Measured** on 20261012: `done puts 32888213
 bytes 35221625742`, about 7 minutes. Keep `data/planet-z14.pmtiles` — step 4 harvests from it.
 
-**The z14 extract finishes in two phases, and the second looks like a hang.** **Measured**
+**Use `--download-threads=16` on the z14 cut. The default 4 did not finish.** **Measured**
 2026-10-16 on a 32 GB cut with the defaults (`--download-threads=4 --overfetch=0.05`): 31 of 32 GB
-arrived in 38 minutes at 13.5 MB/s average, then the last stretch crawled — 1.4 MB/s at 96%, 83
-kB/s at 99%, 67 kB/s three minutes later, still going past 1h20m. Nothing is wrong. The bulk is
-large contiguous chunks that coalesce into few requests; the tail is thousands of tiny scattered
-ones, four at a time, so it is round-trip-bound and the transfer rate stops meaning anything. The
-progress bar's ETA extrapolates from bytes and the bytes are already done, so it reads about
-11 minutes indefinitely — ignore it and watch the output file's size and mtime instead. A real
-hang is both of them frozen for several minutes, not a small nonzero rate.
+arrived in 38 minutes at 13.5 MB/s, then the tail decayed without converging — 1.4 MB/s at 96%,
+83 kB/s and 67 kB/s at 99%, 3.5 kB/s, 1.7 kB/s at 1h46m, with the bar still on 99% and its ETA
+*growing* from 11 to 23 minutes. Killed there. At 1.7 kB/s the remaining 1% of 32 GB is days away.
+
+The shape itself is normal and the same run appears in miniature on the z10 cut, which decayed to
+1.2 kB/s at 99% and then completed, 2m17s in total. The bulk is large contiguous chunks that
+coalesce into few requests — z10 took 2.2 GB in 416 requests, 5.3 MB each — while the tail is many
+tiny scattered ones, so it is round-trip-bound and the transfer rate stops measuring progress. What
+breaks on a 32 GB cut is that `lsof` showed **one** ESTABLISHED connection: three of the four
+threads had drained their queue and the last one was serialising the remainder. More threads is the
+fix; `--overfetch` is not, since 5.3 MB per request is already well coalesced.
+
+Reading it while it runs: the ETA extrapolates from bytes, and the bytes finish long before the
+work does, so it is meaningless once the bar reaches 99% — if it starts *growing*, the run is
+diverging. The output file stops growing at that point too, because the remaining writes land
+inside an extent already allocated, so only its mtime moves. A small nonzero rate with a live mtime
+means it is crawling, not frozen; neither tells you it will converge. Give the tail 20 minutes.
 
 `pmtiles extract` has no resume, so killing it discards the whole transfer: at fraction `f` done,
-restarting to gain a `k`-times speedup only pays when `f < 1 - 1/k`. Past halfway, finish.
+restarting for a `k`-times speedup pays when `f < 1 - 1/k`. That rule assumes the remaining work is
+like the work done, which the tail is not — when it is the tail that has stalled, the restart is
+worth it well past halfway.
+
+If 16 threads still tails, cut z14 in the four quadrants step 2 uses for z15. Four ~8 GB extracts
+each reach a proportionally shorter tail, a failure costs one of them, and the rest of the runbook
+is unaffected: z10 goes in on its own, the quadrants follow in NW, NE, SW, SE order into the same
+draft (`14/0…` < `14/1…` < `14/2…` < `14/3…`, each far under the 67.1M entry cap), and step 4's
+`gazetteer.js` takes all four as repeated `<archive> <bbox> <minz> <maxz>` groups in one command.
 
 ## 2. Cut each zoom 15 quadrant and check it fits
 
