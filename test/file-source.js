@@ -2,7 +2,7 @@
 const test = require('brittle')
 const fs = require('bare-fs')
 const path = require('bare-path')
-const { FileSource } = require('../scripts/pmtiles-file')
+const { FileSource, valueChunks } = require('../scripts/pmtiles-file')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 
@@ -83,6 +83,46 @@ test('concurrent getBytes open the file once', async (t) => {
   const [a, b, c] = await Promise.all([src.getBytes(0, 10), src.getBytes(10, 10), src.getBytes(20, 10)])
   t.is(opens, 1, 'one handle for three concurrent reads')
   t.is(a.data.byteLength + b.data.byteLength + c.data.byteLength, 30)
+})
+
+// Four entries whose file order is the reverse of their entry order, each 10 bytes of its own
+// index, so a value handed back under the wrong entry is visible.
+function fakeArchive (reads) {
+  const table = { offsets: Float64Array.from([30, 20, 10, 0]), lengths: Uint32Array.from([10, 10, 10, 10]) }
+  const source = {
+    getBytes (offset, length) {
+      reads.push(offset)
+      return { data: Buffer.alloc(length, (30 - offset) / 10).buffer }
+    }
+  }
+  return { archive: { source }, header: { clustered: false, tileDataOffset: 0 }, table }
+}
+
+// valueChunks is the read path the planet build and the gazetteer pass share. Both hand it a visit
+// order that is not file order, and both lean on the chunk bounds to cap what is held in memory.
+test('valueChunks bounds each chunk, reads in file order and returns values in visit order', async (t) => {
+  const reads = []
+  const { archive, header, table } = fakeArchive(reads)
+  const order = [{ entry: 0 }, { entry: 1 }, { entry: 2 }, { entry: 3 }, { entry: 0 }]
+  const seen = []
+  for await (const c of valueChunks(archive, header, order, table, { maxTiles: 3, maxBytes: Infinity })) {
+    seen.push({ tiles: c.tiles.length, read: c.read, values: c.tiles.map((x) => c.value(x)[0]) })
+  }
+  t.alike(seen, [
+    { tiles: 3, read: 3, values: [0, 1, 2] },
+    { tiles: 2, read: 5, values: [3, 0] }
+  ], 'two chunks of 3 and 2, each value under its own entry')
+  t.alike(reads, [10, 20, 30, 0, 30], 'each chunk reads its distinct entries in file order')
+
+  const byBytes = []
+  for await (const c of valueChunks(archive, header, order, table, { maxTiles: Infinity, maxBytes: 15 })) {
+    byBytes.push(c.tiles.length)
+  }
+  t.alike(byBytes, [2, 2, 1], 'bytes bound a chunk as well as tiles')
+
+  for await (const c of valueChunks(archive, header, [], table, { maxTiles: 3, maxBytes: 15 })) {
+    t.fail(`empty order yielded ${c.tiles.length} tiles`)
+  }
 })
 
 test('close releases the handle and a later read reopens', async (t) => {

@@ -7,7 +7,7 @@ const fs = require('bare-fs')
 const zlib = require('bare-zlib')
 const perf = require('bare-performance')
 const { Compression, tileIdToZxy } = require('pmtiles')
-const { openArchive, directories, readValues } = require('./pmtiles-file')
+const { openArchive, readValues, readEntryTable, valueChunks } = require('./pmtiles-file')
 const { assertBbox, lonLatToTile, parseBbox } = require('./tiles')
 const { parseFlags } = require('./flags')
 const { decodeGzip } = require('./mvt')
@@ -76,8 +76,8 @@ async function collect (path, bbox, minz, maxz, byName, counts, kinds = null, ar
   }
 }
 
-// Every tile of the archive the rectangle walk would have decoded, in that walk's order, with each
-// entry's offset and length so the values can be read in file order.
+// Every tile of the archive the rectangle walk would have decoded, in that walk's order, over the
+// archive's entry table so the values can be read in file order.
 async function collectTiles (archive, header, bbox, minz, maxz, kinds, areas, stats) {
   assertBbox(bbox)
   // the values come straight off the archive now rather than through getZxy, which decompressed
@@ -85,12 +85,11 @@ async function collectTiles (archive, header, bbox, minz, maxz, kinds, areas, st
   if (header.tileCompression !== Compression.Gzip) throw new Error(`tileCompression ${header.tileCompression} is not gzip`)
   if (header.maxZoom > MAX_ZOOM) throw new Error(`the pass packs zooms up to ${MAX_ZOOM}, archive has ${header.maxZoom}`)
   if (header.numTileEntries >= MAX_ENTRIES) throw new Error(`the pass packs up to ${MAX_ENTRIES} entries, archive has ${header.numTileEntries}`)
-  const n = header.numTileEntries
-  const tileIds = new Float64Array(n)
-  const runLengths = new Uint32Array(n)
-  const offsets = new Float64Array(n)
-  const lengths = new Uint32Array(n)
-  const keep = new Uint8Array(n)
+  const table = await readEntryTable(archive, header)
+  const { tileIds, runLengths, offsets, lengths } = table
+  stats.entries = table.count
+  stats.dirs = table.dirs
+  const keep = new Uint8Array(table.count)
   const ranges = new Map()
   const inRange = (z, x, y) => {
     if (z < minz || z > maxz) return false
@@ -103,55 +102,46 @@ async function collectTiles (archive, header, bbox, minz, maxz, kinds, areas, st
   }
   // one entry per distinct run blob: does it hold anything this pass keeps
   const probed = new Map()
-  for await (const { tiles } of directories(archive, header)) {
-    stats.dirs++
-    for (const e of tiles) {
-      if (stats.entries === n) throw new Error(`archive has more tile entries than its header's ${n}`)
-      const i = stats.entries++
-      tileIds[i] = e.tileId
-      runLengths[i] = e.runLength
-      offsets[i] = e.offset
-      lengths[i] = e.length
-      if (e.runLength === 1) {
-        const [z, x, y] = tileIdToZxy(e.tileId)
-        if (!inRange(z, x, y)) continue
-        keep[i] = 1
-        stats.tiles++
-        continue
-      }
-      // A run is one blob repeated over consecutive tile ids — on the planet, the empty ocean
-      // filler: 7.7M runs covering 236.6M tiles at z14. Probe each distinct blob once and skip the
-      // whole run when it holds nothing to harvest, rather than walking tiles that cannot
-      // contribute. A run that does hold a place is expanded tile by tile, because toGeoJSON puts
-      // the same local geometry at a different lon/lat in each tile of the run.
-      const [z0] = tileIdToZxy(e.tileId)
-      const [z1] = tileIdToZxy(e.tileId + e.runLength - 1)
-      if (z1 < minz || z0 > maxz) continue
-      let has = probed.get(e.offset)
-      if (has === undefined) {
-        stats.runBlobs++
-        const [value] = await readValues(archive, header, [{ offset: e.offset, length: e.length }])
-        has = hasKept(value, kinds, areas)
-        probed.set(e.offset, has)
-      }
-      if (!has) {
-        stats.fillerRuns++
-        stats.fillerTiles += e.runLength
-        continue
-      }
-      let kept = 0
-      for (let r = 0; r < e.runLength; r++) {
-        const [z, x, y] = tileIdToZxy(e.tileId + r)
-        if (inRange(z, x, y)) kept++
-      }
-      if (kept === 0) continue
+  for (let i = 0; i < table.count; i++) {
+    if (runLengths[i] === 1) {
+      const [z, x, y] = tileIdToZxy(tileIds[i])
+      if (!inRange(z, x, y)) continue
       keep[i] = 1
-      stats.tiles += kept
+      stats.tiles++
+      continue
     }
+    // A run is one blob repeated over consecutive tile ids — on the planet, the empty ocean
+    // filler: 7.7M runs covering 236.6M tiles at z14. Probe each distinct blob once and skip the
+    // whole run when it holds nothing to harvest, rather than walking tiles that cannot
+    // contribute. A run that does hold a place is expanded tile by tile, because toGeoJSON puts
+    // the same local geometry at a different lon/lat in each tile of the run.
+    const [z0] = tileIdToZxy(tileIds[i])
+    const [z1] = tileIdToZxy(tileIds[i] + runLengths[i] - 1)
+    if (z1 < minz || z0 > maxz) continue
+    let has = probed.get(offsets[i])
+    if (has === undefined) {
+      stats.runBlobs++
+      const [value] = await readValues(archive, header, [{ offset: offsets[i], length: lengths[i] }])
+      has = hasKept(value, kinds, areas)
+      probed.set(offsets[i], has)
+    }
+    if (!has) {
+      stats.fillerRuns++
+      stats.fillerTiles += runLengths[i]
+      continue
+    }
+    let kept = 0
+    for (let r = 0; r < runLengths[i]; r++) {
+      const [z, x, y] = tileIdToZxy(tileIds[i] + r)
+      if (inRange(z, x, y)) kept++
+    }
+    if (kept === 0) continue
+    keep[i] = 1
+    stats.tiles += kept
   }
   const packed = new BigUint64Array(stats.tiles)
   let k = 0
-  for (let i = 0; i < stats.entries; i++) {
+  for (let i = 0; i < table.count; i++) {
     if (keep[i] === 0) continue
     for (let r = 0; r < runLengths[i]; r++) {
       const [z, x, y] = tileIdToZxy(tileIds[i] + r)
@@ -162,15 +152,17 @@ async function collectTiles (archive, header, bbox, minz, maxz, kinds, areas, st
   const ts = perf.now()
   packed.sort()
   stats.sortMs = Math.round(perf.now() - ts)
-  return { packed, offsets, lengths }
+  return { packed, table }
 }
 
-function unpack (v) {
-  return {
-    z: MAX_ZOOM - Number(v >> Z_SHIFT),
-    y: Number((v >> Y_SHIFT) & COORD_MASK),
-    x: Number((v >> X_SHIFT) & COORD_MASK),
-    entry: Number(v & ENTRY_MASK)
+function * unpackAll (packed) {
+  for (const v of packed) {
+    yield {
+      z: MAX_ZOOM - Number(v >> Z_SHIFT),
+      y: Number((v >> Y_SHIFT) & COORD_MASK),
+      x: Number((v >> X_SHIFT) & COORD_MASK),
+      entry: Number(v & ENTRY_MASK)
+    }
   }
 }
 
@@ -202,27 +194,15 @@ function collectTile (value, { z, x, y }, bbox, byName, counts, kinds, areas) {
 async function collectFrom (archive, header, bbox, minz, maxz, byName, counts, kinds, areas = false, log = null) {
   const stats = { entries: 0, tiles: 0, dirs: 0, fillerRuns: 0, fillerTiles: 0, runBlobs: 0, sortMs: 0 }
   const tw = perf.now()
-  const { packed, offsets, lengths } = await collectTiles(archive, header, bbox, minz, maxz, kinds, areas, stats)
+  const { packed, table } = await collectTiles(archive, header, bbox, minz, maxz, kinds, areas, stats)
   if (log) log(`walk entries ${stats.entries} tiles ${stats.tiles} dirs ${stats.dirs} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles} runBlobs ${stats.runBlobs}\tsort ms ${stats.sortMs}\tms ${Math.round(perf.now() - tw)}`)
   const t0 = perf.now()
-  let j = 0
-  while (j < packed.length) {
-    const chunk = []
-    let bytes = 0
-    while (j < packed.length && chunk.length < CHUNK_TILES && bytes < CHUNK_BYTES) {
-      const t = unpack(packed[j++])
-      bytes += lengths[t.entry]
-      chunk.push(t)
-    }
-    // one coalesced read per chunk: the visit order is not file order, so the entries are sorted
-    // back into file order to read and then decoded in visit order
-    const entries = [...new Set(chunk.map((t) => t.entry))].sort((p, q) => offsets[p] - offsets[q])
-    const values = await readValues(archive, header, entries.map((e) => ({ offset: offsets[e], length: lengths[e] })))
-    const byEntry = new Map(entries.map((e, i) => [e, values[i]]))
-    for (const t of chunk) collectTile(byEntry.get(t.entry), t, bbox, byName, counts, kinds, areas)
+  const chunks = valueChunks(archive, header, unpackAll(packed), table, { maxTiles: CHUNK_TILES, maxBytes: CHUNK_BYTES })
+  for await (const c of chunks) {
+    for (const t of c.tiles) collectTile(c.value(t), t, bbox, byName, counts, kinds, areas)
     if (log) {
       const s = (perf.now() - t0) / 1000
-      log(`tile ${j}/${packed.length}\tkept ${counts.entries.length}\telapsed ${s.toFixed(1)} s\ttiles/s ${Math.round(j / s)}`)
+      log(`tile ${c.read}/${packed.length}\tkept ${counts.entries.length}\telapsed ${s.toFixed(1)} s\ttiles/s ${Math.round(c.read / s)}`)
     }
   }
   return stats

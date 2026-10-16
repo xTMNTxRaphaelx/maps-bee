@@ -4,7 +4,7 @@ const path = require('bare-path')
 const perf = require('bare-performance')
 const Corestore = require('corestore')
 const { Compression, tileIdToZxy } = require('pmtiles')
-const { openArchive, directories, readValues } = require('./pmtiles-file')
+const { openArchive, directories, readValues, readEntryTable, valueChunks } = require('./pmtiles-file')
 const { tileKey, mortonCode, mortonToXY } = require('./tiles')
 const { load } = require('./keys')
 const { openDraft } = require('./publish')
@@ -23,38 +23,28 @@ const MAX_SORTED_ENTRIES = 2 ** 26
 const MORTON_MASK = (1n << (Z_SHIFT - MORTON_SHIFT)) - 1n
 const ENTRY_MASK = (1n << MORTON_SHIFT) - 1n
 
-// Every tile the directory walk would put, in key order, with each entry's offset and length so
+// Every tile the directory walk would put, in key order, over the archive's entry table so the
 // values can be read in chunks of that order.
 async function collectSorted (archive, header, expandRunsUpToZoom) {
   if (header.maxZoom > MAX_SORTED_ZOOM) throw new Error(`sorted build packs zooms up to ${MAX_SORTED_ZOOM}, archive has ${header.maxZoom}`)
   if (header.numTileEntries >= MAX_SORTED_ENTRIES) throw new Error(`sorted build packs up to ${MAX_SORTED_ENTRIES} entries, archive has ${header.numTileEntries}`)
-  const tileIds = new Float64Array(header.numTileEntries)
-  const runLengths = new Uint32Array(header.numTileEntries)
-  const offsets = new Float64Array(header.numTileEntries)
-  const lengths = new Uint32Array(header.numTileEntries)
-  const stats = { entries: 0, tiles: 0, dirs: 0, fillerRuns: 0, fillerTiles: 0, sortMs: 0 }
-  for await (const { tiles } of directories(archive, header)) {
-    stats.dirs++
-    for (const e of tiles) {
-      if (stats.entries === header.numTileEntries) throw new Error(`archive has more tile entries than its header's ${header.numTileEntries}`)
-      const i = stats.entries++
-      tileIds[i] = e.tileId
-      runLengths[i] = e.runLength
-      offsets[i] = e.offset
-      lengths[i] = e.length
-      if (e.runLength === 1 || tileIdToZxy(e.tileId)[0] <= expandRunsUpToZoom) {
-        stats.tiles += e.runLength
-      } else {
-        stats.fillerRuns++
-        stats.fillerTiles += e.runLength
-      }
+  const table = await readEntryTable(archive, header)
+  const { tileIds, runLengths } = table
+  const stats = { entries: table.count, tiles: 0, dirs: table.dirs, fillerRuns: 0, fillerTiles: 0, sortMs: 0 }
+  // a run deeper than expandRunsUpToZoom is filler the build drops, so it takes no slot in packed
+  const expanded = (i) => runLengths[i] === 1 || tileIdToZxy(tileIds[i])[0] <= expandRunsUpToZoom
+  for (let i = 0; i < stats.entries; i++) {
+    if (expanded(i)) {
+      stats.tiles += runLengths[i]
+    } else {
+      stats.fillerRuns++
+      stats.fillerTiles += runLengths[i]
     }
   }
   const packed = new BigUint64Array(stats.tiles)
   let k = 0
   for (let i = 0; i < stats.entries; i++) {
-    const [z] = tileIdToZxy(tileIds[i])
-    if (runLengths[i] !== 1 && z > expandRunsUpToZoom) continue
+    if (!expanded(i)) continue
     for (let r = 0; r < runLengths[i]; r++) {
       const [rz, rx, ry] = tileIdToZxy(tileIds[i] + r)
       packed[k++] = (BigInt(rz) << Z_SHIFT) | (BigInt(mortonCode(rx, ry, rz)) << MORTON_SHIFT) | BigInt(i)
@@ -63,13 +53,15 @@ async function collectSorted (archive, header, expandRunsUpToZoom) {
   const ts = perf.now()
   packed.sort()
   stats.sortMs = Math.round(perf.now() - ts)
-  return { packed, offsets, lengths, stats }
+  return { packed, table, stats }
 }
 
-function unpack (v) {
-  const z = Number(v >> Z_SHIFT)
-  const { x, y } = mortonToXY(Number((v >> MORTON_SHIFT) & MORTON_MASK), z)
-  return { z, x, y, entry: Number(v & ENTRY_MASK) }
+function * unpackAll (packed) {
+  for (const v of packed) {
+    const z = Number(v >> Z_SHIFT)
+    const { x, y } = mortonToXY(Number((v >> MORTON_SHIFT) & MORTON_MASK), z)
+    yield { z, x, y, entry: Number(v & ENTRY_MASK) }
+  }
 }
 
 // logs the phase on each tick it has not changed, to name the await a hung build is stuck on
@@ -148,28 +140,21 @@ async function buildPlanet (bee, archives, opts = {}) {
   // one batch per chunk of the sorted order; each chunk reads its entries in file order, puts in key order
   const putSorted = async (archive, header, a) => {
     const tc = perf.now()
-    const { packed, offsets, lengths, stats } = await collectSorted(archive, header, expandRunsUpToZoom)
+    const { packed, table, stats } = await collectSorted(archive, header, expandRunsUpToZoom)
     totals.dirs += stats.dirs
     totals.fillerRuns += stats.fillerRuns
     totals.fillerTiles += stats.fillerTiles
     log(`archive ${a + 1}/${archives.length}\tcollect entries ${stats.entries} tiles ${stats.tiles} dirs ${stats.dirs} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles}\tsort ms ${stats.sortMs}\tms ${Math.round(perf.now() - tc)}`)
-    let j = 0
     let chunk = 0
-    while (j < packed.length) {
-      const tiles = []
-      let bytes = 0
-      while (j < packed.length && tiles.length < flushPuts && bytes < flushBytes) {
-        const t = unpack(packed[j++])
-        bytes += lengths[t.entry]
-        tiles.push(t)
-      }
-      const entries = [...new Set(tiles.map((t) => t.entry))].sort((p, q) => offsets[p] - offsets[q])
-      phase = `read chunk ${chunk} (${entries.length} entries, ${tiles.length} tiles)`
-      const values = await readValues(archive, header, entries.map((e) => ({ offset: offsets[e], length: lengths[e] })))
-      const byEntry = new Map(entries.map((e, i) => [e, values[i]]))
-      for (const t of tiles) put(tileKey(t.z, t.x, t.y), byEntry.get(t.entry))
+    const chunks = valueChunks(archive, header, unpackAll(packed), table, {
+      maxTiles: flushPuts,
+      maxBytes: flushBytes,
+      onRead: (entries, tiles) => { phase = `read chunk ${chunk} (${entries} entries, ${tiles} tiles)` }
+    })
+    for await (const c of chunks) {
+      for (const t of c.tiles) put(tileKey(t.z, t.x, t.y), c.value(t))
       phase = `flush ${chunk}`
-      await flush(a, `tile ${j}/${packed.length}`)
+      await flush(a, `tile ${c.read}/${packed.length}`)
       chunk++
     }
   }

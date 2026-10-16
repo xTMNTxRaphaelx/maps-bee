@@ -95,6 +95,60 @@ async function readValues (archive, header, tiles) {
   return out
 }
 
+// The archive's tile entries as parallel arrays, filled in one walk of the directories. Float64
+// for tileId and offset because both pass 2^32 on the planet. The index into these arrays is the
+// entry id a packed visit order carries, so a caller can name any entry in 26 bits.
+async function readEntryTable (archive, header) {
+  const n = header.numTileEntries
+  const table = {
+    tileIds: new Float64Array(n),
+    runLengths: new Uint32Array(n),
+    offsets: new Float64Array(n),
+    lengths: new Uint32Array(n),
+    count: 0,
+    dirs: 0
+  }
+  for await (const { tiles } of directories(archive, header)) {
+    table.dirs++
+    for (const e of tiles) {
+      if (table.count === n) throw new Error(`archive has more tile entries than its header's ${n}`)
+      const i = table.count++
+      table.tileIds[i] = e.tileId
+      table.runLengths[i] = e.runLength
+      table.offsets[i] = e.offset
+      table.lengths[i] = e.length
+    }
+  }
+  return table
+}
+
+// The values behind a visit order, a chunk at a time, so only one chunk is in memory at once —
+// hence the bound on bytes as well as on tiles. A visit order is not file order, so each chunk
+// sorts its distinct entries back into file order for one coalesced read and hands them back in
+// visit order: yields { tiles, value(tile), read }, read being the tiles yielded so far.
+// order: an iterable of { entry, ... }, where entry indexes a readEntryTable table.
+// onRead names the read about to be awaited, for a caller watching for a stall.
+async function * valueChunks (archive, header, order, { offsets, lengths }, { maxTiles, maxBytes, onRead = null }) {
+  const it = order[Symbol.iterator]()
+  let next = it.next()
+  let read = 0
+  while (!next.done) {
+    const tiles = []
+    let bytes = 0
+    while (!next.done && tiles.length < maxTiles && bytes < maxBytes) {
+      bytes += lengths[next.value.entry]
+      tiles.push(next.value)
+      next = it.next()
+    }
+    read += tiles.length
+    const entries = [...new Set(tiles.map((t) => t.entry))].sort((p, q) => offsets[p] - offsets[q])
+    if (onRead) onRead(entries.length, tiles.length)
+    const values = await readValues(archive, header, entries.map((e) => ({ offset: offsets[e], length: lengths[e] })))
+    const byEntry = new Map(entries.map((e, i) => [e, values[i]]))
+    yield { tiles, read, value: (t) => byEntry.get(t.entry) }
+  }
+}
+
 // getZxy returns the tile already gunzipped (fflate on bare); the bee stores it re-gzipped. gz is a
 // lazy getter because the gazetteer pass reads t.raw for every tile on the planet and never touches
 // t.gz, where level 9 on each would be most of that pass's runtime.
@@ -112,4 +166,4 @@ async function readTile (archive, z, x, y) {
   }
 }
 
-module.exports = { FileSource, openArchive, directories, readValues, readTile }
+module.exports = { FileSource, openArchive, directories, readValues, readEntryTable, valueChunks, readTile }
