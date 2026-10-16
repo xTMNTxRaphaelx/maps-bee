@@ -4,7 +4,7 @@ const path = require('bare-path')
 const perf = require('bare-performance')
 const Corestore = require('corestore')
 const { Compression, tileIdToZxy } = require('pmtiles')
-const { openArchive } = require('./pmtiles-file')
+const { openArchive, directories, readValues } = require('./pmtiles-file')
 const { tileKey, mortonCode, mortonToXY } = require('./tiles')
 const { load } = require('./keys')
 const { openDraft } = require('./publish')
@@ -22,48 +22,6 @@ const MAX_SORTED_ZOOM = 16
 const MAX_SORTED_ENTRIES = 2 ** 26
 const MORTON_MASK = (1n << (Z_SHIFT - MORTON_SHIFT)) - 1n
 const ENTRY_MASK = (1n << MORTON_SHIFT) - 1n
-
-// Every directory depth-first: index 0 is the root's own entries, then each leaf as the root
-// lists it, the order pmtiles getZxyAttempt follows.
-async function * directories (archive, header) {
-  const walk = async function * (offset, length, isRoot) {
-    const entries = await archive.cache.getDirectory(archive.source, offset, length, header)
-    const tiles = []
-    const dirs = []
-    for (const e of entries) (e.runLength === 0 ? dirs : tiles).push(e)
-    yield { tiles, pending: dirs.length }
-    for (const d of dirs) yield * walk(header.leafDirectoryOffset + d.offset, d.length, false)
-  }
-  yield * walk(header.rootDirectoryOffset, header.rootDirectoryLength, true)
-}
-
-// One read for the whole span of a clustered directory, else one read per entry
-async function readValues (archive, header, tiles) {
-  if (tiles.length === 0) return []
-  let lo = Infinity
-  let hi = 0
-  let sum = 0
-  for (const e of tiles) {
-    if (e.offset < lo) lo = e.offset
-    if (e.offset + e.length > hi) hi = e.offset + e.length
-    sum += e.length
-  }
-  // A short read here is corruption, not a probe: every length comes from a directory entry, and
-  // subarray clamps rather than throwing, so unchecked it publishes blank tiles under a signature
-  if (header.clustered && hi - lo <= 2 * sum + 65536) {
-    const { data } = await archive.source.getBytes(header.tileDataOffset + lo, hi - lo)
-    if (data.byteLength !== hi - lo) throw new Error(`short read: wanted ${hi - lo} bytes at ${header.tileDataOffset + lo}, got ${data.byteLength}`)
-    const span = Buffer.from(data)
-    return tiles.map((e) => Buffer.from(span.subarray(e.offset - lo, e.offset - lo + e.length)))
-  }
-  const out = []
-  for (const e of tiles) {
-    const { data } = await archive.source.getBytes(header.tileDataOffset + e.offset, e.length)
-    if (data.byteLength !== e.length) throw new Error(`short read: wanted ${e.length} bytes at ${header.tileDataOffset + e.offset}, got ${data.byteLength}`)
-    out.push(Buffer.from(data))
-  }
-  return out
-}
 
 // Every tile the directory walk would put, in key order, with each entry's offset and length so
 // values can be read in chunks of that order.
@@ -333,7 +291,7 @@ async function main () {
   }
 }
 
-module.exports = { buildPlanet, directories, stallWatch, FLUSH_PUTS, FLUSH_BYTES }
+module.exports = { buildPlanet, stallWatch, FLUSH_PUTS, FLUSH_BYTES }
 
 if (require.main === module) {
   main().catch((err) => {
