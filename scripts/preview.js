@@ -19,7 +19,6 @@ const ZOOMS = [15, 14, 10]
 const DETAIL_ZOOM = ZOOMS[0]
 const FALLBACK_ZOOM = ZOOMS[ZOOMS.length - 1]
 const LABEL_ZOOM = 8
-const PIN_ZOOM = 15
 
 const NO_TILES = { zoom: null, origin: null, tiles: null }
 
@@ -55,12 +54,6 @@ async function readTiles (bee, point, z, opts = {}, requests = new Requests()) {
   const entries = await Promise.all(tiles.map((t) => (t ? bee.get(tileKey(z, t[0], t[1]), o) : null)))
   if (!entries.some(Boolean)) return null
   return { zoom: z, origin, tiles: entries.map((e) => (e ? e.value : null)) }
-}
-
-async function readPinTile (bee, point, opts = {}, requests = new Requests()) {
-  const { x, y } = lonLatToTile(point.lon, point.lat, PIN_ZOOM)
-  const e = await bee.get(tileKey(PIN_ZOOM, x, y), readOpts(opts, requests.list()))
-  return e ? { zoom: PIN_ZOOM, x, y, tile: e.value } : null
 }
 
 // null for a value that is not a place entry: the label is best effort and one bad entry must not sink it
@@ -226,4 +219,4 @@ async function readPreview (bee, point, opts) {
   }
 }
 
-module.exports = { ZOOMS, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, PIN_ZOOM, readTiles, readPinTile, readLabel, readAreas, readPreview, prefetchTop }
+module.exports = { ZOOMS, DETAIL_ZOOM, FALLBACK_ZOOM, LABEL_ZOOM, readTiles, readLabel, readAreas, readPreview, prefetchTop }
