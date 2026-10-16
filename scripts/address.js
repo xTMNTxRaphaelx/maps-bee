@@ -1,6 +1,7 @@
 'use strict'
 // .default because the package is ESM-only via exports; bare and node both hand back the namespace
 const CheapRuler = require('cheap-ruler').default
+const { project } = require('./mvt')
 
 // Thresholds measured against Nominatim (README.md, Address). Named roads: ours <= 223 m, dropped
 // at 408+; theirs <= 47 m, none >= 61 m. Neighbourhood hits <= 623 m, blanks >= 716 m; suburb hits
@@ -15,19 +16,6 @@ const NEAR_M = 150
 const NEIGHBOURHOOD_M = 800
 const SUBURB_M = 3000
 const VILLAGE_M = 700
-
-// the lon/lat of a tile-local point: the arithmetic of VectorTileFeature.toGeoJSON
-// (@mapbox/vector-tile/index.js:158-170), inlined because toGeoJSON clones a whole Feature to carry
-// two numbers, once per feature, on the preview path
-function project (f, tile, p) {
-  const size = f.extent * Math.pow(2, tile.zoom)
-  const x0 = f.extent * tile.x
-  const y0 = f.extent * tile.y
-  return [
-    (p.x + x0) * 360 / size - 180,
-    360 / Math.PI * Math.atan(Math.exp((1 - (p.y + y0) * 2 / size) * Math.PI)) - 90
-  ]
-}
 
 // One ruler at the pin's latitude, whose scale factors are the exact WGS84 degree lengths, so roads
 // and places share a metric — they used to be on two that disagreed by 0.5% at Lugano.
@@ -163,4 +151,4 @@ function deriveAddress ({ point, tiles, label, areas = null }) {
   return a
 }
 
-module.exports = { HOUSE_M, ROAD_ON_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, deriveAddress }
+module.exports = { HOUSE_M, ROAD_ON_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, origin, nearestLabel, display, deriveAddress }

@@ -11,7 +11,7 @@
 // usage: fixture-points.js <z15 archive> <bbox> <n> [seed] > candidates.json
 const CheapRuler = require('cheap-ruler').default
 const { openArchive, readTile } = require('./pmtiles-file')
-const { decode } = require('./mvt')
+const { decode, project } = require('./mvt')
 const { lonLatToTile } = require('./tiles')
 const { parseFlags } = require('./flags')
 
@@ -27,14 +27,6 @@ function rng (seed) {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
-}
-
-function project (f, tile, p) {
-  const size = f.extent * Math.pow(2, tile.zoom)
-  return [
-    (p.x + f.extent * tile.x) * 360 / size - 180,
-    360 / Math.PI * Math.atan(Math.exp((1 - (p.y + f.extent * tile.y) * 2 / size) * Math.PI)) - 90
-  ]
 }
 
 async function anchors (file, bbox) {

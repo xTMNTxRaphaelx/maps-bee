@@ -7,44 +7,21 @@
 //
 // usage: address-shapes.js <fixture.json> <z11-14 archive> <z15 archive> <bbox> <city gazetteer.json>
 const fs = require('bare-fs')
-const CheapRuler = require('cheap-ruler').default
 const { openArchive, readTile } = require('./pmtiles-file')
-const { decode } = require('./mvt')
+const { decode, project } = require('./mvt')
 const { lonLatToTile, pinTiles } = require('./tiles')
 const { parseFlags } = require('./flags')
-const { deriveAddress, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, ROAD_ON_M } = require('./address')
+const { areaClass } = require('./gazetteer-lib')
+const { DETAIL_ZOOM } = require('./preview')
+const { deriveAddress, origin, nearestLabel, display, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M } = require('./address')
 
 // the zoom the area labels are read out of, not the zoom they are keyed at — gazetteer-lib's
 // AREA_ZOOM is 14 and is the a/ key granularity, a different number for a different thing
 const HARVEST_ZOOM = 13
 const PARTS = ['road', 'neighbourhood', 'suburb', 'village', 'city', 'housenumber']
-const NB = (p) => p.kind === 'neighbourhood' && p.kind_detail === 'neighbourhood'
-const SUB = (p) => (p.kind === 'neighbourhood' && p.kind_detail === 'suburb') || p.kind === 'macrohood'
-const VIL = (p) => p.kind === 'locality' && p.kind_detail === 'village'
 const norm = (s) => String(s).toLowerCase().trim()
 
-function project (f, tile, p) {
-  const size = f.extent * Math.pow(2, tile.zoom)
-  return [
-    (p.x + f.extent * tile.x) * 360 / size - 180,
-    360 / Math.PI * Math.atan(Math.exp((1 - (p.y + f.extent * tile.y) * 2 / size) * Math.PI)) - 90
-  ]
-}
-
-// scripts/address.js display(), which is not exported; kept in step with it by hand
-function display (a) {
-  const road = a.road && a.road.metres <= ROAD_ON_M ? a.road.name : null
-  const specific = a.housenumber
-    ? (road ? `${a.housenumber.value} ${road}` : a.housenumber.value)
-    : road || (a.near ? `near ${a.near.name}` : null)
-  const areas = [[a.neighbourhood, 0], [a.suburb, 1], [a.village, 1]].filter(([p]) => p).sort(([p], [q]) => p.metres - q.metres)
-  const chosen = specific ? areas.slice(0, 1) : areas.slice(0, 2).sort(([p, r], [q, s]) => r - s || p.metres - q.metres)
-  const parts = [specific, ...chosen.map(([p]) => p.name)]
-  if (a.city) parts.push(a.city.name)
-  return parts.filter(Boolean).join(', ')
-}
-
-// the g/ entries an area gazetteer pass would write: one point per named area
+// the a/ entries an area gazetteer pass would write: one point per named area
 async function areaIndex (file, bbox) {
   const archive = openArchive(file)
   const byKey = new Map()
@@ -60,13 +37,14 @@ async function areaIndex (file, bbox) {
         for (let i = 0; i < l.length; i++) {
           const f = l.feature(i)
           const p = f.properties
-          if (!p.name || f.type !== 1) continue
-          const cls = NB(p) ? 'nb' : SUB(p) ? 'sub' : VIL(p) ? 'vil' : null
-          if (!cls) continue
+          if (f.type !== 1) continue
+          // areaClass, so the study classifies exactly as the real pass does
+          const kindDetail = areaClass(p)
+          if (!kindDetail) continue
           const g = f.loadGeometry()
           if (!g.length || !g[0].length) continue
           const [lon, lat] = project(f, { x, y, zoom: HARVEST_ZOOM }, g[0][0])
-          byKey.set(cls + '|' + p.name, { cls, name: p.name, lon, lat })
+          byKey.set(kindDetail + '|' + p.name, { name: p.name, kind_detail: kindDetail, lon, lat })
         }
       }
     }
@@ -74,17 +52,6 @@ async function areaIndex (file, bbox) {
     await archive.close()
   }
   return [...byKey.values()]
-}
-
-function nearestArea (index, point, cls, max) {
-  const ruler = new CheapRuler(point.lat, 'meters')
-  let best = null
-  for (const e of index) {
-    if (e.cls !== cls) continue
-    const m = ruler.distance([point.lon, point.lat], [e.lon, e.lat])
-    if (m <= max && (!best || m < best.metres)) best = { name: e.name, metres: m }
-  }
-  return best
 }
 
 async function cell (archive, point, zoom, count) {
@@ -101,12 +68,12 @@ async function cell (archive, point, zoom, count) {
 }
 
 async function pinTile (archive, point, count) {
-  const { x, y } = lonLatToTile(point.lon, point.lat, 15)
-  const t = await readTile(archive, 15, x, y)
+  const { x, y } = lonLatToTile(point.lon, point.lat, DETAIL_ZOOM)
+  const t = await readTile(archive, DETAIL_ZOOM, x, y)
   if (!t) return null
   count.tiles++
   count.bytes += t.raw.byteLength
-  return { vt: decode(t.raw), x, y, zoom: 15 }
+  return { vt: decode(t.raw), x, y, zoom: DETAIL_ZOOM }
 }
 
 function blank () {
@@ -157,23 +124,24 @@ async function main () {
   try {
     for (const e of entries) {
       const point = { lon: e.lon, lat: e.lat }
-      const ruler = new CheapRuler(point.lat, 'meters')
+      // the same ruler deriveAddress measures on, so every distance here is on one metric
+      const o = origin(point)
       let city = null
       for (const c of cities) {
-        const km = ruler.distance([point.lon, point.lat], [c.lon, c.lat]) / 1000
+        const km = o.ruler.distance(o.p, [c.lon, c.lat]) / 1000
         if (!city || km < city.km) city = { name: c.name, kind: c.kind_detail, km }
       }
       const tilesA = await cell(mid, point, 14, cost.A)
       const pin = await pinTile(z15, point, cost.A)
       score(acc.A, deriveAddress({ point, tiles: pin ? [...tilesA, pin] : tilesA, label: city }), e.address)
 
-      const tilesB = await cell(z15, point, 15, cost.B)
+      const tilesB = await cell(z15, point, DETAIL_ZOOM, cost.B)
       const base = deriveAddress({ point, tiles: tilesB, label: city })
       const withAreas = {
         ...base,
-        neighbourhood: nearestArea(index, point, 'nb', NEIGHBOURHOOD_M),
-        suburb: nearestArea(index, point, 'sub', SUBURB_M),
-        village: nearestArea(index, point, 'vil', VILLAGE_M)
+        neighbourhood: nearestLabel(index, o, 'neighbourhood', NEIGHBOURHOOD_M),
+        suburb: nearestLabel(index, o, 'suburb', SUBURB_M),
+        village: nearestLabel(index, o, 'village', VILLAGE_M)
       }
       withAreas.display = display(withAreas)
       score(acc.B, withAreas, e.address)
