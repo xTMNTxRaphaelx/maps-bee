@@ -70,7 +70,7 @@ async function collect (path, bbox, minz, maxz, byName, counts, kinds = null, ar
   const archive = openArchive(path)
   try {
     const header = await archive.getHeader()
-    await collectFrom(archive, header, bbox, minz, maxz, byName, counts, kinds, areas, log)
+    return await collectFrom(archive, header, bbox, minz, maxz, byName, counts, kinds, areas, log)
   } finally {
     await archive.close()
   }
@@ -225,6 +225,7 @@ async function collectFrom (archive, header, bbox, minz, maxz, byName, counts, k
       log(`tile ${j}/${packed.length}\tkept ${counts.entries.length}\telapsed ${s.toFixed(1)} s\ttiles/s ${Math.round(j / s)}`)
     }
   }
+  return stats
 }
 
 async function main () {

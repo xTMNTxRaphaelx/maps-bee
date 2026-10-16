@@ -41,8 +41,8 @@ PATH=node_modules/bare-runtime/bin:$PATH npx brittle-bare test/address-accuracy-
 Expected tail of `npm test`:
 
 ```
-# tests = 84/84 pass
-# asserts = 871/871 pass
+# tests = 85/85 pass
+# asserts = 879/879 pass
 # ok
 ```
 

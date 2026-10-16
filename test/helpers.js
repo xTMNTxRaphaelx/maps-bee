@@ -28,6 +28,7 @@ const KEYS_FILE = path.join(KEYS_DIR, 'a.json')
 const JAIPUR_CENTRE = { lon: 75.8, lat: 26.9 }
 const JAIPUR_BBOX = [75.65, 26.75, 75.95, 27.05]
 const RAJASTHAN_BBOX = [69.5, 23.0, 78.3, 30.2]
+const ATLANTIC_BBOX = [-30, 27, -13, 30]
 
 // fresh RocksDB dir per test; a copied store is refused by RocksDB, so never share one
 async function tmpStore (t, name) {
@@ -72,6 +73,7 @@ module.exports = {
   JAIPUR_CENTRE,
   JAIPUR_BBOX,
   RAJASTHAN_BBOX,
+  ATLANTIC_BBOX,
   STATE_ARCHIVE,
   JAIPUR_ARCHIVE,
   JAIPUR_Z15_ARCHIVE,

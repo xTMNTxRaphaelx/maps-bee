@@ -8,7 +8,7 @@ const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer } = require('../scripts/gaz
 const { collect, collectFrom } = require('../scripts/gazetteer')
 const { openArchive } = require('../scripts/pmtiles-file')
 const { readLabel } = require('../scripts/preview')
-const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE, STATE_ARCHIVE, GAZETTEER_JSON: GAZ } = require('./helpers')
+const { tmpStore, spyPuts, inlinedValues, JAIPUR_ARCHIVE, JAIPUR_BBOX, JAIPUR_CENTRE, STATE_ARCHIVE, ATLANTIC_ARCHIVE, ATLANTIC_BBOX, GAZETTEER_JSON: GAZ } = require('./helpers')
 const { cities } = require('./atlas')
 
 
@@ -65,6 +65,29 @@ test('collect keeps only the requested kinds', async (t) => {
   t.is(some.entries.length, 1)
   t.ok(some.entries.every((e) => e.kind_detail === 'city' || e.kind_detail === 'town'), 'only city and town')
   t.ok(some.entries.length < all.entries.length, 'fewer than every locality')
+})
+
+// The ocean extract is the only fixture with run-length entries, and the planet is full of them:
+// 7.7M runs covering 236.6M tiles at z14. A run is one blob repeated over consecutive tile ids, so
+// the pass probes each distinct blob once and skips the whole run when it holds nothing to harvest.
+// 102 read + 448 skipped is the archive's whole 550 addressed tiles (test/planet-build.js), so the
+// skip drops tiles and never entries: the 114 localities are what a tile-by-tile walk finds too.
+test('collect probes each distinct run blob once and skips the filler', async (t) => {
+  const counts = { regionFeatures: 0, entries: [] }
+  const stats = await collect(ATLANTIC_ARCHIVE, ATLANTIC_BBOX, 10, 10, new Map(), counts)
+  t.comment(`entries ${stats.entries} tiles read ${stats.tiles} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles} runBlobs ${stats.runBlobs}`)
+  t.is(stats.fillerRuns, 137, '137 runs')
+  t.is(stats.runBlobs, 3, 'three distinct blobs behind them, so three probe reads')
+  t.is(stats.fillerTiles, 448)
+  t.is(stats.tiles, 102)
+  t.is(stats.tiles + stats.fillerTiles, 550, 'every addressed tile is read or skipped, none lost')
+  t.is(counts.entries.length, 114)
+
+  // --areas takes a different predicate into the probe, so it decides the same runs separately
+  const areas = { regionFeatures: 0, entries: [] }
+  const areaStats = await collect(ATLANTIC_ARCHIVE, ATLANTIC_BBOX, 10, 10, new Map(), areas, null, true)
+  t.is(areaStats.fillerRuns, 137)
+  t.is(areas.entries.length, 68)
 })
 
 // An inverted bbox selects no tiles, which looks exactly like an archive that holds none
