@@ -1,0 +1,83 @@
+# Planet probe, 2026-10-16: the z14-topped quadrant build (z10 complete + z14 as four bbox
+# quadrants + a/ + g/), 5,824,622 blocks / 36,715,803,243 bytes, key
+# 5kaf4nntse61r1zbs4o8makpcqtzki7trjfu766qokgmkoeha54y. One seeder and the probe on the same Mac,
+# so the ms column is optimistic and only blocks and bytes are meaningful.
+#
+# Built with --flush-puts=200000 --flush-bytes=536870912 --inline-value-size=0, where the
+# 2026-10-13 baseline in results/planet-probe-2x2.txt used the 20,000 flush default. That is the
+# difference most of the numbers below are measuring.
+
+## no prefetch
+connect ms 6159.8	update ms 0.9 blocks 0 bytes 0	core.length 5824622
+cold	26.9,75.8	ms 384	blocks 198	bytes 1561851	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+cold	46.0037,8.9511	ms 70.8	blocks 54	bytes 439878	zoom 14	tiles 4/4	label Lugano (city, 0.0 km)	address piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+cold	40.7128,-74.006	ms 92.4	blocks 64	bytes 611927	zoom 14	tiles 4/4	label New York (city, 0.0 km)	address IRT City Hall Loop, Lower Manhattan, New York
+cold	-33.8688,151.2093	ms 56.6	blocks 33	bytes 429442	zoom 14	tiles 4/4	label Sydney (city, 0.2 km)	address King Street Cycleway, Wynyard, Sydney
+repeat	26.9,75.8	ms 6.3	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+
+## --levels=1
+connect ms 6265.7	update ms 0.4 blocks 0 bytes 0	core.length 5824622
+prefetch levels 1 nodes 1	ms 203.4	blocks 17	bytes 164082
+cold	26.9,75.8	ms 196.4	blocks 181	bytes 1397769	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+cold	46.0037,8.9511	ms 72.5	blocks 54	bytes 439878	zoom 14	tiles 4/4	label Lugano (city, 0.0 km)	address piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+cold	40.7128,-74.006	ms 90.6	blocks 64	bytes 611927	zoom 14	tiles 4/4	label New York (city, 0.0 km)	address IRT City Hall Loop, Lower Manhattan, New York
+cold	-33.8688,151.2093	ms 58	blocks 33	bytes 429442	zoom 14	tiles 4/4	label Sydney (city, 0.2 km)	address King Street Cycleway, Wynyard, Sydney
+repeat	26.9,75.8	ms 6	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+
+## --levels=2
+connect ms 8718.5	update ms 0.3 blocks 0 bytes 0	core.length 5824622
+prefetch levels 2 nodes 1/16	ms 615.8	blocks 315	bytes 2769437
+cold	26.9,75.8	ms 60.1	blocks 44	bytes 269444	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+cold	46.0037,8.9511	ms 53.8	blocks 38	bytes 290143	zoom 14	tiles 4/4	label Lugano (city, 0.0 km)	address piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+cold	40.7128,-74.006	ms 83.5	blocks 53	bytes 513219	zoom 14	tiles 4/4	label New York (city, 0.0 km)	address IRT City Hall Loop, Lower Manhattan, New York
+cold	-33.8688,151.2093	ms 64.2	blocks 33	bytes 429442	zoom 14	tiles 4/4	label Sydney (city, 0.2 km)	address King Street Cycleway, Wynyard, Sydney
+repeat	26.9,75.8	ms 6.4	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+
+## --levels=3
+connect ms 6257.5	update ms 0.9 blocks 0 bytes 0	core.length 5824622
+prefetch levels 3 nodes 1/16/2153	ms 4497.5	blocks 2761	bytes 14619578
+cold	26.9,75.8	ms 41.1	blocks 36	bytes 226158	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+cold	46.0037,8.9511	ms 40.4	blocks 34	bytes 275736	zoom 14	tiles 4/4	label Lugano (city, 0.0 km)	address piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+cold	40.7128,-74.006	ms 66.1	blocks 49	bytes 499328	zoom 14	tiles 4/4	label New York (city, 0.0 km)	address IRT City Hall Loop, Lower Manhattan, New York
+cold	-33.8688,151.2093	ms 49.8	blocks 29	bytes 407938	zoom 14	tiles 4/4	label Sydney (city, 0.2 km)	address King Street Cycleway, Wynyard, Sydney
+repeat	26.9,75.8	ms 6	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+
+## Prefetch past one level costs more than it saves.
+#
+# Whole session, prefetch plus four cold previews:
+#
+#   levels   blocks        bytes
+#   none        349     3,043,098
+#   1           349     3,043,098
+#   2           483     4,271,685
+#   3         2,909    16,028,738
+#
+# Level 1 is exactly free, to the byte: its 17 blocks / 164,082 bytes are the root the first
+# preview would have fetched anyway (198 blocks / 1,561,851 bytes becomes 17 + 181 and
+# 164,082 + 1,397,769). It buys nothing and costs nothing, beyond moving ~200 ms of root fetch
+# out of the first preview and into app start, which is worth having where the first preview is
+# the one a user waits on.
+#
+# Level 2 runs 1.23 MB behind after four previews. It saves 1.29 MB on the first preview — the
+# tree descent a cold client pays once — and then only ~83 KB each: Lugano 440 -> 290 KB, New
+# York 612 -> 513 KB, Sydney 429 -> 429 KB unchanged. Break-even is near 18 previews in one
+# session, which a chat client does not reach.
+#
+# Level 3 is 12.99 MB behind and saves ~99 KB per preview after the first: break-even near 125.
+#
+# app/ops.js ships PREFETCH_LEVELS = 2. On these numbers it should be 1.
+
+## Against the 2026-10-13 baseline (results/planet-probe-2x2.txt), Jaipur 26.9,75.8, the one
+## identical point between the two runs:
+#
+#                             blocks        bytes
+#   cold, no prefetch   266 -> 198    10.16 MB -> 1.56 MB
+#   cold, --levels=2     22 ->  44      883 KB ->  269 KB
+#   prefetch cost      1288 -> 315    47.95 MB -> 2.77 MB
+#
+# A cold first preview costs 6.5x fewer bytes than the old build while returning strictly more:
+# the baseline had no a/ gazetteer and reported a city label only, where this returns the full
+# three-part address. Blocks per preview went up and bytes went down because the blocks are
+# smaller — 6.3 KB average here against 10.4 KB — so a preview no longer drags a ~40 KB block
+# across the wire to read one tile. More round trips, far less waste; bytes per fetched lat/lon
+# is the second design priority in CLAUDE.md, so that is the right direction.

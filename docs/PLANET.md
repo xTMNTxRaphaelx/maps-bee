@@ -245,9 +245,16 @@ connected. One point per quadrant exercises all four z14 archives and both gazet
 
 - A probe at a dense point should come back at **zoom 15**, not 14. If it says 14, the quadrant
   covering that point did not make it into the draft — check each run's `draft atlas length`.
-- `results/planet-probe-2x2.txt` is the z14-era baseline: 60 blocks / 0.69 MB cold for Jaipur with
-  the publisher flags, 13 / 0.18 MB after the level-2 prefetch (**measured**). The z15 equivalent is
-  unmeasured; `results/address-shapes.txt`'s correction says to expect roughly the same, not less.
+- `results/planet-probe-quadrants.txt` is the current baseline, **measured** 2026-10-16 on the
+  z14-topped quadrant build: a cold first preview is 198 blocks / 1.56 MB, and each one after it
+  33-64 blocks / 0.43-0.61 MB, with a repeat at 0/0. That is 6.5x fewer bytes than the
+  2026-10-13 build in `results/planet-probe-2x2.txt`, which cost 10.16 MB for the same point and
+  returned no area labels — the gain is `--flush-puts=200000 --flush-bytes=536870912`, which
+  leaves smaller blocks so a preview stops hauling a ~40 KB block to read one tile.
+- **Do not prefetch past one level.** Level 1 is free to the byte (its 17 blocks are the root the
+  first preview would fetch anyway) and only moves ~200 ms off the first preview. Level 2 breaks
+  even near 18 previews in a session, level 3 near 125. `app/ops.js` ships `PREFETCH_LEVELS = 2`
+  and on these numbers should be 1.
 - `docs/TESTING.md` stage 4 lists what this run is actually testing — the production flush path,
   short-read detection, the gazetteer pass, handle cleanup. Record the `time` output for each stage
   either way, in `results/`.
