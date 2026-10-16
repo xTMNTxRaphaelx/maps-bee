@@ -60,9 +60,9 @@ Notes:
 
 zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe. This is the build that
 ran on 20261012, not the design the client now reads: `preview.js` tries zoom 15 first (`ZOOMS`), and
-no planet bee holds that tier yet. Building it means a zoom 15 extract split into quadrants, since
-one archive has to stay under `MAX_SORTED_ENTRIES`, published as separate `--sorted` runs into one
-draft — unwritten, and not runnable on a machine short of disk.
+no planet bee holds that tier yet. **To build the current design, follow [PLANET.md](PLANET.md)** —
+the zoom 15 tier, the quadrant split, and the gazetteer passes in key order. What follows is the
+record of the 20261012 run.
 
 | Step | Time | Disk |
 | --- | ---: | ---: |
