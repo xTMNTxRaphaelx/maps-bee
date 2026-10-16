@@ -69,3 +69,10 @@ part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
 # over three Jaipur points at two latencies. So the client cost of moving the detail cell to z15 is
 # a wash, not the 8-42% saving the payload table suggests. The case for z15 is house numbers and
 # the complete road network, not bandwidth.
+
+# 2026-10-16: the script no longer scores shape A
+#
+# A was the shape before the z15 detail cell: a z14 2x2 plus a separate z15 pin tile. The client
+# moved to B, so the question A answered is closed and scripts/address-shapes.js now prints B and C
+# only. The A column above cannot be reproduced by the current script; B and C still can, and still
+# print exactly the numbers recorded here.

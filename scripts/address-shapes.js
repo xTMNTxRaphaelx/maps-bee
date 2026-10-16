@@ -1,11 +1,13 @@
 'use strict'
-// Scores three address shapes on the same fixture points, to decide which zooms the bee needs:
-//   A  z14 2x2 + z15 pin tile, every part from tiles          (today's shape, plus z15)
-//   B  z15 2x2, area parts from a gazetteer built at z13      (no z14 in the bee)
-//   C  z15 2x2 only, area parts from those tiles              (no z14, no gazetteer areas)
-// A and B differing says z14 is load-bearing; B and C differing says the gazetteer areas are.
+// Scores two address shapes on the same fixture points, to decide what the bee must hold:
+//   B  z15 2x2, area parts from a gazetteer harvested at z13   (what preview.js reads)
+//   C  z15 2x2 only, area parts from those tiles               (no gazetteer areas)
+// B and C differing says the area gazetteer earns its place. A third shape, a z14 2x2 plus a
+// separate z15 pin tile, was scored here until the z15 detail cell replaced it; its numbers are in
+// results/address-shapes.txt and the question it answered is closed.
 //
 // usage: address-shapes.js <fixture.json> <z11-14 archive> <z15 archive> <bbox> <city gazetteer.json>
+// the z11-14 archive is still needed: the area labels are harvested from its z13 tiles
 const fs = require('bare-fs')
 const { openArchive, readTile } = require('./pmtiles-file')
 const { decode, project } = require('./mvt')
@@ -67,15 +69,6 @@ async function cell (archive, point, zoom, count) {
   return out
 }
 
-async function pinTile (archive, point, count) {
-  const { x, y } = lonLatToTile(point.lon, point.lat, DETAIL_ZOOM)
-  const t = await readTile(archive, DETAIL_ZOOM, x, y)
-  if (!t) return null
-  count.tiles++
-  count.bytes += t.raw.byteLength
-  return { vt: decode(t.raw), x, y, zoom: DETAIL_ZOOM }
-}
-
 function blank () {
   const o = { hits: {}, n: {} }
   for (const p of PARTS) {
@@ -117,10 +110,9 @@ async function main () {
   const entries = JSON.parse(fs.readFileSync(fixture, 'utf8'))
   const cities = JSON.parse(fs.readFileSync(gazFile, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
   const index = await areaIndex(midFile, bbox)
-  const mid = openArchive(midFile)
   const z15 = openArchive(z15File)
-  const acc = { A: blank(), B: blank(), C: blank() }
-  const cost = { A: { tiles: 0, bytes: 0 }, B: { tiles: 0, bytes: 0 } }
+  const acc = { B: blank(), C: blank() }
+  const cost = { B: { tiles: 0, bytes: 0 } }
   try {
     for (const e of entries) {
       const point = { lon: e.lon, lat: e.lat }
@@ -131,10 +123,6 @@ async function main () {
         const km = o.ruler.distance(o.p, [c.lon, c.lat]) / 1000
         if (!city || km < city.km) city = { name: c.name, kind: c.kind_detail, km }
       }
-      const tilesA = await cell(mid, point, 14, cost.A)
-      const pin = await pinTile(z15, point, cost.A)
-      score(acc.A, deriveAddress({ point, tiles: pin ? [...tilesA, pin] : tilesA, label: city }), e.address)
-
       const tilesB = await cell(z15, point, DETAIL_ZOOM, cost.B)
       const base = deriveAddress({ point, tiles: tilesB, label: city })
       const withAreas = {
@@ -148,19 +136,18 @@ async function main () {
       score(acc.C, base, e.address)
     }
   } finally {
-    await mid.close()
     await z15.close()
   }
 
   const n = entries.length
   console.log(`${fixture}: ${n} points, ${index.length} area labels from z${HARVEST_ZOOM}`)
-  console.log('part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)')
+  console.log('part            B(z15+gazArea)  C(z15 only)')
   for (const p of PARTS) {
     const f = (k) => `${acc[k].hits[p]}/${acc[k].n[p]}`
-    console.log(`  ${p.padEnd(13)} ${f('A').padEnd(14)} ${f('B').padEnd(15)} ${f('C')}`)
+    console.log(`  ${p.padEnd(13)} ${f('B').padEnd(15)} ${f('C')}`)
   }
-  console.log(`  ${'tiles/point'.padEnd(13)} ${(cost.A.tiles / n).toFixed(1).padEnd(14)} ${(cost.B.tiles / n).toFixed(1)}`)
-  console.log(`  ${'KiB/point'.padEnd(13)} ${(cost.A.bytes / n / 1024).toFixed(1).padEnd(14)} ${(cost.B.bytes / n / 1024).toFixed(1)}`)
+  console.log(`  ${'tiles/point'.padEnd(13)} ${(cost.B.tiles / n).toFixed(1)}`)
+  console.log(`  ${'KiB/point'.padEnd(13)} ${(cost.B.bytes / n / 1024).toFixed(1)}`)
 }
 
 if (require.main === module) {
