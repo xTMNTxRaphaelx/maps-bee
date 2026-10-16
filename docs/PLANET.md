@@ -105,15 +105,35 @@ full speed in the middle of it all.
 
 ## 2. Cut each zoom 15 quadrant and check it fits
 
-Cut a hair inside the meridian and the equator so two quadrants never share a tile column or row —
-`pmtiles extract` rounds a bbox out to whole tiles, and an overlap would put the same keys twice and
-break the ascending order across runs.
+Cut inside the meridian and the equator so two quadrants never share a tile column or row —
+`pmtiles extract` rounds a bbox out to whole tiles, and an overlap puts the same keys twice and
+breaks the ascending order across runs.
+
+**Offset by 0.005°, not 0.0001°.** A z14 tile is 0.02197° wide and a z15 tile 0.010986°, so 0.0001°
+sits 0.45% inside the edge tile and `extract` rounds across the boundary anyway. That is **measured,
+2026-10-16**: the four z14 quadrants cut at 0.0001° covered 268,451,842 tiles against a grid of
+268,435,456 — one whole tile line, 16,384, duplicated, plus 2. 0.005° lands 23% inside a z14 tile
+and 45% inside a z15 one, clear of both edges at either zoom.
 
 ```sh
-./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.0001,-0.0001,85.0511 \
-  --minzoom=15 --maxzoom=15 --download-threads=16 --overfetch=0.2
+./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.005,-0.005,85.0511 \
+  --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2
 ./tools/pmtiles show data/planet-z15-nw.pmtiles | grep 'tile entries count'
 ```
+
+**After building the quadrants, check coverage by conservation, not by summing entries.** Every
+tile of a zoom is either put or counted as filler, so across the four runs:
+
+```sh
+grep -h '^done puts' results/planet-build-z15-*.txt \
+  | awk '{p+=$3; ft+=$11} END {print "total", p+ft}'
+```
+
+must equal `4^zoom` — 268,435,456 at z14, 1,073,741,824 at z15. Summing `tile entries count` does
+*not* work: splitting by bbox cuts run-length entries in two, so the quadrants legitimately report
+more entries than the whole zoom (39,506,736 against 39,501,064 at z14, all of it split filler
+runs), and that surplus masks a real overlap. The conservation check is what caught the 0.0001°
+defect after the entry sum said it was fine.
 
 The two flags are for the tail, not the bulk — see the extract shape under step 1. Measure them on
 NW and carry the better setting to the other three rather than assuming: overfetch buys fewer
