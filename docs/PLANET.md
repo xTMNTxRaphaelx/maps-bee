@@ -212,14 +212,34 @@ think and the pass is doing far more work than it should.
 ## 5. Sign, seed, probe
 
 ```sh
-$B scripts/planet-commit.js store/planet keys atlas 2>&1 | tee results/planet-commit.txt
-$B scripts/seed.js store/planet <key from the maps line>
+$B scripts/planet-commit.js store/planet keys atlas 20000 2>&1 | tee results/planet-commit.txt
+
+# check the atlas before blaming the network for anything
+$B scripts/local-check.js store/planet <key from the maps line> \
+  26.9,75.8 46.0037,8.9511 40.7128,-74.0060 -33.8688,151.2093
+
+$B scripts/seed.js store/planet <key>
 $B scripts/probe.js <key> 26.9,75.8 51.5,-0.12
 $B scripts/probe.js --levels=2 <key> 26.9,75.8 51.5,-0.12
 ```
 
-The commit ends with a `maps:` line holding the key and the signed length. **Measured** at z10+z14:
-about 2 minutes; **estimated** 5-6 minutes with z15.
+The commit ends with a `maps:` line holding the key and the signed length. Pass the chunk size:
+hypercore reads every block of a commit into memory at once, so an unchunked commit of a planet
+draft dies at the 4 GB V8 heap. **Measured** at z10+z14: about 2 minutes; **estimated** 5-6 minutes
+with z15.
+
+**Run `local-check.js` before the seeder.** It opens the store read-only and runs the real preview
+path with no swarm, so a sound atlas behind a blocked DHT stops looking like a broken build — which
+is exactly how it looked on 2026-10-16, when the seeder reported `length 5824622` and no client ever
+connected. One point per quadrant exercises all four z14 archives and both gazetteer prefixes.
+**Measured** on that build (`results/planet-local-check.txt`), every point `tiles 4/4` at zoom 14:
+
+```
+26.9,75.8          Kachi Basti, Sudarshanpura, Jaipur
+46.0037,8.9511     piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+40.7128,-74.006    IRT City Hall Loop, Lower Manhattan, New York
+-33.8688,151.2093  King Street Cycleway, Wynyard, Sydney
+```
 
 ## What to check when it is done
 

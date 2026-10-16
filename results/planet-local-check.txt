@@ -1,0 +1,19 @@
+# bare scripts/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-74.0060 -33.8688,151.2093
+# 2026-10-16, the z14-topped planet build: z10 complete + z14 in four bbox quadrants + a/ + g/,
+# committed at 5,824,622 blocks. Read straight off disk, no swarm — the seeder announced
+# `length 5824622` and no client ever connected, so this is what told us the atlas was sound and
+# the problem was discovery.
+
+core.length 5824622 byteLength 36715803243
+26.9,75.8        zoom 14  tiles 4/4  label Jaipur     address Kachi Basti, Sudarshanpura, Jaipur
+46.0037,8.9511   zoom 14  tiles 4/4  label Lugano     address piazza Rizziero Rezzonico, Quartiere Maghetti, Lugano
+40.7128,-74.006  zoom 14  tiles 4/4  label New York   address IRT City Hall Loop, Lower Manhattan, New York
+-33.8688,151.2093 zoom 14 tiles 4/4  label Sydney     address King Street Cycleway, Wynyard, Sydney
+
+# One point per quadrant, so all four z14 archives and both gazetteer prefixes are exercised:
+#   tiles 4/4 everywhere        the bbox split covered the world, seams included
+#   label on every point        g/ resolves on four continents
+#   an area part on every point a/ landed in key order and is read at AREA_QUERY_ZOOM
+#   a road part on every point  z14 carries the street network the address derives from
+# zoom 14 rather than 15 is expected: this build has no z15 tier, so readPreview falls through to
+# z14. House numbers are the one part a z14-topped atlas cannot serve.

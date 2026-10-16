@@ -128,7 +128,7 @@ async function main () {
   await probe({ key: HypercoreId.decode(id), points: parsePoints(rest), levels })
 }
 
-module.exports = { probe, openClient, timed, tilesPresent, labelText, connectLine, prefetchLine, previewLine }
+module.exports = { probe, openClient, timed, tilesPresent, labelText, parsePoints, connectLine, prefetchLine, previewLine }
 
 if (require.main === module) {
   main().catch((err) => {
