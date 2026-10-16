@@ -6,7 +6,7 @@
 // Nominatim's usage policy caps automated use at one request a second and requires a real
 // User-Agent naming the application. Both are enforced below; do not lower DELAY_MS.
 //
-// usage: node scripts/fetch-nominatim.js <candidates.json> <out.json> [contact]
+// usage: node scripts/study/fetch-nominatim.js <candidates.json> <out.json> [contact]
 const fs = require('fs')
 
 const DELAY_MS = 1100
@@ -26,7 +26,7 @@ async function reverse (lat, lon, ua) {
 async function main () {
   const [candFile, outFile, contact] = process.argv.slice(2)
   if (!candFile || !outFile) {
-    throw new Error('usage: node scripts/fetch-nominatim.js <candidates.json> <out.json> [contact]')
+    throw new Error('usage: node scripts/study/fetch-nominatim.js <candidates.json> <out.json> [contact]')
   }
   // Nominatim's policy wants a User-Agent naming the application, and a way to reach whoever is
   // running it if a client misbehaves. `contact` is whatever you are willing to hand a third party

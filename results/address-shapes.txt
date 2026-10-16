@@ -76,3 +76,9 @@ part            A(z14+z15pin)  B(z15+gazArea)  C(z15 only)
 # moved to B, so the question A answered is closed and scripts/address-shapes.js now prints B and C
 # only. The A column above cannot be reproduced by the current script; B and C still can, and still
 # print exactly the numbers recorded here.
+
+# 2026-10-16: the script moved to scripts/study/
+#
+# address-shapes.js, fixture-points.js, fetch-nominatim.js and address-study.sh are research tools
+# nothing in the app or the suite imports, so they now sit under scripts/study/. The commands
+# recorded above still run; read scripts/address-shapes.js as scripts/study/address-shapes.js.

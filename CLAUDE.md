@@ -47,7 +47,7 @@ correction at the end of `results/address-shapes.txt`.
 
 Test on a clean checkout's paths, not on this box's. `data/`, `store/`, `keys/` and `tools/` are
 gitignored and already populated here, so a script that depends on one of them passes locally and
-fails for everyone else — that happened three times in a row in `scripts/address-study.sh`. A script
+fails for everyone else — that happened three times in a row in `scripts/study/address-study.sh`. A script
 creates the directories it writes to, and checks for the tools it needs before doing work.
 
 Do not suppress output with `-q` in a script that can fail: it hid the cause of two of those three.

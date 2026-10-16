@@ -6,7 +6,7 @@
 #   3. reverse geocodes the committed candidate points with Nominatim
 #   4. scores the three address shapes and writes results/address-shapes.txt
 #
-# Nominatim allows one request a second for automated use. scripts/fetch-nominatim.js sleeps
+# Nominatim allows one request a second for automated use. scripts/study/fetch-nominatim.js sleeps
 # 1100 ms between requests; do not run two copies of this at once. A city whose fixture already
 # exists is skipped, so re-running does not refetch.
 #
@@ -14,7 +14,7 @@
 # can reach whoever is running a misbehaving client. Pass a URL or an email if you want to give
 # one; leave it off and the User-Agent names the application only.
 #
-# usage: sh scripts/address-study.sh [contact]
+# usage: sh scripts/study/address-study.sh [contact]
 set -e
 
 B=node_modules/bare-runtime/bin/bare
@@ -98,7 +98,7 @@ for C in $CITIES; do
   fi
   N=$(grep -c '"lat"' "test/fixtures/$C-candidates.json")
   echo "  $C: $N points, about $((N * 11 / 10)) s"
-  node scripts/fetch-nominatim.js "test/fixtures/$C-candidates.json" "$F" "$CONTACT"
+  node scripts/study/fetch-nominatim.js "test/fixtures/$C-candidates.json" "$F" "$CONTACT"
 done
 
 echo "== 3/3 scoring =="
@@ -108,7 +108,7 @@ echo "== 3/3 scoring =="
   echo
 } > "$OUT"
 for C in $CITIES; do
-  $B scripts/address-shapes.js "test/fixtures/$C-nominatim-wide.json" \
+  $B scripts/study/address-shapes.js "test/fixtures/$C-nominatim-wide.json" \
     "data/extract/$C-z11-14.pmtiles" "data/extract/$C-z15.pmtiles" "$(bbox "$C")" "$(gaz "$C")" >> "$OUT"
   echo >> "$OUT"
 done

@@ -9,13 +9,13 @@
 // usage: address-shapes.js <fixture.json> <z11-14 archive> <z15 archive> <bbox> <city gazetteer.json>
 // the z11-14 archive is still needed: the area labels are harvested from its z13 tiles
 const fs = require('bare-fs')
-const { openArchive, readTile } = require('./pmtiles-file')
-const { decode, project } = require('./mvt')
-const { lonLatToTile, parseBbox, pinTiles } = require('./tiles')
-const { parseFlags } = require('./flags')
-const { areaClass } = require('./gazetteer-lib')
-const { DETAIL_ZOOM } = require('./preview')
-const { deriveAddress, origin, nearestLabel, display, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M } = require('./address')
+const { openArchive, readTile } = require('../pmtiles-file')
+const { decode, project } = require('../mvt')
+const { lonLatToTile, parseBbox, pinTiles } = require('../tiles')
+const { parseFlags } = require('../flags')
+const { areaClass } = require('../gazetteer-lib')
+const { DETAIL_ZOOM } = require('../preview')
+const { deriveAddress, origin, nearestLabel, display, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M } = require('../address')
 
 // the zoom the area labels are read out of, not the zoom they are keyed at — gazetteer-lib's
 // AREA_ZOOM is 14 and is the a/ key granularity, a different number for a different thing

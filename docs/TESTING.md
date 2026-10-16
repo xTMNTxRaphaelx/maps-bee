@@ -230,18 +230,18 @@ for C in "berlin 13.30,52.45,13.55,52.56" "nairobi 36.70,-1.36,36.95,-1.22"; do
 done
 
 # 1. candidates are committed; regenerate only to change n or the seed
-#    $B scripts/fixture-points.js data/extract/<city>-z15.pmtiles <bbox> 60 1 > test/fixtures/<city>-candidates.json
+#    $B scripts/study/fixture-points.js data/extract/<city>-z15.pmtiles <bbox> 60 1 > test/fixtures/<city>-candidates.json
 
 # 2. ground truth: node, not bare; one request a second, as Nominatim's policy requires
 for C in jaipur lugano berlin nairobi; do
-  node scripts/fetch-nominatim.js test/fixtures/$C-candidates.json test/fixtures/$C-nominatim-wide.json
+  node scripts/study/fetch-nominatim.js test/fixtures/$C-candidates.json test/fixtures/$C-nominatim-wide.json
 done
 
 # 3. compare the three shapes
-$B scripts/address-shapes.js test/fixtures/jaipur-nominatim-wide.json  data/extract/jaipur-z11-14.pmtiles  data/extract/jaipur-z15.pmtiles  75.65,26.75,75.95,27.05 data/gazetteer.json
-$B scripts/address-shapes.js test/fixtures/lugano-nominatim-wide.json  data/extract/lugano-z11-14.pmtiles  data/extract/lugano-z15.pmtiles  8.85,45.95,9.05,46.06   data/gazetteer-lugano.json
-$B scripts/address-shapes.js test/fixtures/berlin-nominatim-wide.json  data/extract/berlin-z11-14.pmtiles  data/extract/berlin-z15.pmtiles  13.30,52.45,13.55,52.56 data/gazetteer-berlin.json
-$B scripts/address-shapes.js test/fixtures/nairobi-nominatim-wide.json data/extract/nairobi-z11-14.pmtiles data/extract/nairobi-z15.pmtiles 36.70,-1.36,36.95,-1.22 data/gazetteer-nairobi.json
+$B scripts/study/address-shapes.js test/fixtures/jaipur-nominatim-wide.json  data/extract/jaipur-z11-14.pmtiles  data/extract/jaipur-z15.pmtiles  75.65,26.75,75.95,27.05 data/gazetteer.json
+$B scripts/study/address-shapes.js test/fixtures/lugano-nominatim-wide.json  data/extract/lugano-z11-14.pmtiles  data/extract/lugano-z15.pmtiles  8.85,45.95,9.05,46.06   data/gazetteer-lugano.json
+$B scripts/study/address-shapes.js test/fixtures/berlin-nominatim-wide.json  data/extract/berlin-z11-14.pmtiles  data/extract/berlin-z15.pmtiles  13.30,52.45,13.55,52.56 data/gazetteer-berlin.json
+$B scripts/study/address-shapes.js test/fixtures/nairobi-nominatim-wide.json data/extract/nairobi-z11-14.pmtiles data/extract/nairobi-z15.pmtiles 36.70,-1.36,36.95,-1.22 data/gazetteer-nairobi.json
 ```
 
 Step 2 is 225 points at one a second, so about four minutes, and needs
