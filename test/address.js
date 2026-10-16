@@ -31,7 +31,7 @@ test('deriveAddress: parts and display from the z14 2x2 plus the z15 pin tile, z
 
   const tonk = { lat: 26.879464, lon: 75.796516 }
   const a = deriveAddress({ point: tonk, tiles: await placed(tonk), label: LABEL })
-  t.alike(Object.keys(a), ['housenumber', 'road', 'neighbourhood', 'suburb', 'village', 'city', 'region', 'country', 'near', 'display'])
+  t.alike(Object.keys(a), ['housenumber', 'road', 'neighbourhood', 'suburb', 'village', 'city', 'region', 'country', 'near', 'nearby', 'display'])
   t.is(a.housenumber, null)
   t.alike({ name: a.road.name, kind: a.road.kind }, { name: 'Market Road', kind: 'major_road' })
   t.ok(Math.abs(a.road.metres - 215) < 1, `road ${a.road.metres} m`)
@@ -75,7 +75,7 @@ test('deriveAddress: parts and display from the z14 2x2 plus the z15 pin tile, z
   await a15.close()
 
   t.alike(deriveAddress({ point: tonk, tiles: [], label: null }), {
-    housenumber: null, road: null, neighbourhood: null, suburb: null, village: null, city: null, region: null, country: null, near: null, display: ''
+    housenumber: null, road: null, neighbourhood: null, suburb: null, village: null, city: null, region: null, country: null, near: null, nearby: null, display: ''
   })
 })
 

@@ -15,7 +15,7 @@ const { openArchive, readTile } = require('../pmtiles-file')
 const { decode, project } = require('../mvt')
 const { pinTiles } = require('../tiles')
 const { haversineKm } = require('../gazetteer-lib')
-const { deriveAddress, origin, nearestLabel, ROAD_ON_M } = require('../address')
+const { deriveAddress, origin, nearestLabel, ROAD_ON_M, NEARBY_M } = require('../address')
 
 // nearest named poi in the fetched cell at any distance, so a city-only point can be asked what a
 // wider "near X" would have said. Measured on the same ruler deriveAddress uses.
@@ -46,8 +46,6 @@ function nearestArea (areas, o) {
   return best
 }
 
-// a 'near X' that is further than this stops describing the pin and starts misleading
-const NEARBY_M = 500
 const ROOT = path.join(__dirname, '..', '..')
 const CITIES = [
   { label: 'Jaipur', fixture: 'jaipur-nominatim-wide.json', areas: 'areas.json', gaz: 'gazetteer.json', archives: { 14: 'extract/jaipur-z11-14.pmtiles', 15: 'extract/jaipur-z15.pmtiles' } },

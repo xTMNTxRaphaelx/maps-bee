@@ -136,6 +136,52 @@ test('a nameless poi does not become the "near" part', (t) => {
   t.is(a.display, 'near Real Cafe, Jaipur')
 })
 
+// The last resort in display(): a line that would be the city alone reaches past ROAD_ON_M and
+// NEAR_M rather than naming nothing. It must not fire anywhere else, or a road 200 m away starts
+// displacing the area label that actually describes the pin.
+test('a city-only display reaches past ROAD_ON_M and NEAR_M, and only then', (t) => {
+  const poi = deriveAddress({
+    point: POINT,
+    tiles: tiles({ pois: [point({ name: 'Alpe Grande', kind: 'peak' }, 400)] }),
+    label: CITY
+  })
+  t.is(poi.near, null, 'past NEAR_M, so not the specific part')
+  t.is(poi.nearby.name, 'Alpe Grande')
+  t.is(poi.display, 'near Alpe Grande, Jaipur')
+
+  const far = deriveAddress({
+    point: POINT,
+    tiles: tiles({ roads: [road({ name: 'SP13', kind: 'major_road' }, 213)] }),
+    label: CITY
+  })
+  t.is(far.display, 'near SP13, Jaipur', 'a road past ROAD_ON_M is named rather than dropped')
+
+  const both = deriveAddress({
+    point: POINT,
+    tiles: tiles({ roads: [road({ name: 'SP13', kind: 'major_road' }, 213)], pois: [point({ name: 'Alpe Grande', kind: 'peak' }, 400)] }),
+    label: CITY
+  })
+  t.is(both.display, 'near SP13, Jaipur', 'the nearer of the two wins')
+
+  const withArea = deriveAddress({
+    point: POINT,
+    tiles: tiles({
+      roads: [road({ name: 'SP13', kind: 'major_road' }, 213)],
+      places: [point({ name: 'Nbhd', kind: 'neighbourhood', kind_detail: 'neighbourhood' }, 300)]
+    }),
+    label: CITY
+  })
+  t.is(withArea.display, 'Nbhd, Jaipur', 'an area suppresses the last resort')
+
+  const beyond = deriveAddress({
+    point: POINT,
+    tiles: tiles({ pois: [point({ name: 'Too Far', kind: 'peak' }, 600)] }),
+    label: CITY
+  })
+  t.is(beyond.nearby, null, 'past NEARBY_M is not reached for')
+  t.is(beyond.display, 'Jaipur', 'and the city alone is still the honest answer')
+})
+
 test('one places pass still resolves neighbourhood, suburb and village independently', (t) => {
   let reads = 0
   const features = [

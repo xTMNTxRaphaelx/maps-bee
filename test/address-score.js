@@ -12,7 +12,7 @@ const mark = (scored, hit) => (scored ? (hit ? 'HIT' : 'miss') : 'n/a')
 // "undefined" in the display. No hit rate sees that — a nameless part just misses, and a floor
 // absorbs it — so assert it directly. On real data this reaches the roads and pois predicates; the
 // extracts carry no nameless place or number-less address, so those are in test/address-derive.js.
-const NAMED_PARTS = ['road', 'neighbourhood', 'suburb', 'village', 'near']
+const NAMED_PARTS = ['road', 'neighbourhood', 'suburb', 'village', 'near', 'nearby']
 
 function usableParts (a) {
   const bad = []

@@ -22,6 +22,8 @@ const HOUSE_M = 30
 const ROAD_M = 300
 const ROAD_ON_M = 50
 const NEAR_M = 150
+// only for the last resort in display(), where the alternative is naming nothing at all
+const NEARBY_M = 500
 const NEIGHBOURHOOD_M = 800
 const SUBURB_M = 3000
 const VILLAGE_M = 700
@@ -98,7 +100,8 @@ function nearestLabel (areas, o, cls, max) {
 // one area label, or two in small-to-large order when there is no specific part, then the city. The
 // nearest label is the best guess of the containing area — in Lugano the neighbourhood is 121 m away
 // against the next municipality's village at 987 m. A road beyond ROAD_ON_M is not the pin's street,
-// so it stays in the object and out of the display.
+// so it stays in the object and out of the display — unless nothing else was found at all, which
+// is what the last resort below covers.
 function display (a) {
   const road = a.road && a.road.metres <= ROAD_ON_M ? a.road.name : null
   const specific = a.housenumber
@@ -107,6 +110,15 @@ function display (a) {
   const areas = [[a.neighbourhood, 0], [a.suburb, 1], [a.village, 1]].filter(([p]) => p).sort(([p], [q]) => p.metres - q.metres)
   const chosen = specific ? areas.slice(0, 1) : areas.slice(0, 2).sort(([p, r], [q, s]) => r - s || p.metres - q.metres)
   const parts = [specific, ...chosen.map(([p]) => p.name)]
+  // Last resort. With no specific part and no area the line would be the city alone, which is
+  // 13% of the accuracy fixture and was a residential pin in Noida on the planet atlas. Reach
+  // past ROAD_ON_M and NEAR_M for whichever of the two is closer and say "near", which claims
+  // proximity rather than that the pin is on it. Rescues 3 of those 14 points; the other 11 have
+  // nothing inside any radius worth naming (results/bare-display.txt).
+  if (!specific && chosen.length === 0) {
+    const wider = [a.nearby, a.road].filter(Boolean).sort((p, q) => p.metres - q.metres)[0]
+    if (wider) parts.push(`near ${wider.name}`)
+  }
   if (a.city) parts.push(a.city.name)
   return parts.filter(Boolean).join(', ')
 }
@@ -144,7 +156,10 @@ function deriveAddress ({ point, tiles, label, areas = null }) {
   const hn = nearest(tiles, 'buildings', 1, (p) => p.kind === 'address' && Boolean(p.addr_housenumber), pointMetres, o, HOUSE_M)
   const road = nearest(tiles, 'roads', 2, (p) => Boolean(p.name), lineMetres, o, ROAD_M)
   const [nb, sub, vil] = areaParts(areas, tiles, o)
-  const near = nearest(tiles, 'pois', 1, (p) => Boolean(p.name), pointMetres, o, NEAR_M)
+  // one walk of the pois layer for both radii: NEAR_M is the specific part, NEARBY_M only ever
+  // reaches the display when nothing else did
+  const named = (p) => Boolean(p.name)
+  const [near, nearby] = nearestEach(tiles, 'pois', 1, [{ keep: named, max: NEAR_M }, { keep: named, max: NEARBY_M }], pointMetres, o)
   const a = {
     housenumber: hn && { value: hn.f.properties.addr_housenumber, metres: hn.metres },
     road: road && { name: road.f.properties.name, kind: road.f.properties.kind, metres: road.metres },
@@ -154,10 +169,11 @@ function deriveAddress ({ point, tiles, label, areas = null }) {
     city: label,
     region: null,
     country: null,
-    near: near && { name: near.f.properties.name, kind: near.f.properties.kind, metres: near.metres }
+    near: near && { name: near.f.properties.name, kind: near.f.properties.kind, metres: near.metres },
+    nearby: nearby && { name: nearby.f.properties.name, kind: nearby.f.properties.kind, metres: nearby.metres }
   }
   a.display = display(a)
   return a
 }
 
-module.exports = { HOUSE_M, ROAD_ON_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, origin, nearestLabel, display, deriveAddress }
+module.exports = { HOUSE_M, ROAD_ON_M, NEAR_M, NEARBY_M, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M, origin, nearestLabel, display, deriveAddress }
