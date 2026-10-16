@@ -16,14 +16,18 @@ A Keet location message carries only latitude and longitude. This prototype turn
 ```
 Protomaps planet build (OpenStreetMap, ODbL)
         │  pmtiles extract: zoom 10 complete, zoom 14 without filler
+        │  (the planet bee predates the z15 tier; the test atlas has it)
         ▼
 scripts/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
 scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
+                         ──▶  a/14/<quadkey>/<n> → neighbourhood, suburb, village
         │  2-of-3 multisig, committed in signed chunks
         ▼
 scripts/seed.js on any peer  ◀──── public DHT ────▶  the viewer
-                                                       │  readPreview(lat, lon): 2x2 tiles + z15 pin tile + label → address,
-                                                       │  sparse reads, timeout, deadline, cancel
+                                                       │  readPreview(lat, lon): one 2x2 at the first of
+                                                       │  z15, z14, z10 that has tiles, + city and area
+                                                       │  labels → address; sparse reads, timeout,
+                                                       │  deadline, cancel
                                                        ▼
                                               640 × 360 thumbnail with a pin
 ```
@@ -36,12 +40,12 @@ Keet has no server. Whatever the viewer of a shared location sees must come from
 
 - **One hyperbee holds the tiles.** Keys are `<zoom>/<quadkey>`, values are the gzipped Mapbox Vector Tile bytes exactly as Protomaps publishes them. The planet bee holds zoom 10 complete plus zoom 14 without the repeated ocean and empty tiles: 32,888,213 tiles, 36.4 GB on the core.
 - **Signed by a 2-of-3 multisig.** The publisher fills a draft session and commits it in signed chunks of 20,000 blocks, because hypercore loads every block of a commit into memory. A republish on the same key keeps warm clients' blocks valid. Clients receive the key and the signed length the way they receive other shared indexes.
-- **Read sparsely, never downloaded.** For one point the client fetches the 2x2 of zoom 15 tiles the pin leans into, chosen from the pin's fractional position inside its tile, so a 640 by 360 crop centred on the pin is always covered. If all four are absent it falls back to the zoom 10 2x2. Every block read has a timeout, the whole call a deadline, and a failed call cancels its own requests.
+- **Read sparsely, never downloaded.** For one point the client fetches one 2x2 of tiles, the ones the pin leans into, chosen from the pin's fractional position inside its tile so a 640 by 360 crop centred on the pin is always covered. It tries zoom 15 first, then 14, then 10, and stops at the first zoom with any of the four: zoom 15 carries the complete road network and the address points, zoom 14 is the tier between — a zoom 15 run is filler in open country, and without 14 such a pin would fall straight to a 35 km view — and zoom 10 is the floor. The walk costs the client nothing beyond the zoom that answers; the tiers below only cost the publisher storage. Every block read has a timeout, the whole call a deadline, and a failed call cancels its own requests.
 - **A gazetteer in the same bee** gives the nearest city or town: 111,548 localities from the zoom 10 places layer, under `g/` keys. A second set under `a/` holds the neighbourhood, suburb and village labels, harvested at zoom 13 and read over a tighter window. Area parts come from that radius query rather than from whatever fell inside the fetched tiles: measured over 225 points in four cities, it is worth 20 hits, nearly all suburb (`results/address-shapes.txt`).
 - **An optional one-time prefetch** of the top two tree levels, 194 blocks and 1.85 MB, after which every point costs at most 18 blocks.
 - **Layout decides the cost.** hyperbee2 inflates a tree node by fetching the origin block of every key the node references, inlines values of 1 KB or less into key blocks, and cuts blocks far above its 4 KiB target. Writing tiles in key order in large batches and turning off value inlining are the two publisher flags that make a cold read cheap.
 
-What the serving peer learns is the zoom 12 cell the viewer asked about, about 9 km across.
+What the serving peer learns is the cell two zooms above the tiles it served: with the zoom 14 2x2 of the signed test store, the zoom 12 cell, about 9 km across (`results/seeder-sees.txt`). A zoom 15 2x2 would narrow that to the zoom 13 cell, about 4.9 km; no signed store with zoom 15 has been measured.
 
 ## Measured
 
@@ -90,14 +94,14 @@ Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed
 | --- | --- | --- |
 | house number | z15 buildings layer, `kind=address`, property `addr_housenumber` only; the schema has no street, postcode or unit property | Jaipur z15: 468 points in 928 tiles, 0 to 4 per tile |
 | road | roads layer `name` (and `ref`), z15 pin tile has the complete network | pin 26.879464,75.796516: nearest road 11 m is unnamed, nearest named road "Market Road" at 215 m; 11 of 31 roads in the tile are named |
-| neighbourhood, suburb, quarter | places layer points, kind `neighbourhood` (kind_detail neighbourhood, suburb) and `macrohood` (quarter), present in the z14 2x2 already fetched | Tonk Phatak 322 m, Barkat Nagar 470 m, Pratap Nagar 479 m, Bapu Nagar 764 m |
+| neighbourhood, suburb, quarter | the `a/` gazetteer, which reaches past the 2x2; failing that, places layer points in the 2x2 itself, kind `neighbourhood` (kind_detail neighbourhood, suburb) and `macrohood` (quarter) | Tonk Phatak 322 m, Barkat Nagar 470 m, Pratap Nagar 479 m, Bapu Nagar 764 m |
 | village | places layer kind `locality` with kind_detail village, in the tiles already fetched; hamlets (population 200) were the wrong label at every distance | Amber 586 m from 26.9855,75.8513; Paradiso 154 m and Massagno 263 m in Lugano |
 | city or town | gazetteer, already in the bee | Jaipur (city, 4.6 km) |
 | state, country | places layer kinds `region` and `country`, which sit in low-zoom tiles the bee does not hold; z10 tiles near Jaipur carry only locality and macrohood points | z10 scan: locality/city, town, village, macrohood/quarter |
 | postcode | nowhere in the Protomaps schema | |
 | tehsil, municipal corporation, district | boundaries layer has lines by kind with no names; no admin polygons with names | |
 
-Each part is the nearest matching feature across the z14 (or z10) 2x2 and the z15 pin tile together, within a threshold; roads by point-to-segment distance, places and pois by distance to their label point. Both are measured with one `cheap-ruler` built at the pin's latitude, so every part is on the same ruler: its scale factors are the exact WGS84 degree lengths there, within 0.5 m of a Vincenty geodesic at 3 km.
+Each part is the nearest matching feature within a threshold, across the one 2x2 the walk returned — zoom 15, 14 or 10 — together with the `a/` area labels, which are read by radius and so reach past the tiles; roads by point-to-segment distance, places and pois by distance to their label point. Both are measured with one `cheap-ruler` built at the pin's latitude, so every part is on the same ruler: its scale factors are the exact WGS84 degree lengths there, within 0.5 m of a Vincenty geodesic at 3 km.
 
 ```
 address: {
@@ -150,4 +154,6 @@ The road misses are squares and the airport, where Nominatim names a different a
 
 Address points: in the `buildings` layer, geometry type point, `kind: 'address'`, with `addr_housenumber` as the only address key (no street or postcode in any layer). A central z15 tile holds 0 to 2 of them, and none lies within HOUSE_M of any scored point (results/address-accuracy-jaipur.txt, `rate housenumber 0/0`).
 
-`readPreview` reads the pin's z15 tile in parallel with the 2x2 and the label and returns it as `pinTile` (`{ zoom: 15, x, y, tile }` or null). Cold cost on the test atlas: +2 blocks and about +50 KB (the tile's leaf node and its value block); on a bee without z15 the miss costs +1 block, 13 KB. The thumbnail draws the z15 tile over its z14 quarter. Numbers: [`results/z15-jaipur.txt`](results/z15-jaipur.txt).
+Zoom 15 is the first zoom of the 2x2 walk, so one cell serves the thumbnail and the near address together. It replaced an earlier shape that read a z14 2x2 plus a separate z15 pin tile, measured over 225 points in four cities in [`results/address-shapes.txt`](results/address-shapes.txt): the two are a wash on accuracy, and the z15 cell costs one fewer tile per preview.
+
+The payload table there shows 8 to 42% fewer bytes, and the dated correction at the end of that file says what a real bee did instead — blocks 0.93 to 1.00x, bytes 0.95 to 1.09x over three Jaipur points at two latencies. **The case for zoom 15 is house numbers and the complete road network, not bandwidth.** [`results/z15-jaipur.txt`](results/z15-jaipur.txt) measures the earlier shape, where the z15 pin tile was an addition to a z14 2x2 and cost +2 blocks and about +50 KB.

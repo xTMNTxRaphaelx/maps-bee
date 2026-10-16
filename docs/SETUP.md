@@ -58,7 +58,11 @@ Notes:
 
 ## Planet bee
 
-zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe.
+zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe. This is the build that
+ran on 20261012, not the design the client now reads: `preview.js` tries zoom 15 first (`ZOOMS`), and
+no planet bee holds that tier yet. Building it means a zoom 15 extract split into quadrants, since
+one archive has to stay under `MAX_SORTED_ENTRIES`, published as separate `--sorted` runs into one
+draft — unwritten, and not runnable on a machine short of disk.
 
 | Step | Time | Disk |
 | --- | ---: | ---: |
@@ -84,6 +88,13 @@ $B scripts/probe.js --levels=2 <key> 26.9,75.8 51.5,-0.12   # prefetch the top N
 ```
 
 The build logs `done puts 32888213 bytes 35221625742` for build 20261012; the commit ends with a `maps:` line holding the key and the signed length.
+
+The area pass above reads `data/planet-z13.pmtiles`, which no line in this file cuts: harvesting the
+`a/` labels at zoom 13 on the planet means a third extract that nothing else in the build uses.
+Zoom 13 is the cheaper pass — about 8M tiles against 31.8M, and 91% of the neighbourhood labels —
+while the zoom 14 extract the build already needs carries all of them and saves the cut, at about
+1.25 GB resident in the walk instead of 250 MB. Whoever has the disk decides; the `a/` **key** zoom
+is 14 either way (`AREA_ZOOM`), and the city extracts above keep harvesting at zoom 13.
 
 ### Experiments behind the publisher flags
 
