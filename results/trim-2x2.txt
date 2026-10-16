@@ -1,0 +1,62 @@
+# Trimming the 2x2 to the tiles the crop covers, 2026-10-16
+
+The client fetches four tiles. The thumbnail is 640 x 360 and a tile renders at 640, so the crop is
+exactly one tile wide — both columns always — and 360 of 640 tall, so it reaches into the second row
+only when the pin sits within 180 px of the row boundary. The other 43.75% of the time, two of the
+four tiles are fetched and never drawn.
+
+Measured rate over a 4,160-point grid across the Jaipur z15 box (test/trim-cost.js): **44.6%**.
+
+## What it saves in tile payload (scripts/address-shapes.js, shape D)
+
+225 points over four cities, the same fixtures that settled the z15 question.
+
+| city | B tiles/pt | D tiles/pt | B KiB/pt | D KiB/pt | points trimmed |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Jaipur  | 4.0 | 3.3 | 40.6  | 34.0  | 21/60 |
+| Lugano  | 3.9 | 2.9 | 99.4  | 72.5  | 23/45 |
+| Berlin  | 3.8 | 3.1 | 304.9 | 245.5 | 25/60 |
+| Nairobi | 3.9 | 3.2 | 248.5 | 202.0 | 23/60 |
+
+Totals: tiles 877.5 -> 706.5 (-19.5%), payload 40,113 -> 32,152 KiB (-20%), 92/225 points trimmed.
+
+## What it costs the address: nothing measurable
+
+Shape D scored identically to shape B on **every part in all four cities** — road, neighbourhood,
+suburb, village, city, housenumber. Not one hit moved.
+
+The reason is that the parts with the longest reach do not come from the tiles. SUBURB_M is 3,000 m
+and a z15 tile is about 1.1 km at this latitude, so suburb was already a gazetteer part; what the
+dropped row would have supplied is a second tile-row of roads and pois, and the nearest road or poi
+to the pin is in the crop by construction.
+
+## What it saves a real client: about a twentieth of that
+
+results/address-shapes.txt's own correction says payload is not client cost. It is right again here.
+Cold reads from a fresh client over a delayed link, full 2x2 against the trimmed one, cell plus
+label plus areas (test/trim-cost.js, 7 points x 2 latencies, atlas core.length 1437):
+
+```
+point            crop   blocks        bytes
+26.7985,75.9037  2/4    13 -> 12      174,023 -> 166,431
+26.8503,75.8504  2/4    15 -> 14      245,987 -> 239,992
+26.8984,75.8012  2/4    17 -> 14      288,812 -> 235,558
+26.9465,75.7479  2/4    15 -> 14      237,466 -> 228,612
+27.0057,75.6946  2/4    14 -> 13      200,810 -> 196,038
+26.8355,75.6700  4/4    15 -> 15      unchanged, the crop covers all four
+26.9613,75.6700  4/4    16 -> 16      unchanged
+```
+
+On the trimmed points: blocks 74 -> 67 (**0.91x**), bytes 1,147,098 -> 1,066,631 (**0.93x**).
+Weighted by the 44.6% of points that trim at all: **about 4% of blocks and 3% of bytes** off a
+random preview, against the 20% the payload table predicts. The two dropped tiles mostly live in
+blocks the read fetches anyway for the two it keeps.
+
+Identical at both latencies — the saving is blocks, not round trips.
+
+## So
+
+A real but small saving, for no measured accuracy cost. The case against is coupling: the fetch
+would depend on the renderer's W, H and TILE, so changing the thumbnail's shape would silently
+change what the client downloads and how far the address can see. Undecided; `cropMask` lives in
+scripts/render-svg.js and nothing in the read path calls it yet.
