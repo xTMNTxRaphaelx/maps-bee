@@ -42,6 +42,35 @@ cold	40.7128,-74.006	ms 66.1	blocks 49	bytes 499328	zoom 14	tiles 4/4	label New 
 cold	-33.8688,151.2093	ms 49.8	blocks 29	bytes 407938	zoom 14	tiles 4/4	label Sydney (city, 0.2 km)	address King Street Cycleway, Wynyard, Sydney
 repeat	26.9,75.8	ms 6	blocks 0	bytes 0	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
 
+## no prefetch, on the 2026-10-13 baseline's own points
+connect ms 7176.4	update ms 0.9 blocks 0 bytes 0	core.length 5824622
+cold	26.9,75.8	ms 410	blocks 198	bytes 1561851	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+cold	51.5,-0.12	ms 169.4	blocks 59	bytes 598704	zoom 14	tiles 4/4	label London (city, 1.0 km)	address Albert Embankment, Westminster, London
+cold	40.7,-74	ms 146.8	blocks 50	bytes 463375	zoom 14	tiles 4/4	label New York (city, 1.5 km)	address IRT Broadway–Seventh Avenue Line, Lower Manhattan, New York
+cold	-33.9,151.2	ms 119.8	blocks 33	bytes 362372	zoom 14	tiles 4/4	label Sydney (city, 3.4 km)	address Botany Lane, South Eveleigh, Sydney
+
+## Four identical points, both builds, no prefetch. The variance is what collapsed.
+#
+#   point           2026-10-13              2026-10-16
+#   26.9,75.8       266 blk / 10,157,879    198 blk / 1,561,851
+#   51.5,-0.12      132 blk /  4,398,556     59 blk /   598,704
+#   40.7,-74         19 blk /    442,189     50 blk /   463,375
+#   -33.9,151.2      10 blk /    369,648     33 blk /   362,372
+#   total           427 blk / 15,368,272    340 blk / 2,986,302
+#
+# 5.1x fewer bytes over the four. The gain is entirely in the expensive points: Jaipur 10.16 ->
+# 1.56 MB and London 4.40 -> 0.60 MB, while New York and Sydney were already cheap and moved by
+# a couple of percent. Every point now sits in a 0.36-1.56 MB band where the old build spread
+# 0.37-10.16 MB, so the worst case improved 6.5x and the best barely moved. A preview no longer
+# depends on whether its tiles happened to land in a fat block.
+#
+# Jaipur stays the outlier at 198 blocks only because it is first and pays the tree descent; the
+# three after it cost 33-59 blocks and 0.36-0.60 MB. Read those as the steady-state figure and
+# Jaipur as the cold-start one.
+#
+# The addresses also carry area parts the baseline could not produce at all — Westminster, Lower
+# Manhattan, South Eveleigh — since it had no a/ gazetteer.
+
 ## Prefetch past one level costs more than it saves.
 #
 # Whole session, prefetch plus four cold previews:
