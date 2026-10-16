@@ -1,0 +1,91 @@
+
+=== detail cell at z14 ===
+
+--- Jaipur, z14, 60 fixture points
+  specific part (housenumber, road <= 50m, or poi)  39 65.0%
+  area but no specific                                 9 15.0%
+  city only                                            12 20.0%
+    a road was found but dropped as too far            0
+    a named poi within 500m was in the cell        1
+    an a/ area within 500m existed               0
+    genuinely nothing within any threshold             12
+      26.936358,75.923413   road -                                poi Open Air Theater 187m             area Mathura Das Pura 2410m
+      26.988564,75.887547   road -                                poi Bharat Petroleum 1646m            area Kunda 1098m
+      26.816242,75.678879   road -                                poi St. Xavier's School 1140m         area Mahapura 3433m
+      26.794741,75.772599   road -                                poi Advance Hospital 673m             area Padmavati B Colony 1349m
+      27.015361,75.74366    road -                                poi 1 1012m                           area Benarwith Daulatpura 1805m
+      26.842256,75.711383   road -                                poi Swastik Hospital and Research Centre 2026marea Green Avenue Nagar 3857m
+      26.829482,75.929292   road -                                poi -                                 area Hingoniya 1723m
+      27.039874,75.697958   road -                                poi -                                 area Chatarpura 2835m
+      26.760978,75.885091   road -                                poi JECRC University 1746m            area Khera Jagannathpura 1622m
+      26.794525,75.896354   road -                                poi Mahima Cityville 947m             area Goner 2335m
+      26.842385,75.917732   road -                                poi Indira gandhi nagar sector - 7 , park -2 2133marea Hingoniya 1680m
+      26.978719,75.8883     road -                                poi Paiker Hospital 1246m             area Kunda 1986m
+
+--- Lugano, z14, 45 fixture points
+  specific part (housenumber, road <= 50m, or poi)  39 86.7%
+  area but no specific                                 3 6.7%
+  city only                                            3 6.7%
+    a road was found but dropped as too far            1
+    a named poi within 500m was in the cell        2
+    an a/ area within 500m existed               0
+    genuinely nothing within any threshold             2
+      45.977758,9.048331    road SP13 della Valle Intelvi diramazione per Piano delle Noci 213mpoi Chiesa di Santa Maria 961m        area Scaria 968m
+      45.953119,9.04685     road -                                poi Alpe Grande 426m                  area Lanzo d'Intelvi 3528m
+      46.045195,8.868771    road -                                poi Circolo di Breno 262m             area Fescoggia 823m
+
+=== detail cell at z15 ===
+
+--- Jaipur, z15, 60 fixture points
+  specific part (housenumber, road <= 50m, or poi)  43 71.7%
+  area but no specific                                 6 10.0%
+  city only                                            11 18.3%
+    a road was found but dropped as too far            0
+    a named poi within 500m was in the cell        0
+    an a/ area within 500m existed               0
+    genuinely nothing within any threshold             11
+      26.988564,75.887547   road -                                poi EleJungle- Jaipur Elephant Ride 1141marea Kunda 1098m
+      26.816242,75.678879   road -                                poi St. Xavier's School 1140m         area Mahapura 3433m
+      26.794741,75.772599   road -                                poi Advance Hospital 672m             area Padmavati B Colony 1349m
+      27.015361,75.74366    road -                                poi Khejadi 507m                      area Benarwith Daulatpura 1805m
+      26.842256,75.711383   road -                                poi -                                 area Green Avenue Nagar 3857m
+      26.829482,75.929292   road -                                poi -                                 area Hingoniya 1723m
+      27.039874,75.697958   road -                                poi -                                 area Chatarpura 2835m
+      26.760978,75.885091   road -                                poi -                                 area Khera Jagannathpura 1622m
+      26.794525,75.896354   road -                                poi Mahima Cityville 947m             area Goner 2335m
+      26.842385,75.917732   road -                                poi -                                 area Hingoniya 1680m
+      26.978719,75.8883     road -                                poi Elefantastic 1565m                area Kunda 1986m
+
+--- Lugano, z15, 45 fixture points
+  specific part (housenumber, road <= 50m, or poi)  40 88.9%
+  area but no specific                                 2 4.4%
+  city only                                            3 6.7%
+    a road was found but dropped as too far            1
+    a named poi within 500m was in the cell        2
+    an a/ area within 500m existed               0
+    genuinely nothing within any threshold             2
+      45.977758,9.048331    road SP13 della Valle Intelvi diramazione per Piano delle Noci 213mpoi -                                 area Scaria 968m
+      45.953119,9.04685     road -                                poi Alpe Grande 416m                  area Lanzo d'Intelvi 3528m
+      46.045195,8.868771    road -                                poi Circolo di Breno 263m             area Fescoggia 823m
+
+=== both cities, by detail zoom ===
+  zoom	points	city only	road >50m	poi <500m	area <500m
+  14	105	15 (14.3%)	1		3		0
+  15	105	14 (13.3%)	1		2		0
+
+# Read: a last-resort rule does not pay.
+#
+# At z15, 14 of 105 fixture points render as the city alone. Of those, a road beyond ROAD_ON_M
+# would rescue 1, a named poi within 500 m would rescue 2, and an a/ area within 500 m would
+# rescue 0 — three points in total, taking city-only from 13.3% to 10.5%. The other 11 are Jaipur
+# points whose nearest anything is 507 m to 3.8 km away; calling a pin "near" something 1.5 km off
+# describes nothing.
+#
+# z15 is not the answer either: 15 city-only at z14 against 14 at z15, a single point.
+#
+# Caveat on the denominator: a third of the fixture is the `plain` stratum, sampled uniformly in
+# the city bbox (scripts/study/fixture-points.js), so it deliberately over-samples empty ground.
+# 13.3% is an upper bound on what a real share would see, and the Jaipur rows below — elephant
+# rides, a school, open country north of the city — are what that stratum is made of. The case
+# that prompted this was a residential pocket of Noida, which the planet atlas also rendered as
+# the city alone, so the populated-area version of this does happen; it is just rarer than 13%.
