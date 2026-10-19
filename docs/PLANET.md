@@ -73,7 +73,8 @@ $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 
 z10 goes in on its own and each quadrant follows in NW, NE, SW, SE order: `checkZoomOrder` rejects
 two archives sharing a zoom in one invocation, and the keys still ascend across runs
 (`10/` < `14/0…` < `14/1…` < `14/2…` < `14/3…`). Each quadrant is far under the 67.1M entry cap —
-the whole zoom is 39,501,064 entries (**measured**, 20261012). Keep the quadrants: step 4 harvests
+the whole zoom is 39,501,064 entries (**measured**, 20261012, `results/planet-z14-only-dryrun.txt`).
+Keep the quadrants: step 4 harvests
 the areas from them, and `gazetteer.js` takes all four as repeated `<archive> <bbox> <minz> <maxz>`
 groups in one command. **Measured** on 20261012 for the whole zoom in one run: `done puts 32888213
 bytes 35221625742`, about 7 minutes of build time.
@@ -125,7 +126,8 @@ and 45% inside a z15 one, clear of both edges at either zoom.
 **The antimeridian is an edge too: offset ±180 as well, to ∓179.995.** A bbox ending at exactly
 180 gives `x = floor((180 + 180) / 360 * 32768) = 32768`, one past the last column at z15, so the
 region is 16,385 columns wide and the surplus is whatever lies at x = 0 — the other quadrant's.
-**Measured 2026-10-19** on the z15 cuts, which used ±180: NE and SE each addressed 268,451,840
+**Measured 2026-10-19** (`results/planet-z15-quadrant-bboxes.txt`) on the z15 cuts, which used
+±180: NE and SE each addressed 268,451,840
 tiles, exactly 16385 x 16384, and NW and SW 268,435,457, a single tile over. Re-cutting NE at
 179.995 brought the region to 268,435,456 and dropped 5,660 entries; NW at -179.995 dropped 1.
 A quadrant is right when `addressed tiles count` is exactly 268,435,456 = 2^28.

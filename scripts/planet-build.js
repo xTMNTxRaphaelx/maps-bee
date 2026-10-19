@@ -63,7 +63,8 @@ function * unpackAll (packed) {
 }
 
 // logs the phase on each tick it has not changed, to name the await a hung build is stuck on
-// (results/planet-c1-sorted.txt run 1 went idle with no error); returns the stop function
+// (results/planet-c1-sorted.txt run 1 went idle with no error; results/planet-build-hardening.txt
+// is the run that added this). returns the stop function
 function stallWatch (phase, ms, log) {
   let last = phase()
   const timer = setInterval(() => {
