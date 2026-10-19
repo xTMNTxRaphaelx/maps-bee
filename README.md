@@ -121,33 +121,35 @@ address: {
 
 `address` is null only outside the atlas, where there is no tile and no label.
 
-Measured on 20 Jaipur points against Nominatim reverse results (`test/fixtures/jaipur-nominatim.json`, scored by `test/address-accuracy.js`; a neighbourhood or suburb counts as a hit when it equals any of Nominatim's neighbourhood, suburb or quarter; the city when it equals Nominatim's city, town or village, or starts Nominatim's city, or when our village is that locality). Rows, rates and distances: [`results/address-accuracy-jaipur.txt`](results/address-accuracy-jaipur.txt).
+Measured on 60 Jaipur points against Nominatim reverse results (`test/fixtures/jaipur-nominatim-wide.json`, scored by `test/address-accuracy.js`; a neighbourhood or suburb counts as a hit when it equals any of Nominatim's neighbourhood, suburb or quarter; the city when it equals Nominatim's city, town or village, or starts Nominatim's city, or when our village is that locality). Rows, rates and distances: [`results/address-accuracy-jaipur.txt`](results/address-accuracy-jaipur.txt).
 
 | Part | Hits/n | Chosen-part distance range |
 | --- | --- | --- |
-| road | 5/6 | 2 to 223 m (17 points) |
-| neighbourhood | 7/7 | 61 to 716 m (8 points) |
-| suburb | 12/12 | 145 to 2495 m (13 points) |
-| village | 1/2 | 586 m (1 point) |
-| city | 18/19 | 1209 to 15105 m (20 points) |
-| house number | 0/0 | none within 30 m |
+| road | 28/36 | 0 m to 258 m (41 points) |
+| neighbourhood | 21/21 | 80 m to 779 m (25 points) |
+| suburb | 32/36 | 84 m to 2.6 km (38 points) |
+| village | 2/10 | 572 m to 669 m (2 points) |
+| city | 48/56 | 876 m to 18.2 km (60 points) |
+| house number | 14/16 | 1 m to 25 m (21 points) |
 
-The road miss: at 26.9196,75.788 the nearest named road is Ram Mandir Road at 123 m and Nominatim gives Station Road, 146 m away; Nominatim picks by polygon, so nearest-line cannot match it. The city and village misses are the same point: at 26.92,75.93 Nominatim gives the village Dyodha Chor; the gazetteer, which holds cities and towns only, gives Jaipur at 11.0 km, and the nearest village or hamlet label in the tiles is Malpura at 1.3 km with Dyodha Chor itself at 2.3 km, so VILLAGE_M leaves the part null rather than wrong.
+Hits/n counts only the points where Nominatim gave that part to compare against; the distance range covers every point where we produced one, which is why n and the point count differ.
+
+**Village is the weak part, and not for want of recall.** Nominatim names the municipality a point lies inside; we take the nearest village *point*, which is often a neighbour's. No distance cut separates the two — the villages picked right reach 691 m and the ones picked wrong start at 138 m — so `VILLAGE_M` buys hits and errors together. A real fix needs village extent, which the `a/` pass does not keep. Measured over 105 points in [`results/village-gap.txt`](results/village-gap.txt).
 
 ### Lugano, where the data is dense
 
-Swiss OpenStreetMap carries house numbers and street names on most buildings. At 46.006005,8.952766, six metres off Corso Enrico Pestalozzi, the same rules give `9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano`: house number 9 at 16 m, the road at 5 m, the neighbourhood label at 121 m. The next municipality, Massagno, has its village label 987 m away and loses to the nearer neighbourhood, which is why the display takes the nearest area label rather than a fixed order (test/address.js, Lugano test on data/extract/lugano-z11-14.pmtiles and lugano-z15.pmtiles). Scored on 11 Lugano points against Nominatim (`test/fixtures/lugano-nominatim.json`, `test/address-accuracy-lugano.js`, results/address-accuracy-lugano.txt):
+Swiss OpenStreetMap carries house numbers and street names on most buildings. At 46.006005,8.952766, six metres off Corso Enrico Pestalozzi, the same rules give `9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano`: house number 9 at 16 m, the road at 5 m, the neighbourhood label at 121 m. The next municipality, Massagno, has its village label 987 m away and loses to the nearer neighbourhood, which is why the display takes the nearest area label rather than a fixed order (test/address.js, Lugano test on data/extract/lugano-z11-14.pmtiles and lugano-z15.pmtiles). Scored on 45 Lugano points against Nominatim (`test/fixtures/lugano-nominatim-wide.json`, `test/address-accuracy-lugano.js`, [`results/address-accuracy-lugano.txt`](results/address-accuracy-lugano.txt)):
 
 | Part | Hits/n | Chosen-part distance range |
 | --- | --- | --- |
-| road | 7/11 | 1 to 122 m (11 points) |
-| neighbourhood | 4/5 | 121 to 737 m (7 points) |
-| suburb | 5/7 | 198 to 2557 m (10 points) |
-| village | 2/6 | 154 to 606 m (3 points) |
-| city | 10/11 | 26 m to 3.2 km (11 points) |
-| house number | 3/5 | 9 to 24 m (6 points) |
+| road | 36/43 | 1 m to 213 m (42 points) |
+| neighbourhood | 3/3 | 85 m to 551 m (4 points) |
+| suburb | 4/7 | 330 m to 1.4 km (7 points) |
+| village | 22/37 | 56 m to 692 m (28 points) |
+| city | 29/44 | 353 m to 9.3 km (45 points) |
+| house number | 19/24 | 2 m to 28 m (26 points) |
 
-The road misses are squares and the airport, where Nominatim names a different adjoining way (Piazza della Riforma against piazza Rizziero Rezzonico 10 m away, Piazzale della Stazione against Lugano Stazione). The two house-number misses are the neighbouring building: 10B against 1, 14 against 16, for pins placed between buildings. Paradiso and Massagno are municipalities of their own that OpenStreetMap tags as villages; the city gazetteer keeps cities and towns, so the city part says Lugano there while the village part names them at 154 and 263 m, and the scorer credits the city part when the village is Nominatim's locality. The remaining city miss is Cimo, whose label is 1.1 km from the point. The village misses are Cimo and three central points where Nominatim gives Breganzona as the village and the nearest village label in the tiles is Massagno at 815 to 1,138 m, past VILLAGE_M.
+Dense addressing moves the parts a sparse region cannot exercise: house numbers go from 14/16 on a handful of Jaipur points to 19/24, and the road rate rises with them. The city rate falls instead, because the Lugano box reaches municipalities OpenStreetMap tags as villages — Paradiso, Massagno, Breganzona — where the city gazetteer, holding cities and towns only, answers Lugano. That is the same village-extent limit as above, seen from the city part.
 
 ### Zoom 15 on the Jaipur region
 

@@ -126,14 +126,14 @@ git diff --stat results/
 
 **Gate.** Both exit 0, and the hit rates are unchanged from what is committed:
 
-| Part | Jaipur | Lugano |
+| Part | Jaipur (60 points) | Lugano (45 points) |
 |---|---|---|
-| road | 5/6 | 7/11 |
-| neighbourhood | 7/7 | 4/5 |
-| suburb | 12/12 | 5/7 |
-| village | 1/2 | 2/6 |
-| city | 18/19 | 10/11 |
-| housenumber | 0/0 | 3/5 |
+| road | 28/36 | 36/43 |
+| neighbourhood | 21/21 | 3/3 |
+| suburb | 32/36 | 4/7 |
+| village | 2/10 | 22/37 |
+| city | 48/56 | 29/44 |
+| housenumber | 14/16 | 19/24 |
 
 Distances may differ in the last metre; rates must not move. A rate change means either the
 Protomaps build rotated under you or the address code behaves differently on macOS — the first is
@@ -296,9 +296,9 @@ One `## session N` heading per app launch.
 
 ## Widening the address fixture
 
-The scored fixtures are 20 Jaipur and 11 Lugano points, which is thin — a two-point difference
-decides whether the bee needs z14. To widen, sample candidates from the extracts, reverse geocode
-them, then compare the address shapes:
+The scored fixtures are 60 Jaipur and 45 Lugano points. They were 20 and 11, thin enough that a
+two-point difference decided whether the bee needed z14. To widen further, sample candidates from
+the extracts, reverse geocode them, then compare the address shapes:
 
 Four cities, chosen to span the regimes address derivation has to cope with:
 
