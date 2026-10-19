@@ -54,19 +54,29 @@ function createOps ({ bootstrap } = {}) {
 
 // JSON requests { id, op, ...req } in, { id, ok, result | error } out
 function serve (pipe, ops) {
-  pipe.on('data', async (data) => {
-    // parse inside the try: a malformed frame throws before id is bound, and a reply without an id
-    // is a reply the caller's pending promise can never match, so the window waits forever
-    let id = null
-    try {
-      const { id: frameId, op, ...req } = JSON.parse(data.toString())
-      id = frameId
-      if (typeof ops[op] !== 'function') throw new Error(`unknown op ${op}`)
-      const result = await ops[op](req)
-      pipe.write(JSON.stringify({ id, ok: true, result }))
-    } catch (err) {
-      pipe.write(JSON.stringify({ id, ok: false, error: err.message }))
-    }
+  // One frame at a time. The ops share a client, and the host sends close from window-all-closed,
+  // which can land while a run is still reading — close() destroys the swarm, closes the store and
+  // removes the tmp dir underneath it. Serialising also stops two runs that both find no session
+  // from each opening a client, the loser's swarm and store never closed.
+  // returned, not just stored: the emitter ignores it, but a direct caller awaiting the handler
+  // is awaiting this frame's turn, which is what test/app/ops.js relies on
+  let queue = Promise.resolve()
+  pipe.on('data', (data) => {
+    queue = queue.then(async () => {
+      // parse inside the try: a malformed frame throws before id is bound, and a reply without an id
+      // is a reply the caller's pending promise can never match, so the window waits forever
+      let id = null
+      try {
+        const { id: frameId, op, ...req } = JSON.parse(data.toString())
+        id = frameId
+        if (typeof ops[op] !== 'function') throw new Error(`unknown op ${op}`)
+        const result = await ops[op](req)
+        pipe.write(JSON.stringify({ id, ok: true, result }))
+      } catch (err) {
+        pipe.write(JSON.stringify({ id, ok: false, error: err.message }))
+      }
+    })
+    return queue
   })
 }
 

@@ -96,6 +96,27 @@ test('collect refuses an inverted bbox', async (t) => {
   await t.exception.all(collect(JAIPUR_ARCHIVE, [75.95, 26.75, 75.65, 27.05], 11, 14, new Map(), counts), /bbox is inverted/)
 })
 
+// Same failure mode as the inverted bbox: every tile falls outside the range, so the pass finishes
+// and reports a successful empty harvest instead of naming the bad argument.
+test('collect refuses an inverted zoom range', async (t) => {
+  const counts = { entries: [] }
+  await t.exception.all(collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 14, 11, new Map(), counts), /zoom range is inverted/)
+})
+
+// kinds used to be consulted only on the locality branch, so --areas --kinds=neighbourhood
+// harvested suburbs and villages too, silently, over a pass that takes hours on the planet.
+test('collect --areas honours kinds', async (t) => {
+  const all = { entries: [] }
+  const some = { entries: [] }
+  await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), all, null, true)
+  await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), some, new Set(['neighbourhood']), true)
+  t.comment(`areas ${all.entries.length}, neighbourhood only ${some.entries.length}`)
+  t.ok(all.entries.length > 0, 'the fixture holds areas at all')
+  t.ok(some.entries.length > 0, 'and some of them are neighbourhoods')
+  t.ok(some.entries.every((e) => e.kind_detail === 'neighbourhood'), 'only neighbourhoods')
+  t.ok(some.entries.length < all.entries.length, 'fewer than every area class')
+})
+
 // The pass is driven by the archive's tile entries, not by the bbox. This bbox spans the world,
 // so the rectangle it used to walk is 1,048,576 tiles at z10 against the 624 the archive holds —
 // the shape of the planet area pass, where that rectangle is 67.1M tiles. Reads must stay with the

@@ -69,3 +69,20 @@ test('generate refuses to overwrite an existing key set', (t) => {
     console.log = log
   }
 })
+
+// The dangerous case is the half-populated directory, not the full one: a per-file check inside
+// the write loop mints a and b, then refuses on c, and the surviving set derives a different core
+// key from the one c was already publishing under. The refusal has to come before any write.
+test('generate refuses a partially populated directory without writing anything', (t) => {
+  const dir = tmpDir(t, 'keys-partial')
+  const log = console.log
+  console.log = () => {}
+  try {
+    fs.writeFileSync(path.join(dir, 'c.json'), '{"name":"c"}\n')
+    t.exception(() => generate(dir), /refusing to overwrite/)
+    t.alike(fs.readdirSync(dir).sort(), ['c.json'], 'a.json and b.json were never written')
+    t.is(fs.readFileSync(path.join(dir, 'c.json'), 'utf8'), '{"name":"c"}\n', 'and c is untouched')
+  } finally {
+    console.log = log
+  }
+})
