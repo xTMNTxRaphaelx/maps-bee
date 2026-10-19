@@ -198,6 +198,21 @@ test('sorted build rejects --resume and archives out of zoom order', async (t) =
   t.is(bee.core.length, 0, 'nothing written')
 })
 
+// why a dead sorted run is re-run rather than restarted: the second pass writes the same bytes, and
+// a put that matches what is stored is not applied, so the batch appends nothing (PLANET.md step 3)
+test('re-running a sorted build over its own output appends no block', async (t) => {
+  const bee = await newBee(t, 'planet-sorted-again')
+  const opts = { expandRunsUpToZoom: 10, sorted: true, inlineValueSize: 0, flushPuts: 200, log: () => {} }
+  const first = await buildPlanet(bee, [ATLANTIC], opts)
+  const length = bee.core.length
+  t.ok(first.puts > 0 && length > 0, `${first.puts} puts in ${length} blocks`)
+
+  const second = await buildPlanet(bee, [ATLANTIC], opts)
+  t.is(second.puts, first.puts, 'every key is tried again')
+  t.is(bee.core.length, length, 'and none of them appends a block')
+  t.is((await keysOf(bee)).length, first.puts, 'one key per tile, not two')
+})
+
 test('stallWatch logs a phase that has not changed since the last tick', async (t) => {
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
   const still = []

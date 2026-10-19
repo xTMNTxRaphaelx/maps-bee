@@ -174,10 +174,17 @@ Then `-ne`, `-sw`, `-se`, one command each, same store and same draft name `atla
 `draft atlas length N` at the start — N must be larger each time, or you are writing to a fresh
 draft and the earlier work is not in it.
 
-**A sorted run cannot `--resume`** (`buildPlanet` throws on the combination). If one dies partway,
-that quadrant's puts are already in the draft and re-running it would duplicate them: start the
-whole store again, or finish on a machine that will not be interrupted. This is the one place where
-an interruption costs real time, which is also the argument for four runs rather than one.
+**A sorted run cannot `--resume`** (`buildPlanet` throws on the combination), but a dead one is
+re-run by repeating its command unchanged. A hyperbee put whose stored bytes equal the ones being
+written is not applied (hyperbee2 lib/write.js:152-158 and :170-179 compare the inflated value,
+not just the key), and a batch with nothing applied appends no block (:427). The build copies the
+archive's gzip bytes raw, so the second pass writes the same bytes and the already-flushed prefix
+costs a tree descent and one value read per key, not a block. The draft ends with one key per tile
+either way.
+
+The one consequence is in the numbers, not the data: the re-run counts every key it tried, so its
+`done puts` includes the retried ones. Take that archive's `tiles` and `fillerTiles` from its
+`collect entries …` line instead when summing step 2's coverage check.
 
 Delete each quadrant extract after its run to keep peak disk near one extract plus the store.
 
