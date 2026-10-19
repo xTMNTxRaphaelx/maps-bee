@@ -61,7 +61,7 @@ are not optional on a home link.
 
 # then once per quadrant, bboxes from step 2
 until ./tools/pmtiles extract $S data/planet-z14-nw.pmtiles \
-  --bbox=-180,0.0001,-0.0001,85.0511 --minzoom=14 --maxzoom=14 \
+  --bbox=-180,0.005,-0.005,85.0511 --minzoom=14 --maxzoom=14 \
   --download-threads=8 --overfetch=0.2; do echo "reset — retrying in 30s"; sleep 30; done
 
 $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
@@ -123,8 +123,8 @@ sits 0.45% inside the edge tile and `extract` rounds across the boundary anyway.
 and 45% inside a z15 one, clear of both edges at either zoom.
 
 ```sh
-./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.005,-0.005,85.0511 \
-  --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2
+until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.005,-0.005,85.0511 \
+  --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2; do echo "reset — retrying in 30s"; sleep 30; done
 ./tools/pmtiles show data/planet-z15-nw.pmtiles | grep 'tile entries count'
 ```
 
@@ -157,10 +157,10 @@ The four bboxes:
 
 | quadrant | bbox | order |
 | --- | --- | ---: |
-| NW | `-180,0.0001,-0.0001,85.0511` | 1 |
-| NE | `0.0001,0.0001,180,85.0511` | 2 |
-| SW | `-180,-85.0511,-0.0001,-0.0001` | 3 |
-| SE | `0.0001,-85.0511,180,-0.0001` | 4 |
+| NW | `-180,0.005,-0.005,85.0511` | 1 |
+| NE | `0.005,0.005,180,85.0511` | 2 |
+| SW | `-180,-85.0511,-0.005,-0.005` | 3 |
+| SE | `0.005,-85.0511,180,-0.005` | 4 |
 
 ## 3. Build each quadrant, in that order
 
