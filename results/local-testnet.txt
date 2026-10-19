@@ -94,3 +94,36 @@ Ruled out on the way, each by its own check:
 So the question is not "does replication work" but "why does a seeder serve one client and then
 stop seeing peers". `label null` in these runs is unrelated and expected: `store/signed` holds
 tiles only, no `g/` keys.
+
+## Second correction, 2026-10-19: the "first client works" reading does not hold either
+
+A clean run — nothing else running, fresh testnet, one `seed.js`, three sequential `probe.js` —
+serves **none** of the three. The seeder logs no peer at all. So the earlier "first client is
+served, the rest are not" was also contaminated: an instrumented seeder from a previous experiment
+was still announcing the same discovery key, and clients were pairing with whichever announcer the
+DHT handed them.
+
+What the instrumentation did establish, each from a run with the identities printed on both sides:
+
+- A client reports `connections 1` and names the seeder's own public key as the remote, while that
+  seeder reports `connections 0` and never fires its `'connection'` handler. Both sides agree on
+  the topic (`965902ae5bd4dbc2`).
+- A plain hyperswarm server on the *same* discovery key, with a read-only Corestore open over
+  `store/signed`, **does** fire its handler and does log the peer. So neither the topic nor the
+  read-only store is the cause.
+- The one difference between the server that fires and the server that does not is on the client:
+  the working case had a client with no Corestore that never called `store.replicate(conn)`; the
+  failing cases have a client that does.
+- `test/seed-probe.js`, which runs the testnet, the seeder and the client in one process, passes
+  on every suite run.
+
+That is as far as measurement went. The mechanism is not identified, and the asymmetry — a client
+holding a connection the server does not have — is more consistent with the transport than with
+anything in this repo. This VM is a sandboxed Linux ARM64 container; two processes holepunching
+UDX through a local DHT is exactly the path a sandbox is most likely to break, and in-process
+replication working reliably here fits that.
+
+**Next step is to run this on the Mac, not here.** `bare scripts/testnet.js`, then `seed.js` and
+`probe.js` with `--bootstrap`, on real hardware. If it works there, this file is an environment
+report and nothing more. If it fails there too, the instrumented pair that printed the identities
+above is the way back in.
