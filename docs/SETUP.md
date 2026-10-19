@@ -58,43 +58,8 @@ Notes:
 
 ## Planet bee
 
-zoom 10 complete plus zoom 14 without filler runs, then sign, seed and probe. This is the build that
-ran on 20261012, not the design the client now reads: `preview.js` tries zoom 15 first (`ZOOMS`), and
-no planet bee holds that tier yet. **To build the current design, follow [PLANET.md](PLANET.md)** —
-the zoom 15 tier, the quadrant split, and the gazetteer passes in key order. What follows is the
-record of the 20261012 run.
-
-| Step | Time | Disk |
-| --- | ---: | ---: |
-| zoom 10 extract | minutes | 2.2 GB |
-| zoom 14 extract | about 2.5 h | 31 GB |
-| build, publisher flags | about 7 min | 35 GB store |
-| gazetteer pass over zoom 10 | about 2 min | 12 MB |
-| area pass over zoom 13 | with the z13 tile entries, not the rectangle | about 100 MB |
-| signed commit | about 2 min | |
-
-```sh
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/planet-z10.pmtiles --minzoom=10 --maxzoom=10
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/planet-z14.pmtiles --minzoom=14 --maxzoom=14
-$B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles data/planet-z14.pmtiles   # publisher path, into an empty store dir: key-order puts, no value inlined with its key, no --resume
-$B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10 | tee results/planet-gazetteer.txt
-$B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json   # g/ keys after the tiles, before the commit; --inline-value-size=N as in planet-build.js
-$B scripts/gazetteer.js data/planet-areas.json --areas data/planet-z13.pmtiles -180,-85.05,180,85.05 13 13 | tee results/planet-areas.txt   # neighbourhood, suburb and village labels
-$B scripts/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json   # a/ keys
-$B scripts/planet-commit.js store/planet keys atlas   # optional 4th arg: blocks per signed commit, default 20000; resumable
-$B scripts/seed.js store/planet <key from the maps line>
-$B scripts/probe.js <key> 26.9,75.8 51.5,-0.12
-$B scripts/probe.js --levels=2 <key> 26.9,75.8 51.5,-0.12   # prefetch the top N tree levels first, then read
-```
-
-The build logs `done puts 32888213 bytes 35221625742` for build 20261012; the commit ends with a `maps:` line holding the key and the signed length.
-
-The area pass above reads `data/planet-z13.pmtiles`, which no line in this file cuts: harvesting the
-`a/` labels at zoom 13 on the planet means a third extract that nothing else in the build uses.
-Zoom 13 is the cheaper pass — about 8M tiles against 31.8M, and 91% of the neighbourhood labels —
-while the zoom 14 extract the build already needs carries all of them and saves the cut, at about
-1.25 GB resident in the walk instead of 250 MB. Whoever has the disk decides; the `a/` **key** zoom
-is 14 either way (`AREA_ZOOM`), and the city extracts above keep harvesting at zoom 13.
+The runbook is [PLANET.md](PLANET.md): the zoom 15 tier, the quadrant split, the gazetteer passes
+in key order, and what the 20261012 run measured. It is the only place those commands live.
 
 ### Experiments behind the publisher flags
 

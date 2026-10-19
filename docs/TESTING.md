@@ -102,26 +102,11 @@ far likelier, so check that `20261012` is still the build you cut from.
 
 ## Stage 4 — planet scale
 
-The part no machine has run since the fixes. Budget ~3 h wall clock, mostly the zoom 14 extract.
-Nothing special is needed beyond disk space.
+Run [PLANET.md](PLANET.md) end to end — it carries the commands, the quadrant bboxes, the entry
+cap and the retry loops. Budget a day; nearly all of it is `pmtiles extract`. Record each step's
+output under `results/` as that document names, and the `time` output with it.
 
-```sh
-B=node_modules/bare-runtime/bin/bare
-S=https://build.protomaps.com/20261012.pmtiles
-
-./tools/pmtiles extract $S data/planet-z10.pmtiles --minzoom=10 --maxzoom=10   # ~2.2 GB, minutes
-./tools/pmtiles extract $S data/planet-z14.pmtiles --minzoom=14 --maxzoom=14   # ~31 GB, ~2.5 h
-
-time $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
-  --inline-value-size=0 store/planet keys atlas 10 \
-  data/planet-z10.pmtiles data/planet-z14.pmtiles 2>&1 | tee results/planet-build-mac.txt
-
-time $B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town \
-  data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10 2>&1 | tee results/planet-gazetteer-mac.txt
-
-$B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json
-time $B scripts/planet-commit.js store/planet keys atlas 2>&1 | tee results/planet-commit-mac.txt
-```
+What follows is what this stage is for, which is not the same as how to run it.
 
 ### What this stage is actually testing
 
@@ -129,8 +114,8 @@ Four things the small fixtures cannot reach. Each has a specific expected outcom
 
 1. **The production flush path.** `FLUSH_PUTS` (20000) and `FLUSH_BYTES` (64 MB) are the defaults,
    and every test passes `flushPuts: 200` instead — so until this run, the chunking that actually
-   ships has never executed. The command above overrides both to the publisher values, so run it
-   **once more without the two flags** if you want the defaults themselves exercised.
+   ships has never executed. PLANET.md's build command overrides both to the publisher values, so
+   run one archive **once more without the two flags** to exercise the defaults themselves.
 
 2. **Short-read detection at scale.** `readValues` now throws `short read: wanted N bytes at M, got
    K` rather than silently writing blank tiles under a signature. On a correctly downloaded archive
@@ -139,24 +124,25 @@ Four things the small fixtures cannot reach. Each has a specific expected outcom
 3. **The gazetteer pass.** Level-9 gzip on every tile in the world used to run and be discarded
    here; `gz` is now a lazy getter. The pass also walks the archive's tile entries now rather than
    the bbox rectangle, so the 1,048,576-tile z10 rectangle costs the 478,575 entries the archive
-   holds. SETUP budgets ~2 min for this pass from before either change, so **expect it to come in
-   meaningfully under 2 min**. This is the one performance fix with a measurable prediction —
-   record the `time` output either way, and the `walk entries ... fillerRuns ...` line with it.
+   holds. The ~2 min budget predates both changes, so **expect it to come in meaningfully under
+   2 min**. This is the one performance fix with a measurable prediction — record the `time`
+   output either way, and the `walk entries ... fillerRuns ...` line with it.
 
 4. **Handle and store cleanup.** The archive fd and the store now close in `finally` rather than as
    the last statement of the happy path, so an interrupted or failed build releases them too. Kill
-   the build partway with Ctrl-C once and confirm it exits without leaving the store locked — the
-   next run should open `store/planet` with `--resume` instead of refusing it.
+   one quadrant's build partway with Ctrl-C and confirm it exits without leaving the store locked.
+   A sorted build cannot `--resume`; the recovery is to re-run that quadrant's command unchanged,
+   and the puts already flushed must append no block the second time.
 
 ### Gate
 
-```
-done puts 32888213 bytes 35221625742
-```
+The conservation check in PLANET.md step 2 — `puts + fillerTiles` summed across the quadrant runs
+equals `4^zoom` — is the gate, because it is the one that catches a bad cut. Summing
+`tile entries count` instead does not work and has masked a real overlap.
 
-That is the exact line build `20261012` produced. A different build date gives different numbers —
-legitimate, but then it is not a regression check, so note which build you used. The commit ends
-with a `maps:` line carrying the key and signed length; keep it, stage 5 needs the key.
+The commit ends with a `maps:` line carrying the key and signed length; keep it, stage 5 needs the
+key. For scale, build `20261012` logged `done puts 32888213 bytes 35221625742` for the
+z10-plus-z14 build that preceded the quadrant split.
 
 Also confirm `store/planet` is ~35 GB and the process exited 0.
 
