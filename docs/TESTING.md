@@ -216,11 +216,18 @@ produced them. A key the store does not hold now fails with `holds no core <key>
 **On a private DHT, to take the network out of the question.** A third terminal runs
 `$B scripts/testnet.js`, which prints a `--bootstrap=` line to pass to both commands below. This
 is the configuration to use when a seeder reports `peers 0` and you need to know whether that is
-the network or the code. **It does not currently connect** — see
-[`results/local-testnet.txt`](results/local-testnet.txt), which reproduces `peers 0` between two
-processes on one machine with no NAT in the path. Replication has only ever been observed working
-inside a single process (`test/seed-probe.js`); two processes is the untested configuration and
-the only one an operator uses.
+the network or the code.
+
+A freshly started seeder serves its first client correctly — `uploads` on the seeder equals
+`blocks` on the probe, and the repeat read costs nothing. **Every client after that one connects
+and receives nothing**: `connect ms` is single-digit, then `core.update` returns `core.length 0`
+after ~13 s, and the seeder logs no second peer. Restarting the seeder does not reliably restore
+it. See [`results/local-testnet.txt`](results/local-testnet.txt) for the runs and for what has
+been ruled out — hyperswarm itself, the discovery key, a stale announcer, and the store.
+
+Until that is understood, treat one successful probe per seeder start as the expected ceiling, and
+do not read a second failing probe as a broken atlas. `scripts/local-check.js` answers that
+question without the swarm.
 
 **Terminal B, the probe:**
 

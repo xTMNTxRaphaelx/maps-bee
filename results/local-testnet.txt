@@ -47,3 +47,50 @@ Two dead ends worth not repeating, both hit on the way here:
 An earlier reading of dead end 1 blamed an unclean shutdown leaving the store unopenable read-only.
 That was wrong. A read-write open appeared to "repair" the store only because it created the
 missing core; opening the *correct* key read-only works first time, with no repair step.
+
+## Correction, 2026-10-19, later the same day
+
+**The conclusion above is wrong, and so is its headline.** Replication across two processes does
+work: it was observed complete and correct. What this file originally recorded was a run against a
+DHT that was not there.
+
+Cause of the bad run: `pkill -f "scripts/testnet.js"` matches the shell invocation that contains
+that string as well as the testnet, so the command that was meant to check whether the testnet was
+alive killed it instead. The later `seed`/`probe` pair then talked to nothing. A bound UDP port was
+read as evidence the testnet survived; it was not.
+
+What a clean run produces, seeder and probe as separate processes over `scripts/testnet.js`:
+
+```
+seeding njz8wtxjwantpkjwd4s1fiwejroz64qjb5eorjrsdp14453c7hxo length 1076 byteLength 18253320
+peer 66373b1b open, peers 1
+peer 66373b1b close, peers 0
+length 1076	peers 0	uploads 9	uploadBytes 114462
+
+connect ms 7.8	update ms 5.2 blocks 0 bytes 0	core.length 1076
+cold	26.9,75.8	ms 15.4	blocks 9	bytes 114462	zoom 14	tiles 4/4	address Kachi Basti, Sudarshanpura
+repeat	26.9,75.8	ms 2.5	blocks 0	bytes 0	zoom 14	tiles 4/4
+```
+
+The seeder's `uploads 9 / uploadBytes 114462` equals the client's `blocks 9 / bytes 114462`, and
+the repeat read costs nothing. That is the whole path working between two processes.
+
+**What is still open, and it is not what this file first claimed.** The success above was the
+first client a freshly started seeder served. Every client after it, and every client of a seeder
+started later in the same session, connects — `connect ms` is 6-7 ms, so hyperswarm pairs them —
+and then `core.update({ wait: true })` returns `core.length 0` after ~13 s having moved no bytes,
+while the seeder logs no `peer ... open` at all. Six attempts across two seeder instances, with no
+stale seeder and no second announcer on the discovery key.
+
+Ruled out on the way, each by its own check:
+
+- hyperswarm cross-process on this testnet: a bare server/client pair on an arbitrary topic, no
+  maps-bee code in the path, connects every time.
+- a discovery-key mismatch: the seeder's read-only store by key and a fresh client store by key
+  produce the same discovery key, `965902ae5bd4dbc2...`.
+- a stale seeder still announcing: `ps` showed exactly one seeder and one testnet.
+- the store or the key: the seeder reads `length 1076` and prints it before announcing.
+
+So the question is not "does replication work" but "why does a seeder serve one client and then
+stop seeing peers". `label null` in these runs is unrelated and expected: `store/signed` holds
+tiles only, no `g/` keys.
