@@ -128,7 +128,7 @@ What a serving peer learns is the cell two zooms above the tiles it served: with
 | `index.js` | the client surface, and the only entry point a consumer needs |
 | `lib/` | the read path: `tiles.js` and `mvt.js` (pure — quadkeys, MVT decode, no I/O), then `gazetteer-lib.js`, `address.js`, `render-svg.js` and `preview.js` on top |
 | `lib/build/` | publisher-side: pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer collector, test-only keys |
-| `lib/net/` | `client.js` opens a cold client and measures it; `report.js` formats what it measured; `seed.js` serves a published core |
+| `lib/net/` | `client.js` opens a cold client and measures it; `report.js` formats what it measured; `published.js` opens a published core off disk read-only; `seed.js` serves one |
 | `bin/` | one thin `main()` per CLI over the modules above, plus `flags.js` for argument parsing. Nothing in `lib/` requires `bin/` |
 | `scripts/study/` | research tooling, not part of the library |
 | `test/` | brittle tests mirroring the source layout (`geo/ read/ build/ net/ cli/ app/`, with shared fixtures in `helpers/`), registered in `test/index.js`, run under bare |
@@ -188,9 +188,11 @@ The suite runs two ways on purpose. With `data/` absent — what a clean clone a
 the whole suite runs. Either way the gate is a zero exit, zero `not ok`, and a summary line that is
 actually printed; a `SIGABRT` or no summary at all means the preflight does not hold.
 
+### Fixtures
+
 The fixtures are seven `pmtiles extract` cuts (~28 MB) plus a publish and four gazetteer passes —
-the commands are in `test/helpers.js`'s path list order, and `$S` is a live build found as in the
-quick start:
+the commands are in `test/helpers/helpers.js`'s path list order, and `$S` is a live build found as
+in the quick start:
 
 ```sh
 ./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
@@ -215,7 +217,7 @@ $B bin/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pm
 must cover a margin around the region it serves, or a pin near the edge takes the nearest label that
 survived the clip rather than the true nearest.
 
-`test/address-accuracy.js` and `test/address-accuracy-lugano.js` print a rate per address part. Note
+`test/read/address-accuracy.js` and `test/read/address-accuracy-lugano.js` print a rate per address part. Note
 the Protomaps build alongside any rate you keep — the fixture is fixed but the tiles come from a
 build that rotates weekly, so a rate change across builds says nothing about the code.
 
@@ -224,19 +226,26 @@ build that rotates weekly, so a rate change across builds says nothing about the
 ### Seed and probe
 
 ```sh
-$B bin/seed.js store/planet <key>                 # terminal A
-$B bin/probe.js <key> 26.9,75.8 51.5,-0.12        # terminal B
+$B bin/seed.js store/planet <key>                      # terminal A
+$B bin/probe.js --levels=1 <key> 26.9,75.8 51.5,-0.12  # terminal B
 ```
 
+`--levels=N` on `probe.js` inflates the top N tree levels before the first read, as an app
+shipping them would; `app/README.md` has the measurement behind the level it picks. Both commands
+take `--bootstrap=host:port,...` for a private DHT.
+
 `bin/local-check.js` runs the same read path with no swarm at all, so run it first whenever a
-probe comes back empty — a sound atlas behind a blocked DHT stops looking like a broken build.
+probe comes back empty — a sound atlas behind a blocked DHT stops looking like a broken build. Its
+`--json` also dumps the whole address object, which is what separates "nothing was found" from
+"something was found and `display()` dropped it": a road beyond `ROAD_ON_M` stays in the object and
+out of the string, so a pin that is not on a street shows the city alone and looks empty.
 `bin/testnet.js` prints a `--bootstrap=` line that puts both commands on a private DHT. If a
 seeder survives Ctrl-C, the launcher did not forward SIGINT: `pkill -INT -f bin/seed.js`.
 
 **A probe over the swarm may serve nothing, and it is not known to be this repo's fault.** On a
 clean run the seeder has served none of three sequential probes and logged no peer, while the client
 reported `connections 1` naming that seeder's own key. A plain hyperswarm server on the same
-discovery key does fire its handler, and `test/seed-probe.js` — testnet, seeder and client in one
+discovery key does fire its handler, and `test/net/seed-probe.js` — testnet, seeder and client in one
 process — passes on every suite run. A client holding a connection the server does not have points
 at the transport, and this has only ever run in a sandboxed Linux ARM64 container where UDX
 holepunching is the likeliest thing to break. **Next step is real hardware**, not more debugging
@@ -275,7 +284,10 @@ rounds across anyway, which once duplicated a whole tile line. A quadrant is rig
 ```sh
 ./tools/pmtiles extract $S data/planet-z10.pmtiles --minzoom=10 --maxzoom=10
 
-# once per quadrant, at z14 and z15; the retry loop is not optional on a home link
+# once per quadrant, at z14 and z15; the retry loop is not optional on a home link. NW is shown;
+# the other three bboxes follow from the cutting rule above.
+until ./tools/pmtiles extract $S data/planet-z14-nw.pmtiles --bbox=-179.995,0.005,-0.005,85.0511 \
+  --minzoom=14 --maxzoom=14 --download-threads=8 --overfetch=0.2; do echo "retrying in 30s"; sleep 30; done
 until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-179.995,0.005,-0.005,85.0511 \
   --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2; do echo "retrying in 30s"; sleep 30; done
 
@@ -283,8 +295,14 @@ $B bin/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
   --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles
 # then one run per quadrant, NW NE SW SE, same store and same draft name
 
-# a/ before g/, because a/ sorts first
-$B bin/gazetteer.js data/planet-areas.json --areas data/planet-z14.pmtiles -180,-85.05,180,85.05 14 14
+# a/ before g/, because a/ sorts first. One invocation over all four z14 quadrants, not four runs:
+# the dedupe is shared across the sources of a single pass, so splitting it would keep a name once
+# per quadrant. The bbox stays the whole world on each, the margin the --areas note below explains.
+$B bin/gazetteer.js data/planet-areas.json --areas \
+  data/planet-z14-nw.pmtiles -180,-85.05,180,85.05 14 14 \
+  data/planet-z14-ne.pmtiles -180,-85.05,180,85.05 14 14 \
+  data/planet-z14-sw.pmtiles -180,-85.05,180,85.05 14 14 \
+  data/planet-z14-se.pmtiles -180,-85.05,180,85.05 14 14
 $B bin/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json
 $B bin/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10
 $B bin/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json

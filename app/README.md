@@ -4,9 +4,10 @@ An Electron window that calls the library's `readPreview` over the public DHT an
 back. It is an example consumer, not part of maps-bee — nothing in `lib/`, `bin/` or `index.js` requires
 it, and the library is usable without Electron, pear-runtime, or anything else in this directory.
 
-What it is here for: `readPreview` is otherwise only ever driven by tests and by `bin/probe.js`,
-both of which run in one process against a store on the same machine. This is the only place the
-real read path runs in a real application, in a real process boundary, against a real remote peer.
+What it is here for: `readPreview` is otherwise only ever driven by tests, by `bin/local-check.js`
+off local disk, and by `probe()` in `lib/net/client.js` behind `bin/probe.js` — all of which run in
+one process against a store on the same machine. This is the only place the real read path runs in
+a real application, in a real process boundary, against a real remote peer.
 That makes it the least covered path in the repo and the one worth exercising by hand before
 trusting a change to the client read.
 
@@ -58,7 +59,7 @@ app/worker.js     a bare process — the only place library code runs
 The split is the point. `readPreview` needs bare, Electron's main process is node, so the read runs
 in a bare worker over pear-runtime and everything else only relays: `main.js` and `renderer.js`
 carry no map logic at all, and `ops.js` is plain JavaScript with no Electron in it, which is why
-`test/app-ops.js` can test it directly.
+`test/app/ops.js` can test it directly.
 
 Every reply is matched by `id`, and both ends treat a malformed or unmatched frame as a non-event
 rather than throwing — an uncaught throw in main's frame handler takes the whole Electron process

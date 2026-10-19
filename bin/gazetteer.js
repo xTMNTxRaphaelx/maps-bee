@@ -1,8 +1,6 @@
 'use strict'
-// usage: gazetteer.js <out.json> [--kinds=a,b] [--areas] (<archive> <bbox> <minz> <maxz>)...
-// --areas collects the neighbourhood, suburb and village labels deriveAddress wants instead of
-// localities, and writes them for a/ keys; harvest them from z13, where 91% of the neighbourhood
-// labels are already present and a z14 pass costs four times as many tile entries.
+// What the two passes collect, and why z13 for one and z14 for the other, is on collect() in
+// lib/build/gazetteer.js. The usage string lives in main(), where it is thrown.
 const fs = require('bare-fs')
 const zlib = require('bare-zlib')
 const { parseBbox } = require('../lib/tiles')

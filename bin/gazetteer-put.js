@@ -5,7 +5,9 @@ const { putGazetteer, gazKeys, areaKeys } = require('../lib/gazetteer-lib')
 const { parseFlags, intFlag } = require('./flags')
 
 // Adds a gazetteer.js output to the named draft, after the tiles; commit with planet-commit.js.
-// --areas writes a/ keys from a --areas gazetteer run instead of the g/ city and town keys.
+// --areas must match the run that produced the file. Nothing checks it: the JSON records which
+// pass wrote it nowhere, and kind_detail alone cannot tell an areas file from an unfiltered
+// locality one. Getting it wrong writes the labels under the other prefix and the atlas signs it.
 async function main () {
   const argv = Bare.argv.slice(2)
   const { flags, args } = parseFlags(argv, ['--inline-value-size', '--areas'])

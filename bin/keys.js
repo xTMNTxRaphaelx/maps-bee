@@ -1,5 +1,5 @@
 'use strict'
-// Generates TEST-ONLY ed25519 key pairs for the multisig prototype. Never use for a real publish.
+// TEST KEYS ONLY. Never use a set from here for a real publish.
 const { generate } = require('../lib/build/keys')
 const { parseFlags } = require('./flags')
 

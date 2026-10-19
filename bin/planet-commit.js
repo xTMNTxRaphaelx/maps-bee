@@ -3,7 +3,6 @@ const perf = require('bare-performance')
 const { withDraft, commitDraft, mapsLine } = require('../lib/build/publish')
 const { parseFlags } = require('./flags')
 
-// Commits the named draft of a planet build with two of the three signatures, chunkBlocks at a time.
 async function main () {
   const { args } = parseFlags(Bare.argv.slice(2), [])
   const [storeDir, keysDir, name, chunkArg] = args
