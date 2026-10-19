@@ -156,6 +156,33 @@ test('putGazetteer writes sorted g/ keys and readLabel finds Jaipur', async (t) 
   t.is(label.name, 'Jaipur')
 })
 
+// The property README "Design" claims for a republish — warm clients keep their blocks — only
+// holds if an unchanged place puts identical bytes, which hyperbee then does not append. That in
+// turn only holds because the key identifies the place rather than its position in the input: a
+// positional counter renumbered a tile whenever the harvest order moved, rewriting every value in
+// it. The reversed pass is the one that would have failed.
+test('republishing the same gazetteer appends no block, whatever the input order', async (t) => {
+  const store = await tmpStore(t, 'gaz-republish')
+  const core = store.get({ name: 'gaz-republish' })
+  const bee = new Hyperbee(store, { core, writable: true })
+  await bee.ready()
+  const entries = cities()
+
+  const n = await putGazetteer(bee, entries, { flushPuts: 200 })
+  const first = core.length
+  t.ok(first > 0, `first publish appended ${first} blocks for ${n} places`)
+
+  await putGazetteer(bee, entries, { flushPuts: 200 })
+  t.is(core.length, first, 'the same set again appends nothing')
+
+  await putGazetteer(bee, entries.slice().reverse(), { flushPuts: 200 })
+  t.is(core.length, first, 'and neither does the same set in reverse order')
+
+  let keys = 0
+  for await (const e of bee.createReadStream()) if (e) keys++
+  t.is(keys, n, 'and the atlas still holds one key per place, not three')
+})
+
 test('putGazetteer passes inlineValueSize to every write batch', async (t) => {
   const store = await tmpStore(t, 'gaz-inline')
   const out = new Hyperbee(store, { core: store.get({ name: 'gaz-noinline' }), writable: true })
