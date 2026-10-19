@@ -1,6 +1,5 @@
 'use strict'
 const perf = require('bare-performance')
-const Corestore = require('corestore')
 const Hypercore = require('hypercore')
 const Hyperbee = require('hyperbee2')
 const HypercoreId = require('hypercore-id-encoding')
@@ -9,6 +8,7 @@ const { decodeGzip } = require('../../lib/mvt')
 const { tileKey, quadkey, subtreeRange } = require('../../lib/tiles')
 const { load } = require('../../lib/build/keys')
 const { manifestFor } = require('../../lib/build/sign')
+const { openPublished } = require('../../lib/net/published')
 const { tmpStore, SIGNED_STORE, KEYS_DIR } = require('./helpers')
 
 // publish.js opens the core as store.get({ manifest: manifestFor(publicKeys) }), so the published
@@ -24,12 +24,14 @@ function publishedRef () {
   return { key, id: HypercoreId.encode(key), length: PUBLISHED_LENGTH }
 }
 
-// readOnly: no device-file lock and no RocksDB writes, so store/signed stays untouched
+// openPublished rather than a bare store.get: it opens read-only (no device-file lock, no RocksDB
+// writes, so store/signed stays untouched) and, crucially, throws when the store holds no core for
+// the key. Without that check a missing or unbuilt fixture store yields an empty core and the
+// failure reads "actual: 0, expected: 1076", which cannot tell "fixtures were never built" from
+// "the key set changed" from "the store is genuinely empty".
 async function openSeeder (t) {
   const ref = publishedRef()
-  const store = new Corestore(SIGNED_STORE, { readOnly: true })
-  const core = store.get({ key: ref.key, writable: false })
-  await core.ready()
+  const { store, core } = await openPublished(SIGNED_STORE, ref.key)
   // the build is deterministic, so this checks store/signed against a known length
   t.is(core.length, ref.length, `seeder holds the published length ${ref.length}`)
   t.teardown(() => store.close())

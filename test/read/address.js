@@ -60,7 +60,7 @@ test('deriveAddress: parts and display from the z14 2x2 plus the z15 pin tile, z
   t.is(both.road.name, 'to Jaigarh Fort', 'the z15 pin tile holds a nearer named road')
   t.ok(Math.abs(both.road.metres - 42) < 1, `z14+z15 road ${both.road.metres} m`)
   t.is(both.village.name, 'Amber')
-  t.is(both.village.kind, 'village')
+  t.alike(Object.keys(both.village).sort(), ['metres', 'name'], 'the tile path returns the same shape as the gazetteer path')
   t.ok(Math.abs(both.village.metres - 586) < 1, `village ${both.village.metres} m`)
   t.is(both.display, 'to Jaigarh Fort, kundalaoo Colony, Jaipur', 'the nearest area label, 282 m, over the village at 586 m')
 

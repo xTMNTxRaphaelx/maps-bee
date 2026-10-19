@@ -84,7 +84,7 @@ address: {
   road:          { name, kind, metres } | null,  // named road within ROAD_M
   neighbourhood: { name, metres } | null,        // within NEIGHBOURHOOD_M
   suburb:        { name, metres } | null,        // places neighbourhood/suburb or macrohood within SUBURB_M
-  village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M
+  village:       { name, metres } | null,        // places locality/village within VILLAGE_M
   city:          { name, kind, km } | null,      // the g/ gazetteer label
   region:        null,                           // not in the bee: these sit in tiles below z10
   country:       null,
