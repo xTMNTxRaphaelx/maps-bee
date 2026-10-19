@@ -210,6 +210,19 @@ $B scripts/seed.js store/planet <key from the maps line>
 `node_modules/bare-runtime/bin/bare` launcher does not forward SIGINT, so Ctrl-C may not reach it.
 `pkill -INT -f scripts/seed.js` from terminal B always does.
 
+**The key must be one the store holds.** It comes from the `maps:` line of the publish or commit
+that built the store, not from a committed `results/` file — those record the key set that
+produced them. A key the store does not hold now fails with `holds no core <key>`.
+
+**On a private DHT, to take the network out of the question.** A third terminal runs
+`$B scripts/testnet.js`, which prints a `--bootstrap=` line to pass to both commands below. This
+is the configuration to use when a seeder reports `peers 0` and you need to know whether that is
+the network or the code. **It does not currently connect** — see
+[`results/local-testnet.txt`](results/local-testnet.txt), which reproduces `peers 0` between two
+processes on one machine with no NAT in the path. Replication has only ever been observed working
+inside a single process (`test/seed-probe.js`); two processes is the untested configuration and
+the only one an operator uses.
+
 **Terminal B, the probe:**
 
 ```sh

@@ -1,6 +1,0 @@
-2026/10/13 13:18:03 extract.go:401: fetching 11 dirs, 11 chunks, 1 requests
-2026/10/13 13:18:05 extract.go:441: Region tiles 1398101, result tile entries 657664
-2026/10/13 13:18:05 extract.go:450: fetching 657664 tiles, 1 chunks, 1 requests
-2026/10/13 13:18:05 extract.go:606: Completed in 3.416256083s with 4 download threads (192510.15612888217 tiles/s).
-2026/10/13 13:18:05 extract.go:611: Extract required 5 total requests.
-2026/10/13 13:18:05 extract.go:612: Extract transferred 3.8 GB (overfetch 0.05) for an archive size of 3.8 GB

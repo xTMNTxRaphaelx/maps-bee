@@ -6,3 +6,10 @@ node_modules/
 
 # bare writes core.<pid> here on SIGABRT; they are sparse, so size them with du, not ls
 core.*
+
+# editor and OS droppings, and anything a run writes locally
+.DS_Store
+.idea/
+.vscode/
+*.log
+.env
