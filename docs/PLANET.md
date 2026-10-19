@@ -25,13 +25,19 @@ that disagrees with an estimate here is the estimate's problem.
 
 ```sh
 B=node_modules/bare-runtime/bin/bare
-S=https://build.protomaps.com/20261012.pmtiles
 $B scripts/keys.js keys     # only if keys/ is empty; test-only keys, never committed
+
+# builds are named by date and kept about a week; 20261012, which every count below was measured
+# from, was already a 404 on 2026-10-19
+for i in $(seq 0 25); do D=$(date -v-${i}d +%Y%m%d 2>/dev/null || date -d "-$i day" +%Y%m%d); \
+  C=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 -r 0-1 "https://build.protomaps.com/$D.pmtiles"); \
+  case $C in 200|206) S=https://build.protomaps.com/$D.pmtiles; echo "using $D"; break;; esac; done
 ```
 
-Check the source build is still the one these numbers came from — `./tools/pmtiles show $S` should
-say `tile entries count: 178204798` (**measured**, `results/planet-filler.txt`). A different number
-means Protomaps rotated the build under you, and every count below moves with it.
+`./tools/pmtiles show $S` gives that build's `tile entries count`. It said **178,204,798** on
+20261012 (**measured**, `results/planet-filler.txt`), and every count in this document moves with
+it. Record what yours says before starting: the conservation checks below are against `4^zoom`,
+which does not move, but the entry counts and the cap headroom do.
 
 ## The constraint that shapes all of this
 

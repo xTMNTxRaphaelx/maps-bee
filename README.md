@@ -23,7 +23,12 @@ mkdir -p tools data/extract
 cp <path to the pmtiles binary> tools/pmtiles        # github.com/protomaps/go-pmtiles/releases
 
 B=node_modules/bare-runtime/bin/bare
-S=https://build.protomaps.com/20261012.pmtiles
+
+# Protomaps names builds by date and keeps about a week of them, so pick one that still exists
+for i in $(seq 0 25); do D=$(date -v-${i}d +%Y%m%d 2>/dev/null || date -d "-$i day" +%Y%m%d); \
+  C=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 -r 0-1 "https://build.protomaps.com/$D.pmtiles"); \
+  case $C in 200|206) S=https://build.protomaps.com/$D.pmtiles; echo "using $D"; break;; esac; done
+
 ./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
 ./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
 

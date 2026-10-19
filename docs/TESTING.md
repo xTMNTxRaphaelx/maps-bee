@@ -43,6 +43,22 @@ xattr -d com.apple.quarantine tools/pmtiles 2>/dev/null
 ./tools/pmtiles version
 ```
 
+**A Protomaps build that still exists.** Builds are named by date and retained for about a week —
+`20261012`, which every measurement in `results/` was cut from, was already a 404 on 2026-10-19.
+Find a live one and keep it in `$S` for the rest of the run:
+
+```sh
+for i in $(seq 0 25); do
+  D=$(date -v-${i}d +%Y%m%d)                       # GNU date: date -d "-$i day" +%Y%m%d
+  C=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 -r 0-1 "https://build.protomaps.com/$D.pmtiles")
+  if [ "$C" = "206" ] || [ "$C" = "200" ]; then echo "USE $D"; break; fi
+done
+S=https://build.protomaps.com/<that date>.pmtiles
+```
+
+Note the date you used. A different build than `20261012` is legitimate, but it makes stage 3 a
+comparison against your own first run rather than against the committed rates — see that stage.
+
 **Fresh clone.** Test what the repo actually holds, not a tree with local state in it:
 
 ```sh
@@ -73,13 +89,13 @@ About two minutes end to end, including seven small downloads totalling about 28
 npm install
 mkdir -p tools data/extract results
 cp <path to the pmtiles binary> tools/pmtiles
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/jaipur-z15.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=15 --maxzoom=15
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z11-14.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=11 --maxzoom=14
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z15.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=15 --maxzoom=15
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/lugano-z10.pmtiles --bbox=8.85,45.95,9.05,46.06 --maxzoom=10
-./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
+./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
+./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract $S data/extract/jaipur-z15.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract $S data/extract/lugano-z11-14.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract $S data/extract/lugano-z15.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract $S data/extract/lugano-z10.pmtiles --bbox=8.85,45.95,9.05,46.06 --maxzoom=10
+./tools/pmtiles extract $S data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 B=node_modules/bare-runtime/bin/bare
 $B scripts/keys.js keys
 $B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee ../publish.txt
@@ -134,9 +150,14 @@ git diff --stat results/
 | city | 48/56 | 29/44 |
 | housenumber | 14/16 | 19/24 |
 
-Distances may differ in the last metre; rates must not move. A rate change means either the
-Protomaps build rotated under you or the address code behaves differently on macOS — the first is
-far likelier, so check that `20261012` is still the build you cut from.
+Distances may differ in the last metre. **The rates above hold only for build `20261012`**, which
+no longer exists, so a run from a current build is expected to differ — OpenStreetMap moves under
+it. Record what your build produces and keep it: that becomes the baseline this gate compares
+against on your next run, and a rate that moves between two runs of the *same* build is the
+signal this stage is for.
+
+Note which build you used alongside the numbers. A rate change across different builds says
+nothing about the code.
 
 ## Stage 4 — planet scale
 
@@ -330,7 +351,6 @@ Four cities, chosen to span the regimes address derivation has to cope with:
 
 ```sh
 B=node_modules/bare-runtime/bin/bare
-S=https://build.protomaps.com/20261012.pmtiles
 
 # 0. Berlin and Nairobi extracts and city gazetteers (Jaipur and Lugano come from stage 2)
 for C in "berlin 13.30,52.45,13.55,52.56" "nairobi 36.70,-1.36,36.95,-1.22"; do

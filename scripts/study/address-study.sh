@@ -18,7 +18,10 @@
 set -e
 
 B=node_modules/bare-runtime/bin/bare
-S=https://build.protomaps.com/20261012.pmtiles
+# Protomaps names builds by date and keeps about a week of them, so the one the committed results
+# were cut from (20261012) is already gone. Set S yourself to pin a build; otherwise the newest
+# live one is found below, and the shapes this prints are then that build's, not 20261012's.
+S="${S:-}"
 CONTACT="$1"
 OUT=results/address-shapes.txt
 CITIES="jaipur lugano berlin nairobi"
@@ -40,8 +43,30 @@ gaz () {
 
 [ -x "$B" ] || { echo "$B missing; run npm install" >&2; exit 1; }
 
-# only needed when an extract has to be cut; tools/ is gitignored, so a fresh clone has no binary
+# a 404 here is the usual failure: the build this was written against expired. Resolve it once,
+# loudly, rather than letting every extract fail the same way.
+find_build () {
+  if [ -n "$S" ]; then
+    echo "using $S" >&2
+    return 0
+  fi
+  i=0
+  while [ "$i" -le 25 ]; do
+    D=$(date -v-${i}d +%Y%m%d 2>/dev/null || date -d "-$i day" +%Y%m%d)
+    C=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 -r 0-1 "https://build.protomaps.com/$D.pmtiles")
+    case "$C" in
+      200|206) S="https://build.protomaps.com/$D.pmtiles"; echo "using build $D" >&2; return 0 ;;
+    esac
+    i=$((i + 1))
+  done
+  echo "no Protomaps build found in the last 25 days; set S=<url> and re-run" >&2
+  exit 1
+}
+
+# everything a cut needs: a live source build, and the binary to cut with — tools/ is gitignored,
+# so a fresh clone has no binary
 need_pmtiles () {
+  find_build
   if [ -x tools/pmtiles ]; then
     return 0
   fi
@@ -103,7 +128,7 @@ done
 
 echo "== 3/3 scoring =="
 {
-  echo "# address shapes, $(date -u +%Y-%m-%dT%H:%M:%SZ), protomaps build 20261012"
+  echo "# address shapes, $(date -u +%Y-%m-%dT%H:%M:%SZ), protomaps build ${S:-(extracts already present, build unknown)}"
   echo "# A z14 2x2 + z15 pin | B z15 2x2 + gazetteer areas | C z15 2x2 only"
   echo
 } > "$OUT"
