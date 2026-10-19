@@ -10,6 +10,16 @@ const { readPreview, prefetchTop } = require('./preview')
 const { parseFlags, intFlag } = require('./flags')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
+const CONNECT_TIMEOUT = 30000
+
+// rejects if promise has not settled in ms; clears the timer either way so bare can exit
+function withDeadline (promise, ms, message) {
+  let timer = null
+  const expiry = new Promise((resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), ms)
+  })
+  return Promise.race([promise, expiry]).finally(() => clearTimeout(timer))
+}
 
 function counter (core) {
   const dl = { blocks: 0, bytes: 0 }
@@ -30,7 +40,7 @@ async function timed (dl, fn) {
 
 // A cold client: fresh store, swarm lookup by discovery key, first connection, update.
 // close() removes the store dir.
-async function openClient ({ key, bootstrap, dir = null }) {
+async function openClient ({ key, bootstrap, dir = null, connectTimeout = CONNECT_TIMEOUT }) {
   if (!dir) {
     fs.mkdirSync(TMP, { recursive: true })
     dir = fs.mkdtempSync(path.join(TMP, 'probe-'))
@@ -50,8 +60,10 @@ async function openClient ({ key, bootstrap, dir = null }) {
     const t0 = perf.now()
     const connected = new Promise((resolve) => swarm.once('connection', resolve))
     swarm.join(core.discoveryKey, { client: true, server: false })
+    // flush() resolves when the lookups settle, peer or no peer, so only this await distinguishes
+    // "nobody is seeding the key" from "still connecting" — unbounded, it is an unkillable wait
     await swarm.flush()
-    await connected
+    await withDeadline(connected, connectTimeout, `no peer for ${HypercoreId.encode(key)} within ${connectTimeout} ms`)
     const connectMs = perf.now() - t0
     const upd = await timed(dl, () => core.update({ wait: true }))
     const bee = new Hyperbee(store, { core, writable: false })
@@ -86,8 +98,8 @@ function previewLine (phase, point, r) {
 // A cold client as an app would open one, optionally the top `levels` tree levels as an app would
 // ship them, one preview per point, then the first point again to show the repeat cost. Every read
 // counts blocks and bytes downloaded.
-async function probe ({ key, points, bootstrap, dir = null, levels = 0, timeout = 10000, deadline = 30000, log = console.log }) {
-  const c = await openClient({ key, bootstrap, dir })
+async function probe ({ key, points, bootstrap, dir = null, levels = 0, timeout = 10000, deadline = 30000, connectTimeout = CONNECT_TIMEOUT, log = console.log }) {
+  const c = await openClient({ key, bootstrap, dir, connectTimeout })
   const results = []
   try {
     const { core, bee, dl, connectMs, upd } = c

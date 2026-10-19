@@ -28,7 +28,7 @@ function createOps ({ bootstrap } = {}) {
     const lines = []
     if (!session || session.id !== key) {
       await close()
-      const client = await openClient({ key: HypercoreId.decode(key), bootstrap })
+      const client = await openClient({ key: HypercoreId.decode(key), bootstrap, connectTimeout: DEADLINE })
       session = { id: key, client, prefetched: false, seen: new Set() }
       lines.push(connectLine(client.connectMs, client.upd, client.core))
     }

@@ -45,6 +45,7 @@ require('./probe-helpers')
 require('./address-derive')
 require('./file-source')
 require('./areas')
+require('./no-peer')
 
 const missing = FIXTURES.filter((p) => !fs.existsSync(p))
 
