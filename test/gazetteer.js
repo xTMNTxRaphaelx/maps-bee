@@ -54,8 +54,8 @@ test('city+town gazetteer: nearest entry to the Jaipur centre is Jaipur', async 
 })
 
 test('collect keeps only the requested kinds', async (t) => {
-  const all = { regionFeatures: 0, entries: [] }
-  const some = { regionFeatures: 0, entries: [] }
+  const all = { entries: [] }
+  const some = { entries: [] }
   await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), all)
   await collect(JAIPUR_ARCHIVE, JAIPUR_BBOX, 11, 14, new Map(), some, new Set(['city', 'town']))
   t.comment(`localities ${all.entries.length}, city+town ${some.entries.length}`)
@@ -73,7 +73,7 @@ test('collect keeps only the requested kinds', async (t) => {
 // 102 read + 448 skipped is the archive's whole 550 addressed tiles (test/planet-build.js), so the
 // skip drops tiles and never entries: the 114 localities are what a tile-by-tile walk finds too.
 test('collect probes each distinct run blob once and skips the filler', async (t) => {
-  const counts = { regionFeatures: 0, entries: [] }
+  const counts = { entries: [] }
   const stats = await collect(ATLANTIC_ARCHIVE, ATLANTIC_BBOX, 10, 10, new Map(), counts)
   t.comment(`entries ${stats.entries} tiles read ${stats.tiles} fillerRuns ${stats.fillerRuns} fillerTiles ${stats.fillerTiles} runBlobs ${stats.runBlobs}`)
   t.is(stats.fillerRuns, 137, '137 runs')
@@ -84,7 +84,7 @@ test('collect probes each distinct run blob once and skips the filler', async (t
   t.is(counts.entries.length, 114)
 
   // --areas takes a different predicate into the probe, so it decides the same runs separately
-  const areas = { regionFeatures: 0, entries: [] }
+  const areas = { entries: [] }
   const areaStats = await collect(ATLANTIC_ARCHIVE, ATLANTIC_BBOX, 10, 10, new Map(), areas, null, true)
   t.is(areaStats.fillerRuns, 137)
   t.is(areas.entries.length, 68)
@@ -92,7 +92,7 @@ test('collect probes each distinct run blob once and skips the filler', async (t
 
 // An inverted bbox selects no tiles, which looks exactly like an archive that holds none
 test('collect refuses an inverted bbox', async (t) => {
-  const counts = { regionFeatures: 0, entries: [] }
+  const counts = { entries: [] }
   await t.exception.all(collect(JAIPUR_ARCHIVE, [75.95, 26.75, 75.65, 27.05], 11, 14, new Map(), counts), /bbox is inverted/)
 })
 
@@ -110,7 +110,7 @@ test('a world bbox costs the archive, not the rectangle', async (t) => {
     reads++
     return getBytes(offset, length)
   }
-  const counts = { regionFeatures: 0, entries: [] }
+  const counts = { entries: [] }
   await collectFrom(archive, header, [-180, -85.05, 180, 85.05], 10, 10, new Map(), counts)
   t.comment(`world bbox at z10: ${counts.entries.length} localities in ${reads} reads`)
   t.is(counts.entries.length, 27533)

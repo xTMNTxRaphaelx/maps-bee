@@ -69,4 +69,4 @@ function serve (pipe, ops) {
   })
 }
 
-module.exports = { PREFETCH_LEVELS, TIMEOUT, DEADLINE, createOps, serve }
+module.exports = { createOps, serve }

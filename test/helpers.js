@@ -19,7 +19,6 @@ const AREAS_JSON = path.join(DATA, 'areas.json')
 const AREAS_LUGANO_JSON = path.join(DATA, 'areas-lugano.json')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
-const SINGLE_STORE = path.join(__dirname, '..', 'store', 'single')
 const SIGNED_STORE = path.join(__dirname, '..', 'store', 'signed')
 // the three keypairs scripts/keys.js writes; the published key derives from their public halves
 const KEYS_DIR = path.join(__dirname, '..', 'keys')
@@ -27,7 +26,6 @@ const KEYS_FILE = path.join(KEYS_DIR, 'a.json')
 
 const JAIPUR_CENTRE = { lon: 75.8, lat: 26.9 }
 const JAIPUR_BBOX = [75.65, 26.75, 75.95, 27.05]
-const RAJASTHAN_BBOX = [69.5, 23.0, 78.3, 30.2]
 const ATLANTIC_BBOX = [-30, 27, -13, 30]
 
 // fresh RocksDB dir per test; a copied store is refused by RocksDB, so never share one
@@ -72,7 +70,6 @@ module.exports = {
   inlinedValues,
   JAIPUR_CENTRE,
   JAIPUR_BBOX,
-  RAJASTHAN_BBOX,
   ATLANTIC_BBOX,
   STATE_ARCHIVE,
   JAIPUR_ARCHIVE,
@@ -84,7 +81,6 @@ module.exports = {
   GAZETTEER_LUGANO_JSON,
   AREAS_JSON,
   AREAS_LUGANO_JSON,
-  SINGLE_STORE,
   SIGNED_STORE,
   KEYS_DIR,
   KEYS_FILE,

@@ -172,7 +172,6 @@ function collectTile (value, { z, x, y }, bbox, byName, counts, kinds, areas) {
   for (let i = 0; i < layer.length; i++) {
     const f = layer.feature(i)
     const p = f.properties
-    if (p.kind === 'region') counts.regionFeatures++
     const kindDetail = keptKind(p, kinds, areas)
     if (kindDetail === SKIP) continue
     const g = f.toGeoJSON(x, y, z).geometry
@@ -220,7 +219,7 @@ async function main () {
     throw new Error('usage: gazetteer.js [--kinds=a,b] [--areas] <out.json> (<archive.pmtiles> <minLon,minLat,maxLon,maxLat> <minz> <maxz>)...')
   }
   const byName = new Map()
-  const counts = { regionFeatures: 0, entries: [] }
+  const counts = { entries: [] }
   for (let i = 0; i < rest.length; i += 4) {
     const [path, bbox, minz, maxz] = rest.slice(i, i + 4)
     for (const [label, v] of [['minz', minz], ['maxz', maxz]]) {
@@ -233,7 +232,6 @@ async function main () {
   const entries = counts.entries
   const perKind = {}
   for (const e of entries) perKind[e.kind_detail] = (perKind[e.kind_detail] || 0) + 1
-  console.log(`region features seen (not deduped, all zooms) ${counts.regionFeatures}`)
   console.log(`${areas ? 'areas' : 'localities'} ${entries.length} by kind_detail ${JSON.stringify(perKind)}`)
   const kv = areas ? areaKeys(entries) : gazKeys(entries)
   const rawKV = kv.reduce((n, e) => n + e.key.byteLength + e.value.byteLength, 0)
