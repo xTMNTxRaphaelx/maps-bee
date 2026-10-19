@@ -143,7 +143,7 @@ test('putGazetteer writes sorted g/ keys and readLabel finds Jaipur', async (t) 
   const bee = new Hyperbee(store, { core: store.get({ name: 'gaz-put' }), writable: true })
   await bee.ready()
   const puts = spyPuts(bee)
-  const n = await putGazetteer(bee, cities(), { flushPuts: 200 })
+  const { puts: n } = await putGazetteer(bee, cities(), { flushPuts: 200 })
   t.is(n, 825)
   let ascending = 0
   for (let i = 1; i < puts.length; i++) if (b4a.compare(puts[i - 1], puts[i]) < 0) ascending++
@@ -168,7 +168,7 @@ test('republishing the same gazetteer appends no block, whatever the input order
   await bee.ready()
   const entries = cities()
 
-  const n = await putGazetteer(bee, entries, { flushPuts: 200 })
+  const { puts: n } = await putGazetteer(bee, entries, { flushPuts: 200 })
   const first = core.length
   t.ok(first > 0, `first publish appended ${first} blocks for ${n} places`)
 
@@ -181,6 +181,45 @@ test('republishing the same gazetteer appends no block, whatever the input order
   let keys = 0
   for await (const e of bee.createReadStream()) if (e) keys++
   t.is(keys, n, 'and the atlas still holds one key per place, not three')
+})
+
+// The orphan half. Readers range-scan a quadkey prefix rather than asking for keys they know,
+// so a place dropped upstream keeps being served until something deletes its key — and nothing
+// else in the library ever deletes. This is the only tryDelete in the codebase.
+test('prune removes the places a republish no longer has, and only those', async (t) => {
+  const store = await tmpStore(t, 'gaz-prune')
+  const core = store.get({ name: 'gaz-prune' })
+  const bee = new Hyperbee(store, { core, writable: true })
+  await bee.ready()
+  const all = cities()
+  const fewer = all.filter((_, i) => i % 3 !== 0)
+
+  await putGazetteer(bee, all, { flushPuts: 200 })
+  const read = async () => {
+    const names = []
+    for await (const e of bee.createReadStream()) names.push(JSON.parse(b4a.toString(e.value)).name)
+    return names
+  }
+  t.is((await read()).length, all.length, 'everything is there to begin with')
+
+  // without prune the dropped places survive, which is the bug this exists for
+  const kept = await putGazetteer(bee, fewer, { flushPuts: 200 })
+  t.is(kept.pruned, 0)
+  t.is((await read()).length, all.length, 'a plain republish leaves the dropped places behind')
+
+  const r = await putGazetteer(bee, fewer, { flushPuts: 200, prune: true })
+  t.is(r.puts, fewer.length)
+  t.is(r.pruned, all.length - fewer.length, 'exactly the dropped places are deleted')
+  const after = await read()
+  t.is(after.length, fewer.length, 'and the atlas holds only what remains')
+  const want = new Set(fewer.map((e) => e.name))
+  t.ok(after.every((n) => want.has(n)), 'every surviving place is one that was republished')
+
+  // a prune with nothing to drop must delete nothing and cost nothing
+  const atRest = core.length
+  const again = await putGazetteer(bee, fewer, { flushPuts: 200, prune: true })
+  t.is(again.pruned, 0)
+  t.is(core.length, atRest, 'an unchanged republish with prune on still appends no block')
 })
 
 test('putGazetteer passes inlineValueSize to every write batch', async (t) => {

@@ -19,8 +19,8 @@ Protomaps planet build (OpenStreetMap, ODbL)
         │  pmtiles extract
         ▼
 bin/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
-bin/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
-                         ──▶  a/14/<quadkey>/<n> → neighbourhood, suburb, village
+bin/gazetteer-put.js ──▶  g/10/<quadkey>/<place> → nearest city or town
+                         ──▶  a/14/<quadkey>/<place> → neighbourhood, suburb, village
         │  2-of-3 multisig, committed in signed chunks
         ▼
 bin/seed.js on any peer  ◀──── DHT ────▶  readPreview → 640 × 360 thumbnail with a pin
@@ -311,6 +311,15 @@ $B bin/planet-commit.js store/planet keys atlas 20000   # chunk size: an unchunk
                                                             # dies at the 4 GB V8 heap
 $B bin/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-74.006 -33.8688,151.2093
 ```
+
+**Republishing a gazetteer over a draft that already has one needs `--prune`.** A place is keyed
+by its name, kind and rounded position, so re-putting an unchanged one writes identical bytes and
+appends no block — a republish costs only what actually moved, and warm clients keep the rest. But
+a place dropped upstream has no key in the new set and nothing would otherwise delete the old one,
+and readers scan the quadkey range rather than asking for keys they know, so it would go on being
+served. `--prune` deletes exactly the keys the new file no longer holds; it is off by default
+because a first publish has nothing to delete and it is the one option here that removes signed
+content.
 
 `--download-threads=8` is the setting that finished: 4 never gets reset but its tail does not
 converge, 16 gets reset. `pmtiles extract` neither resumes nor retries, so one reset discards the
