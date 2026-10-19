@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "A signed, peer-to-peer map tile store for Keet location previews: a prototype that turns a latitude and longitude into a pinned map thumbnail and a derived address, fetched from peers.",
   "private": true,
-  "main": "app/main.js",
+  "main": "index.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron app/main.js",
     "lint": "lunte --env browser,node",
     "test": "PATH=node_modules/bare-runtime/bin:$PATH brittle-bare test/index.js"
   },
@@ -17,7 +17,7 @@
     "peer-to-peer",
     "keet"
   ],
-  "author": "",
+  "author": "Holepunch",
   "license": "ISC",
   "engines": {
     "node": ">=22.12.0",
@@ -33,8 +33,6 @@
     "bare-zlib": "^1.4.1",
     "cheap-ruler": "^4.1.1",
     "corestore": "^7.13.0",
-    "electron": "^42.11.14",
-    "framed-stream": "^1.0.1",
     "hyperbee2": "^2.18.0",
     "hypercore": "^11.38.0",
     "hypercore-crypto": "^3.7.0",
@@ -42,14 +40,20 @@
     "hypercore-id-encoding": "^1.3.0",
     "hyperswarm": "^4.17.2",
     "pbf": "^5.1.2",
-    "pear-runtime": "^1.3.1",
     "pmtiles": "^4.5.0"
   },
   "devDependencies": {
     "bare-runtime": "^1.34.1",
     "brittle": "^4.5.0",
+    "electron": "^42.11.14",
+    "framed-stream": "^1.0.1",
     "hyperdht": "^6.34.1",
     "lunte": "^1.8.6",
+    "pear-runtime": "^1.3.1",
     "streamx": "^2.28.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holepunchto/maps-bee.git"
   }
 }
