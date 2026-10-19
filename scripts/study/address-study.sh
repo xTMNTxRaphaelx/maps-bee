@@ -114,4 +114,4 @@ for C in $CITIES; do
 done
 
 cat "$OUT"
-echo "wrote $OUT  — send this file back"
+echo "wrote $OUT"

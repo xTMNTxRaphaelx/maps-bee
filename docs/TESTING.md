@@ -60,7 +60,7 @@ cleanly instead of aborting the runtime mid-suite.
 npm test; echo "EXIT=$?"
 ```
 
-**Gate.** Exit 0, `# tests = 42/42 pass`, `# asserts = 146/146 pass`, and one
+**Gate.** Exit 0, `# tests = 46/46 pass`, `# asserts = 164/164 pass`, and one
 `data fixtures are present # SKIP` line, with the missing paths listed on stderr. Any other outcome
 — especially a non-zero exit, a `SIGABRT`, or no summary line at all — means the preflight does not
 hold on macOS. Stop and report it.
@@ -82,16 +82,16 @@ cp <path to the pmtiles binary> tools/pmtiles
 ./tools/pmtiles extract https://build.protomaps.com/20261012.pmtiles data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 B=node_modules/bare-runtime/bin/bare
 $B scripts/keys.js keys
-$B scripts/bee-build.js store/single data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/bee-build.txt
-$B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee results/publish.txt
-$B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee results/gazetteer.txt
+$B scripts/bee-build.js store/single data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee ../bee-build.txt
+$B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles | tee ../publish.txt
+$B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14 | tee ../gazetteer.txt
 $B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
 $B scripts/gazetteer.js data/areas.json --areas data/extract/jaipur-z11-14.pmtiles 75.55,26.65,76.05,27.15 13 13          # a/ keys; bbox widened by 0.1 deg, see below
 $B scripts/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pmtiles 8.75,45.85,9.15,46.16 13 13
 npm test 2>&1 | tee ../stage2.txt; echo "EXIT=$?"
 ```
 
-**Gate.** Exit 0, `# tests = 89/89 pass`, `# asserts = 900/900 pass`, zero `not ok` lines.
+**Gate.** Exit 0, `# tests = 93/93 pass`, `# asserts = 918/918 pass`, zero `not ok` lines.
 
 Also run the linter, which should be silent:
 
@@ -112,7 +112,7 @@ Notes on the fixtures:
 - The Atlantic extract is cut straight from the remote build, so this stage needs nothing from the planet build. It is zoom 10 over open ocean, and `test/planet-build.js` asserts its exact `addressed tiles count: 550`.
 - The two `--areas` passes harvest with a **wider bbox than the extract**. An area gazetteer must cover a margin around the region it serves, or a pin near the edge takes the nearest label that happened to survive the clip rather than the true nearest. Clipping Lugano to its own bbox cost 97 labels instead of 129 and two village hits.
 - `test/index.js` preflights all twelve fixture paths and skips the data-dependent suite with one `# SKIP` line if any is absent, so a partial run of this section fails loudly rather than aborting the process.
-- This stage rewrites `results/bee-build.txt`, `results/publish.txt` and `results/gazetteer.txt` for your own keys and store, so expect those three to show as modified. They are measurement logs, not test input — restore them with `git checkout -- results/` and nothing breaks.
+- The three `tee`s above write outside the repo on purpose. The committed `results/bee-build.txt`, `results/publish.txt` and `results/gazetteer.txt` are measurements of the key set that produced them; regenerating them over your own keys would dirty the tree and replace a cited measurement with an uncited one. Compare against them, do not overwrite them.
 - The sparse tests derive the published key from `keys/` (the same manifest `scripts/publish.js` publishes under) and open `store/signed`; the gazetteer and preview tests read `data/gazetteer.json`.
 - `keys/` holds test-only keys and is never committed.
 
@@ -263,7 +263,7 @@ $B scripts/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-7
 
 Run it before the seeder whenever a probe or the app comes back empty.
 
-## Test window with an outside tester
+## Test window with a second machine
 
 **Seeder**, kept running with its terminal open for the agreed window:
 
@@ -274,7 +274,7 @@ $B scripts/seed.js store/planet-c12 q6psfy7rzwm4hbsc9r81jans53ympcb3r88w83cc4e91
 **Tester:**
 
 ```sh
-git clone https://github.com/xTMNTxRaphaelx/maps-bee && cd maps-bee
+git clone https://github.com/holepunchto/maps-bee && cd maps-bee
 npm install
 node node_modules/electron/install.js   # when npm has ignore-scripts
 npm start
@@ -350,18 +350,18 @@ look load-bearing — on two points. That is what the wider set is for.
 | Symptom | Cause | Fix |
 | --- | --- | --- |
 | `npm start` says Electron failed to install | `~/.npmrc` has `ignore-scripts=true` | `node node_modules/electron/install.js` |
-| `npm test` ends at `# tests = 42/42` with a `data fixtures are present # SKIP` line | one or more of the twelve fixtures is missing; the names are printed on stderr | finish stage 2 |
+| `npm test` ends at `# tests = 46/46` with a `data fixtures are present # SKIP` line | one or more of the twelve fixtures is missing; the names are printed on stderr | finish stage 2 |
 | a seeder keeps running after Ctrl-C in another terminal | the launcher ignores SIGINT; the real bare child must get it | `pkill -INT -f scripts/seed.js` |
 | the app's Run reports `no peer for <key> within 30000 ms` | no seeder is online for that key | start the seeder, then Run again |
 | three `results/` files show as modified | stage 2 regenerates them for your keys | expected; do not commit them, `git checkout -- results/` to drop them |
 
-## Reporting back
+## What a run should report
 
-Send me, in this order:
+In this order:
 
 1. the stage 1, 2 and 3 gate results (pass/fail plus the counts)
 2. the planet build's `done puts` lines and the conservation total
 3. the `time` outputs for the build and the gazetteer pass
 4. anything that threw, verbatim, with the stage it threw in
 
-If a stage fails, send that stage's output and stop there rather than working around it.
+A failing stage ends the run: report that stage's output rather than working around it.
