@@ -352,7 +352,7 @@ look load-bearing — on two points. That is what the wider set is for.
 | `npm start` says Electron failed to install | `~/.npmrc` has `ignore-scripts=true` | `node node_modules/electron/install.js` |
 | `npm test` ends at `# tests = 42/42` with a `data fixtures are present # SKIP` line | one or more of the twelve fixtures is missing; the names are printed on stderr | finish stage 2 |
 | a seeder keeps running after Ctrl-C in another terminal | the launcher ignores SIGINT; the real bare child must get it | `pkill -INT -f scripts/seed.js` |
-| the app's Run never returns | no seeder is online for that key | start the seeder, then Run again |
+| the app's Run reports `no peer for <key> within 30000 ms` | no seeder is online for that key | start the seeder, then Run again |
 | three `results/` files show as modified | stage 2 regenerates them for your keys | expected; do not commit them, `git checkout -- results/` to drop them |
 
 ## Reporting back

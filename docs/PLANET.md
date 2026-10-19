@@ -270,8 +270,8 @@ connected. One point per quadrant exercises all four z14 archives and both gazet
   leaves smaller blocks so a preview stops hauling a ~40 KB block to read one tile.
 - **Do not prefetch past one level.** Level 1 is free to the byte (its 17 blocks are the root the
   first preview would fetch anyway) and only moves ~200 ms off the first preview. Level 2 breaks
-  even near 18 previews in a session, level 3 near 125. `app/ops.js` ships `PREFETCH_LEVELS = 2`
-  and on these numbers should be 1.
+  even near 18 previews in a session, level 3 near 125. `app/ops.js` ships `PREFETCH_LEVELS = 1`
+  on these numbers.
 - `docs/TESTING.md` stage 4 lists what this run is actually testing — the production flush path,
   short-read detection, the gazetteer pass, handle cleanup. Record the `time` output for each stage
   either way, in `results/`.
