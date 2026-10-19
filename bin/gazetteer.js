@@ -43,7 +43,9 @@ async function main () {
     const sub = Buffer.from(JSON.stringify(entries.filter((e) => e.kind_detail === k)))
     console.log(`subset ${k}: json ${sub.byteLength} gzip ${zlib.gzipSync(sub, { level: 9 }).byteLength}`)
   }
-  fs.writeFileSync(out, JSON.stringify(entries, null, 1) + '\n')
+  // areas and kinds are the two flags that decide what is in here, and gazetteer-put cannot infer
+  // either from the entries — so the file says, rather than the next command guessing
+  fs.writeFileSync(out, JSON.stringify({ areas, kinds: kinds ? [...kinds].sort() : null, entries }, null, 1) + '\n')
   console.log(`wrote ${out}`)
 }
 

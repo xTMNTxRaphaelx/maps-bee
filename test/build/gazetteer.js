@@ -4,7 +4,7 @@ const fs = require('bare-fs')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
 const { lonLatToTile, quadkey, subtreeRange } = require('../../lib/tiles')
-const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer } = require('../../lib/gazetteer-lib')
+const { GAZ_ZOOM, haversineKm, gazKeys, putGazetteer, readGazetteer } = require('../../lib/gazetteer-lib')
 const { collect, collectFrom } = require('../../lib/build/gazetteer')
 const { openArchive } = require('../../lib/build/pmtiles-file')
 const { readLabel } = require('../../lib/preview')
@@ -25,7 +25,7 @@ async function buildBee (t, name, kv) {
 }
 
 test('city+town gazetteer: nearest entry to the Jaipur centre is Jaipur', async (t) => {
-  const entries = JSON.parse(fs.readFileSync(GAZ, 'utf8'))
+  const { entries } = readGazetteer(JSON.parse(fs.readFileSync(GAZ, 'utf8')))
 
   // size of the full locality set, for comparison only
   const all = await buildBee(t, 'gaz', gazKeys(entries))
@@ -220,6 +220,22 @@ test('prune removes the places a republish no longer has, and only those', async
   const again = await putGazetteer(bee, fewer, { flushPuts: 200, prune: true })
   t.is(again.pruned, 0)
   t.is(core.length, atRest, 'an unchanged republish with prune on still appends no block')
+})
+
+// The marker exists because the entries cannot be made to say which pass wrote them: kind_detail
+// 'village' comes out of an --areas run and an unfiltered locality run alike. Three shapes have
+// to be distinguished — a marked harvest, a bare array from before the marker, and junk.
+test('readGazetteer reads both harvest shapes and rejects anything else', (t) => {
+  const entries = [{ name: 'a', kind_detail: 'village', lat: 1, lon: 2 }]
+  t.alike(readGazetteer({ areas: true, kinds: ['neighbourhood'], entries }), { areas: true, kinds: ['neighbourhood'], entries })
+  t.alike(readGazetteer({ areas: false, kinds: null, entries }), { areas: false, kinds: null, entries })
+  // a bare array is readable, but areas is unknown rather than false — the caller must not read
+  // a missing marker as "this was a locality harvest"
+  t.alike(readGazetteer(entries), { areas: null, kinds: null, entries })
+  // .all, not plain exception: this throws a TypeError, and brittle re-throws natives otherwise
+  for (const bad of [null, {}, { entries: 'no' }, 42]) {
+    t.exception.all(() => readGazetteer(bad), /not a gazetteer file/, `rejects ${JSON.stringify(bad)}`)
+  }
 })
 
 test('putGazetteer passes inlineValueSize to every write batch', async (t) => {
