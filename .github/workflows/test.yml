@@ -1,0 +1,27 @@
+name: test
+
+# Stage 1 of docs/TESTING.md: the suite with no fixtures. It needs no pmtiles binary and no
+# downloads from build.protomaps.com, so a Protomaps build rotating under us cannot turn CI red.
+# Stage 2 onward needs ~28 MB of extracts from a build that rotates, and is run by hand.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run lint
+      # the preflight in test/index.js must skip the data-dependent modules rather than abort the
+      # runtime; macOS is in the matrix because that claim had only ever been checked by hand there
+      - run: npm test

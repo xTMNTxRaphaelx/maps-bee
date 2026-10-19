@@ -12,6 +12,47 @@ A Keet location message carries only latitude and longitude. This prototype turn
 | Test app | [`app/`](app/), run with `npm start` |
 | Runtime | bare 1.34, hypercore 11, hyperbee2 2.18 |
 
+## Quick start
+
+About two minutes, two small downloads, and no seeder or planet build. It builds a signed atlas
+over one Indian state and reads an address out of it.
+
+```sh
+npm install
+mkdir -p tools data/extract
+cp <path to the pmtiles binary> tools/pmtiles        # github.com/protomaps/go-pmtiles/releases
+
+B=node_modules/bare-runtime/bin/bare
+S=https://build.protomaps.com/20261012.pmtiles
+./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
+./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
+
+$B scripts/keys.js keys                              # test-only keys, never committed
+$B scripts/publish.js store/quickstart keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
+
+# the nearest city or town, under g/ keys in the same bee
+$B scripts/gazetteer.js data/gazetteer-quickstart.json --kinds=city,town \
+  data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10
+$B scripts/gazetteer-put.js store/quickstart keys draft data/gazetteer-quickstart.json
+$B scripts/planet-commit.js store/quickstart keys draft
+```
+
+Each commit ends with a `maps:` line holding the key and the signed length. Read a point out of
+the atlas with it:
+
+```sh
+$B scripts/local-check.js store/quickstart <key from the maps line> 26.9,75.8
+```
+
+```
+core.length 1083 byteLength 18333759
+26.9,75.8	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
+```
+
+That is the whole read path — the 2x2 of tiles, the city label, the derived address — off disk,
+with no network. [docs/TESTING.md](docs/TESTING.md) has the full staged procedure, the remaining
+fixtures the test suite needs, and the Electron app.
+
 ## How it fits together
 
 ```
