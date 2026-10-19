@@ -7,7 +7,7 @@ const Hyperbee = require('hyperbee2')
 const Hyperswarm = require('hyperswarm')
 const HypercoreId = require('hypercore-id-encoding')
 const { readPreview, prefetchTop } = require('./preview')
-const { parseFlags, intFlag } = require('./flags')
+const { parseFlags, intFlag, bootstrapFlag } = require('./flags')
 
 const TMP = path.join(__dirname, '..', 'store', 'tmp')
 const CONNECT_TIMEOUT = 30000
@@ -133,11 +133,11 @@ function parsePoints (args) {
 }
 
 async function main () {
-  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--levels'])
+  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--levels', '--bootstrap'])
   const levels = intFlag(flags, '--levels', 0) ?? 0
   const [id, ...rest] = args
-  if (!id || rest.length === 0) throw new Error('usage: probe.js [--levels=N] <coreKey> <lat,lon>...')
-  await probe({ key: HypercoreId.decode(id), points: parsePoints(rest), levels })
+  if (!id || rest.length === 0) throw new Error('usage: probe.js [--levels=N] [--bootstrap=host:port,...] <coreKey> <lat,lon>...')
+  await probe({ key: HypercoreId.decode(id), points: parsePoints(rest), levels, bootstrap: bootstrapFlag(flags, '--bootstrap') })
 }
 
 module.exports = { probe, openClient, timed, tilesPresent, labelText, parsePoints, connectLine, prefetchLine, previewLine }

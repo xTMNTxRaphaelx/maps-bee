@@ -3,6 +3,7 @@ const Corestore = require('corestore')
 const Hyperswarm = require('hyperswarm')
 const HypercoreId = require('hypercore-id-encoding')
 const b4a = require('b4a')
+const { parseFlags, bootstrapFlag } = require('./flags')
 
 // Serves one published core from a store opened read-only, as a seeder would.
 async function seed ({ storeDir, key, bootstrap, interval = 10000, log = console.log }) {
@@ -47,9 +48,10 @@ async function seed ({ storeDir, key, bootstrap, interval = 10000, log = console
 }
 
 async function main () {
-  const [storeDir, id] = Bare.argv.slice(2)
-  if (!storeDir || !id) throw new Error('usage: seed.js <storeDir> <coreKey>')
-  const s = await seed({ storeDir, key: HypercoreId.decode(id) })
+  const { flags, args } = parseFlags(Bare.argv.slice(2), ['--bootstrap'])
+  const [storeDir, id] = args
+  if (!storeDir || !id) throw new Error('usage: seed.js [--bootstrap=host:port,...] <storeDir> <coreKey>')
+  const s = await seed({ storeDir, key: HypercoreId.decode(id), bootstrap: bootstrapFlag(flags, '--bootstrap') })
   const Signal = require('bare-signals')
   const sigint = new Signal('SIGINT')
   sigint.on('signal', () => {

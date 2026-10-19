@@ -26,4 +26,18 @@ function intFlag (flags, name, min) {
   return Number(v)
 }
 
-module.exports = { parseFlags, intFlag }
+// host:port[,host:port] into the node list hyperswarm and hyperdht take as `bootstrap`. Undefined
+// means the public DHT; an empty list would instead make hyperdht bootstrap off nothing at all.
+function bootstrapFlag (flags, name) {
+  if (!flags.has(name)) return undefined
+  const v = flags.get(name)
+  if (v === null || v === '') throw new Error(`${name} must be host:port[,host:port]`)
+  return v.split(',').map((node) => {
+    const i = node.lastIndexOf(':')
+    const port = Number(node.slice(i + 1))
+    if (i < 1 || !Number.isInteger(port) || port < 1 || port > 65535) throw new Error(`${name}: bad node ${node}, want host:port`)
+    return { host: node.slice(0, i), port }
+  })
+}
+
+module.exports = { parseFlags, intFlag, bootstrapFlag }

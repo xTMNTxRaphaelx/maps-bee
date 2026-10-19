@@ -1,0 +1,49 @@
+# 2026-10-19. First attempt to run the seeder and the probe against each other as two processes,
+# over a private DHT, using the --bootstrap flag added the same day. The point was to take the
+# network out of the question: every previous seeding attempt used the public DHT, where `peers 0`
+# could mean a broken build, a blocked DHT, or no client ever arriving.
+#
+# Result: it does not connect. The seeder announces and the probe times out, on one machine, on a
+# private 3-node DHT, with no NAT and no firewall in the path. This is NOT a confirmation of
+# replication; it is a reproduction of the `peers 0` symptom in a controlled setting.
+
+$ bare scripts/testnet.js
+testnet nodes 3
+--bootstrap=127.0.0.1:49737
+
+$ bare scripts/seed.js --bootstrap=127.0.0.1:49737 store/signed njz8wtxjwantpkjwd4s1fiwejroz64qjb5eorjrsdp14453c7hxo
+seeding njz8wtxjwantpkjwd4s1fiwejroz64qjb5eorjrsdp14453c7hxo length 1076 byteLength 18253320
+length 1076	peers 0	uploads 0	uploadBytes 0
+length 1076	peers 0	uploads 0	uploadBytes 0
+
+$ bare scripts/probe.js --bootstrap=127.0.0.1:49737 njz8wtxjwantpkjwd4s1fiwejroz64qjb5eorjrsdp14453c7hxo 26.9,75.8
+Error: no peer for njz8wtxjwantpkjwd4s1fiwejroz64qjb5eorjrsdp14453c7hxo within 30000 ms
+
+The seeder got past `swarm.join(discoveryKey, { server: true }).flushed()` (seed.js), so its announce
+landed on the testnet. The probe joined the same discovery key as a client against the same
+bootstrap and never saw a connection.
+
+What this rules out, which the public-DHT attempts could not: the store is sound (the seeder read
+it and reported the signed length), the key is right (both sides printed the same one), the build
+is not at fault, and no NAT or home router is involved.
+
+What it does not rule out: that the pair only ever works in one process. `test/seed-probe.js` runs
+createTestnet, seed() and probe() inside a single process and passes, and that is the only place
+replication has ever been observed working. Two processes is the untested configuration, and it is
+the only one an operator uses.
+
+Two dead ends worth not repeating, both hit on the way here:
+
+1. The key in `results/publish.txt` (q6psfy7rz...) is from the key set that produced that committed
+   log, not from a local `keys/`. Using it, seed.js and local-check.js both die with
+   `Batch was not applied | Not supported operation in read only mode`. That is corestore trying to
+   *create* a core for a key the store does not hold, which the `readOnly: true` both scripts pass
+   forbids. The local key comes from the manifest over `keys/`, not from a results file.
+
+2. That error says nothing about the actual problem. A key the store does not hold should say so.
+
+## Correction, same day
+
+An earlier reading of dead end 1 blamed an unclean shutdown leaving the store unopenable read-only.
+That was wrong. A read-write open appeared to "repair" the store only because it created the
+missing core; opening the *correct* key read-only works first time, with no repair step.
