@@ -107,7 +107,9 @@ test('second 2-of-3 publish on the same core: same key, one signature rejected, 
   t.comment(h.fmt('warm', 'update-v2', upd, L2))
   const again = await h.measure(warm.core, warm.wire, () => readPreview(warm.bee, POINT, OPTS))
   t.is(again.result.zoom, SIGNED_ZOOM)
-  t.is(again.result.tiles[0].byteLength, before[0].byteLength + 1, 'warm client sees the rewritten tile')
+  // readPreview hands back decoded tiles, so the byte comparison goes through the bee, the same
+  // way the cold branch above checks it
+  t.is((await warm.bee.get(changed[0])).value.byteLength, before[0].byteLength + 1, 'warm client sees the rewritten tile')
   t.ok(again.indices.every((i) => i >= L1), 'nothing below the first publish is fetched again')
   t.comment(h.fmt('warm', 'read-v2', again, L2))
 

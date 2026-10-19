@@ -3,7 +3,6 @@ const HypercoreId = require('hypercore-id-encoding')
 const { readPreview, prefetchTop } = require('../lib/preview')
 const { openClient, timed, TIMEOUT, DEADLINE } = require('../lib/net/client')
 const { tilesPresent, labelText, connectLine, prefetchLine, previewLine } = require('../lib/net/report')
-const { decodeGzip } = require('../lib/mvt')
 const { renderThumbnail, pinOffset } = require('../lib/render-svg')
 
 // One level, not two. On the planet atlas level 1 is free to the byte — its 17 blocks are the root
@@ -43,7 +42,7 @@ function createOps ({ bootstrap } = {}) {
     session.seen.add(`${lat},${lon}`)
     lines.push(previewLine(phase, point, r))
     const v = r.value
-    const svg = v.tiles ? renderThumbnail(v.tiles.map((gz) => gz && decodeGzip(gz)), pinOffset(point, v.origin, v.zoom)) : null
+    const svg = v.tiles ? renderThumbnail(v.tiles, pinOffset(point, v.origin, v.zoom)) : null
     return { lines, svg, label: labelText(v.label), address: v.address, zoom: v.zoom, present: tilesPresent(v), ms: r.ms, blocks: r.blocks, bytes: r.bytes }
   }
 

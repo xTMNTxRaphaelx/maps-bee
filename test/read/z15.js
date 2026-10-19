@@ -2,7 +2,6 @@
 const test = require('brittle')
 const Hyperbee = require('hyperbee2')
 const { lonLatToTile, pinTiles } = require('../../lib/tiles')
-const { decodeGzip } = require('../../lib/mvt')
 const { readPreview, readTiles, readLabel, DETAIL_ZOOM, FALLBACK_ZOOM } = require('../../lib/preview')
 const { tmpStore, STATE_ARCHIVE, JAIPUR_ARCHIVE, JAIPUR_Z15_ARCHIVE } = require('../helpers/helpers')
 const { fillAtlas } = require('../helpers/atlas')
@@ -37,7 +36,7 @@ test('readPreview with z15: the 2x2 is z15 where the atlas has it, z14 and z10 w
     const p = lonLatToTile(CENTRE.lon, CENTRE.lat, 15)
     return x === p.x && y === p.y
   }), true, 'the 2x2 contains the pin tile')
-  t.ok(centre.tiles.some((v) => v && decodeGzip(v).layers.buildings), 'the z15 cell carries the buildings layer')
+  t.ok(centre.tiles.some((v) => v && v.layers.buildings), 'the z15 cell carries the buildings layer')
   t.is(centre.address.housenumber, null, 'the nearest address point is 437.6 m away')
   t.alike({ name: centre.address.near.name, kind: centre.address.near.kind }, { name: 'High court circle', kind: 'bus_stop' })
   t.ok(Math.abs(centre.address.near.metres - 106) < 1, `near ${centre.address.near.metres} m`)

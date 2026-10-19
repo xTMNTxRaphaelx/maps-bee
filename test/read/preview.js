@@ -3,7 +3,6 @@ const test = require('brittle')
 const Hyperbee = require('hyperbee2')
 const { haversineKm } = require('../../lib/gazetteer-lib')
 const { lonLatToTile, pinTiles } = require('../../lib/tiles')
-const { decodeGzip } = require('../../lib/mvt')
 const { openArchive, readTile } = require('../../lib/build/pmtiles-file')
 const { readPreview, FALLBACK_ZOOM, LABEL_ZOOM } = require('../../lib/preview')
 
@@ -50,7 +49,7 @@ function assertCell (t, p, zoom, point) {
   t.is(p.zoom, zoom)
   t.alike(p.origin, pinTiles(point.lon, point.lat, zoom).origin)
   t.is(p.tiles.length, 4)
-  t.is(p.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, 4, 'all 4 tiles decode as MVT')
+  t.is(p.tiles.filter((v) => v && Object.keys(v.layers).length > 0).length, 4, 'all 4 tiles come back decoded')
 }
 
 function assertLabel (t, p, places, point) {
@@ -84,7 +83,7 @@ test('readPreview: z14 cell, partial cell, z10 fallback, neighbour-cell label, o
   t.ok(n > 0 && n < 4, `the extract holds ${n} of the 4 tiles of this 2x2`)
   t.is(partial.zoom, ATLAS_ZOOM, 'a partly published 2x2 stays at its zoom, no fallback')
   t.alike(partial.tiles.map(Boolean), expected, 'missing tiles are null, present ones in place')
-  t.is(partial.tiles.filter((v) => v && Object.keys(decodeGzip(v).layers).length > 0).length, n, 'present tiles decode as MVT')
+  t.is(partial.tiles.filter((v) => v && Object.keys(v.layers).length > 0).length, n, 'present tiles come back decoded')
 
   const jodhpur = await readPreview(bee, POINTS.jodhpur, OPTS)
   assertCell(t, jodhpur, FALLBACK_ZOOM, POINTS.jodhpur)

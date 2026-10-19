@@ -34,13 +34,12 @@ three are reached by path, not from here.
 
 ```js
 const { readPreview, prefetchTop, renderThumbnail, pinOffset } = require('maps-bee')
-const { decodeGzip } = require('maps-bee/lib/mvt')   // not on the surface yet; see below
 
 const point = { lat: 26.9, lon: 75.8 }
 const { zoom, origin, tiles, label, address } =
   await readPreview(bee, point, { timeout: 10000, deadline: 30000 })
 
-const svg = renderThumbnail(tiles.map((gz) => gz && decodeGzip(gz)), pinOffset(point, origin, zoom))
+const svg = renderThumbnail(tiles, pinOffset(point, origin, zoom))
 ```
 
 **`readPreview(bee, point, opts)`** is one call per shared location. It reads the 2x2, the nearest
@@ -53,7 +52,7 @@ city and the area labels in parallel, then derives the address from what they re
 | `opts.deadline` | optional, ms for the whole call |
 | `zoom` | 15, 14 or 10 — whichever tier answered — or `null` outside the atlas |
 | `origin` | `{ x, y }`, the tile coordinate of the 2x2's top-left at that zoom |
-| `tiles` | four gzipped MVT buffers, row-major from `origin`; a missing one is `null` and drawn blank, all four missing makes the result `null` |
+| `tiles` | four decoded MVT tiles, row-major from `origin`, ready for `renderThumbnail`; a missing one is `null` and drawn blank, and when all four are missing `tiles` itself is `null` |
 | `label` | `{ name, kind, km }`, the nearest city or town, or `null` |
 | `address` | see below, or `null` outside the atlas |
 
@@ -61,9 +60,12 @@ On either timeout it rejects with hypercore's `REQUEST_TIMEOUT` and destroys the
 started, so a failed call leaves nothing in flight. The label is best effort — its failure gives
 `label: null` rather than rejecting.
 
-`tiles` comes back gzipped and `renderThumbnail` takes decoded tiles, so rendering currently needs
-`decodeGzip` from `lib/mvt.js`, which `index.js` does not export. That is a gap in the surface:
-`app/ops.js` reaches past `index.js` for the same reason.
+`tiles` is decoded on the way out, once. `deriveAddress` needs every tile placed on the globe in
+any case, so handing back the gzip only made the caller inflate the same four a second time to
+render — and reach past `index.js` for a compression helper the surface deliberately does not
+carry. Rendering is now just `renderThumbnail(tiles, …)`, and nothing needs `decodeGzip` to use
+the library. (`app/ops.js` still requires `lib/net/` by path, but for the probe line formatters,
+which are deliberately not on the surface — see [`app/README.md`](app/README.md).)
 
 | rest of the surface | |
 | --- | --- |
