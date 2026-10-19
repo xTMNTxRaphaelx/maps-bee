@@ -1,10 +1,7 @@
 'use strict'
 const b4a = require('b4a')
-const Corestore = require('corestore')
-const Hyperbee = require('hyperbee2')
 const { openArchive, readTile } = require('./pmtiles-file')
 const { bboxTiles, tileKey } = require('./tiles')
-const { parseFlags } = require('./flags')
 
 // Writes every present tile of the archives into bee, one write batch per zoom.
 // The bbox rectangle is the right walk here and only here: an extract is clipped to its own bbox,
@@ -68,31 +65,4 @@ async function build (bee, archives, log) {
   return totals
 }
 
-async function main () {
-  const { args } = parseFlags(Bare.argv.slice(2), [])
-  const [storeDir, ...archives] = args
-  if (!storeDir || archives.length === 0) throw new Error('usage: bee-build.js <storeDir> <archive.pmtiles>...')
-  const store = new Corestore(storeDir)
-  // the "already holds N blocks" throw below lands after ready(), so without the finally it leaves
-  // the store and its core open; bee.close() only closes the store anyway (hyperbee2/index.js:189)
-  try {
-    const core = store.get({ name: 'maps-draft' })
-    const bee = new Hyperbee(store, { core, writable: true })
-    await bee.ready()
-    if (core.length > 0) throw new Error(`store ${storeDir} already holds ${core.length} blocks; use an empty dir`)
-    const start = Date.now()
-    await buildBee(bee, archives)
-    console.log(`build ms ${Date.now() - start}`)
-  } finally {
-    await store.close()
-  }
-}
-
 module.exports = { buildBee }
-
-if (require.main === module) {
-  main().catch((err) => {
-    console.error(err)
-    Bare.exitCode = 1
-  })
-}
