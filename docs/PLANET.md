@@ -1,8 +1,8 @@
 # Building the planet bee on a machine with disk
 
 The runbook for the design the client actually reads: zoom 10 complete, zoom 14 without filler, zoom
-15 split into quadrants, plus the `g/` and `a/` gazetteers. `docs/SETUP.md`'s planet section records
-the 20261012 build, which stopped at zoom 14; this supersedes it.
+15 split into quadrants, plus the `g/` and `a/` gazetteers. This is the only place these commands
+live; `docs/TESTING.md` stage 4 says what running them is testing.
 
 Steps 1, 3 and 4 were run end to end on 2026-10-16, without zoom 15: z10 complete plus z14 in four
 quadrants, then both gazetteers, committed to **5,824,622 blocks / 36,715,803,243 bytes**. z10 put
@@ -208,7 +208,7 @@ $B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet
 $B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json
 ```
 
-**`a/` before `g/`**: `a/` sorts first, and `docs/SETUP.md` had these the other way round.
+**`a/` before `g/`**: `a/` sorts first. The 20261012 run had these the other way round.
 
 The area pass harvests from the zoom 14 extract rather than a zoom 13 cut of its own. Zoom 13 is the
 cheaper pass — **estimated** ~8M tiles against ~31.8M **measured** at z14, so ~14 min against ~56 min

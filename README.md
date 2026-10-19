@@ -6,7 +6,8 @@ A Keet location message carries only latitude and longitude. This prototype turn
 
 | | |
 | --- | --- |
-| Setup and commands | [docs/SETUP.md](docs/SETUP.md) |
+| Setup, commands and test stages | [docs/TESTING.md](docs/TESTING.md) |
+| Planet build runbook | [docs/PLANET.md](docs/PLANET.md) |
 | Measurements | [`results/`](results/) |
 | Test app | [`app/`](app/), run with `npm start` |
 | Runtime | bare 1.34, hypercore 11, hyperbee2 2.18 |
@@ -150,7 +151,7 @@ The road misses are squares and the airport, where Nominatim names a different a
 
 ### Zoom 15 on the Jaipur region
 
-`data/extract/jaipur-z15.pmtiles` (docs/SETUP.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
+`data/extract/jaipur-z15.pmtiles` (docs/TESTING.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
 
 Address points: in the `buildings` layer, geometry type point, `kind: 'address'`, with `addr_housenumber` as the only address key (no street or postcode in any layer). A central z15 tile holds 0 to 2 of them, and none lies within HOUSE_M of any scored point (results/address-accuracy-jaipur.txt, `rate housenumber 0/0`).
 

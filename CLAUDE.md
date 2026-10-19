@@ -1,8 +1,8 @@
 # Working notes for maps-bee
 
 Conventions and standing decisions that the code does not state on its own. Everything else —
-architecture, key schemes, thresholds, how to build — is in `README.md`, `docs/SETUP.md` and
-`docs/TESTING.md`.
+architecture, key schemes, thresholds, how to build — is in `README.md`, `docs/TESTING.md` and
+`docs/PLANET.md`.
 
 ## Commands
 
