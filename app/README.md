@@ -1,10 +1,10 @@
 # maps-bee example app
 
 An Electron window that calls the library's `readPreview` over the public DHT and draws what comes
-back. It is an example consumer, not part of maps-bee — nothing in `scripts/` or `index.js` requires
+back. It is an example consumer, not part of maps-bee — nothing in `lib/`, `bin/` or `index.js` requires
 it, and the library is usable without Electron, pear-runtime, or anything else in this directory.
 
-What it is here for: `readPreview` is otherwise only ever driven by tests and by `scripts/probe.js`,
+What it is here for: `readPreview` is otherwise only ever driven by tests and by `bin/probe.js`,
 both of which run in one process against a store on the same machine. This is the only place the
 real read path runs in a real application, in a real process boundary, against a real remote peer.
 That makes it the least covered path in the repo and the one worth exercising by hand before
@@ -26,7 +26,7 @@ click Run. Clicking Run again on the same point gives the repeat line, which is 
 cost 0 blocks. One client per key stays open while the window is open, so the first point of a
 session pays the connect and the rest do not.
 
-Copy log puts the session on the clipboard in `scripts/probe.js` format:
+Copy log puts the session on the clipboard in `bin/probe.js` format:
 
 ```
 connect ms N	update ms N blocks N bytes N	core.length N             # once per key
@@ -84,7 +84,8 @@ In `ops.js`:
 | `TIMEOUT` | 10000 | `opts.timeout`, per block read |
 | `DEADLINE` | 30000 | `opts.deadline`, the whole call, and the connect timeout |
 
-One note for anyone reading this as a model: `ops.js` requires `../scripts/preview` and
-`../scripts/probe` by path rather than going through `index.js`. It wants `probe.js`'s line
-formatters so its log matches the probe's byte for byte, and those are deliberately not part of the
-client surface. A consumer that does not need to print probe lines should require the package.
+One note for anyone reading this as a model: `ops.js` requires `../lib/preview`,
+`../lib/net/client` and `../lib/net/report` by path rather than going through `index.js`. It wants
+`report.js`'s line formatters so its log matches the probe's byte for byte, and those are
+deliberately not part of the client surface. A consumer that does not need to print probe lines
+should require the package.

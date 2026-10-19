@@ -11,11 +11,11 @@
 // usage: bare-display.js
 const fs = require('bare-fs')
 const path = require('bare-path')
-const { openArchive, readTile } = require('../pmtiles-file')
-const { decode, project } = require('../mvt')
-const { pinTiles } = require('../tiles')
-const { haversineKm } = require('../gazetteer-lib')
-const { deriveAddress, origin, nearestLabel, ROAD_ON_M, NEARBY_M } = require('../address')
+const { openArchive, readTile } = require('../../lib/build/pmtiles-file')
+const { decode, project } = require('../../lib/mvt')
+const { pinTiles } = require('../../lib/tiles')
+const { haversineKm } = require('../../lib/gazetteer-lib')
+const { deriveAddress, origin, nearestLabel, ROAD_ON_M, NEARBY_M } = require('../../lib/address')
 
 // nearest named poi in the fetched cell at any distance, so a city-only point can be asked what a
 // wider "near X" would have said. Measured on the same ruler deriveAddress uses.

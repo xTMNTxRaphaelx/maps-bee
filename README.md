@@ -18,22 +18,23 @@ and does not try to be portable. Runtime: bare 1.34, hypercore 11, hyperbee2 2.1
 Protomaps planet build (OpenStreetMap, ODbL)
         │  pmtiles extract
         ▼
-scripts/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
-scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
+bin/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
+bin/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
                          ──▶  a/14/<quadkey>/<n> → neighbourhood, suburb, village
         │  2-of-3 multisig, committed in signed chunks
         ▼
-scripts/seed.js on any peer  ◀──── DHT ────▶  readPreview → 640 × 360 thumbnail with a pin
+bin/seed.js on any peer  ◀──── DHT ────▶  readPreview → 640 × 360 thumbnail with a pin
 ```
 
 ## Reading from a bee
 
-`index.js` is the whole client surface. Everything else under `scripts/` is publisher-side or a CLI,
-and is required by path.
+`index.js` is the whole client surface — the read path and nothing else. `lib/build/` is
+publisher-side, `lib/net/` opens and measures a client of its own, and `bin/` holds the CLIs; all
+three are reached by path, not from here.
 
 ```js
 const { readPreview, prefetchTop, renderThumbnail, pinOffset } = require('maps-bee')
-const { decodeGzip } = require('maps-bee/scripts/mvt')   // not on the surface yet; see below
+const { decodeGzip } = require('maps-bee/lib/mvt')   // not on the surface yet; see below
 
 const point = { lat: 26.9, lon: 75.8 }
 const { zoom, origin, tiles, label, address } =
@@ -61,7 +62,7 @@ started, so a failed call leaves nothing in flight. The label is best effort —
 `label: null` rather than rejecting.
 
 `tiles` comes back gzipped and `renderThumbnail` takes decoded tiles, so rendering currently needs
-`decodeGzip` from `scripts/mvt.js`, which `index.js` does not export. That is a gap in the surface:
+`decodeGzip` from `lib/mvt.js`, which `index.js` does not export. That is a gap in the surface:
 `app/ops.js` reaches past `index.js` for the same reason.
 
 | rest of the surface | |
@@ -75,7 +76,7 @@ started, so a failed call leaves nothing in flight. The label is best effort —
 
 Each part is the nearest matching feature within a threshold, across the one 2x2 the walk returned,
 plus the `a/` labels, which are read by radius and so reach past the tiles. Thresholds are named
-constants at the top of `scripts/address.js`, which is the source for their values.
+constants at the top of `lib/address.js`, which is the source for their values.
 
 ```
 address: {
@@ -125,9 +126,12 @@ What a serving peer learns is the cell two zooms above the tiles it served: with
 | | |
 | --- | --- |
 | `index.js` | the client surface, and the only entry point a consumer needs |
-| `scripts/` | the library: tiles and quadkeys, pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer, `preview.js`, the SVG renderer, and the seed and probe CLIs |
+| `lib/` | the read path: `tiles.js` and `mvt.js` (pure — quadkeys, MVT decode, no I/O), then `gazetteer-lib.js`, `address.js`, `render-svg.js` and `preview.js` on top |
+| `lib/build/` | publisher-side: pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer collector, test-only keys |
+| `lib/net/` | `client.js` opens a cold client and measures it; `report.js` formats what it measured; `seed.js` serves a published core |
+| `bin/` | one thin `main()` per CLI over the modules above, plus `flags.js` for argument parsing. Nothing in `lib/` requires `bin/` |
 | `scripts/study/` | research tooling, not part of the library |
-| `test/` | brittle tests, registered in `test/index.js`, run under bare |
+| `test/` | brittle tests mirroring the source layout (`geo/ read/ build/ net/ cli/ app/`, with shared fixtures in `helpers/`), registered in `test/index.js`, run under bare |
 | `app/` | an example consumer — [`app/README.md`](app/README.md) |
 | `results/` | benchmark and probe output, as the scripts printed it; regenerated, not maintained |
 
@@ -151,20 +155,20 @@ for i in $(seq 0 25); do D=$(date -v-${i}d +%Y%m%d 2>/dev/null || date -d "-$i d
 ./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles \
   --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
 
-$B scripts/keys.js keys                              # test-only keys, never committed
-$B scripts/publish.js store/quickstart keys \
+$B bin/keys.js keys                              # test-only keys, never committed
+$B bin/publish.js store/quickstart keys \
   data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
-$B scripts/gazetteer.js data/gazetteer-quickstart.json --kinds=city,town \
+$B bin/gazetteer.js data/gazetteer-quickstart.json --kinds=city,town \
   data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10
-$B scripts/gazetteer-put.js store/quickstart keys draft data/gazetteer-quickstart.json
-$B scripts/planet-commit.js store/quickstart keys draft    # commits any draft, not just a planet one
+$B bin/gazetteer-put.js store/quickstart keys draft data/gazetteer-quickstart.json
+$B bin/planet-commit.js store/quickstart keys draft    # commits any draft, not just a planet one
 ```
 
 Every publish and commit ends with a `maps:` line holding the key and the signed length — that is
 the only place a usable key comes from. Read a point out of the atlas with it:
 
 ```sh
-$B scripts/local-check.js store/quickstart <key from the maps line> 26.9,75.8
+$B bin/local-check.js store/quickstart <key from the maps line> 26.9,75.8
 ```
 
 ```
@@ -198,13 +202,13 @@ quick start:
 ./tools/pmtiles extract $S data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 
 B=node_modules/bare-runtime/bin/bare
-$B scripts/keys.js keys
-$B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
-$B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 \
+$B bin/keys.js keys
+$B bin/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
+$B bin/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 \
   data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14
-$B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
-$B scripts/gazetteer.js data/areas.json --areas data/extract/jaipur-z11-14.pmtiles 75.55,26.65,76.05,27.15 13 13
-$B scripts/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pmtiles 8.75,45.85,9.15,46.16 13 13
+$B bin/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
+$B bin/gazetteer.js data/areas.json --areas data/extract/jaipur-z11-14.pmtiles 75.55,26.65,76.05,27.15 13 13
+$B bin/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pmtiles 8.75,45.85,9.15,46.16 13 13
 ```
 
 **The `--areas` passes harvest with a wider bbox than the extract on purpose:** an area gazetteer
@@ -220,14 +224,14 @@ build that rotates weekly, so a rate change across builds says nothing about the
 ### Seed and probe
 
 ```sh
-$B scripts/seed.js store/planet <key>                 # terminal A
-$B scripts/probe.js <key> 26.9,75.8 51.5,-0.12        # terminal B
+$B bin/seed.js store/planet <key>                 # terminal A
+$B bin/probe.js <key> 26.9,75.8 51.5,-0.12        # terminal B
 ```
 
-`scripts/local-check.js` runs the same read path with no swarm at all, so run it first whenever a
+`bin/local-check.js` runs the same read path with no swarm at all, so run it first whenever a
 probe comes back empty — a sound atlas behind a blocked DHT stops looking like a broken build.
-`scripts/testnet.js` prints a `--bootstrap=` line that puts both commands on a private DHT. If a
-seeder survives Ctrl-C, the launcher did not forward SIGINT: `pkill -INT -f scripts/seed.js`.
+`bin/testnet.js` prints a `--bootstrap=` line that puts both commands on a private DHT. If a
+seeder survives Ctrl-C, the launcher did not forward SIGINT: `pkill -INT -f bin/seed.js`.
 
 **A probe over the swarm may serve nothing, and it is not known to be this repo's fault.** On a
 clean run the seeder has served none of three sequential probes and logged no peer, while the client
@@ -275,19 +279,19 @@ rounds across anyway, which once duplicated a whole tile line. A quadrant is rig
 until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-179.995,0.005,-0.005,85.0511 \
   --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2; do echo "retrying in 30s"; sleep 30; done
 
-$B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
+$B bin/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
   --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles
 # then one run per quadrant, NW NE SW SE, same store and same draft name
 
 # a/ before g/, because a/ sorts first
-$B scripts/gazetteer.js data/planet-areas.json --areas data/planet-z14.pmtiles -180,-85.05,180,85.05 14 14
-$B scripts/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json
-$B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10
-$B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json
+$B bin/gazetteer.js data/planet-areas.json --areas data/planet-z14.pmtiles -180,-85.05,180,85.05 14 14
+$B bin/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json
+$B bin/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10
+$B bin/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json
 
-$B scripts/planet-commit.js store/planet keys atlas 20000   # chunk size: an unchunked planet commit
+$B bin/planet-commit.js store/planet keys atlas 20000   # chunk size: an unchunked planet commit
                                                             # dies at the 4 GB V8 heap
-$B scripts/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-74.006 -33.8688,151.2093
+$B bin/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-74.006 -33.8688,151.2093
 ```
 
 `--download-threads=8` is the setting that finished: 4 never gets reset but its tail does not

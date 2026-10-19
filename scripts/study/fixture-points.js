@@ -10,10 +10,10 @@
 //
 // usage: fixture-points.js <z15 archive> <bbox> <n> [seed] > candidates.json
 const CheapRuler = require('cheap-ruler').default
-const { openArchive, readTile } = require('../pmtiles-file')
-const { decode, project } = require('../mvt')
-const { lonLatToTile, parseBbox } = require('../tiles')
-const { parseFlags } = require('../flags')
+const { openArchive, readTile } = require('../../lib/build/pmtiles-file')
+const { decode, project } = require('../../lib/mvt')
+const { lonLatToTile, parseBbox } = require('../../lib/tiles')
+const { parseFlags } = require('../../bin/flags')
 
 const SPREAD_M = 25
 const Z = 15

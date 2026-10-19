@@ -110,7 +110,7 @@ for C in $CITIES; do
   G=$(gaz "$C")
   if [ -f "$G" ]; then echo "  have $G"; else
     echo "  building $G"
-    $B scripts/gazetteer.js "$G" --kinds=city,town "data/extract/$C-z10.pmtiles" "$BB" 0 10 >/dev/null
+    $B bin/gazetteer.js "$G" --kinds=city,town "data/extract/$C-z10.pmtiles" "$BB" 0 10 >/dev/null
   fi
 done
 

@@ -1,9 +1,10 @@
 'use strict'
 const HypercoreId = require('hypercore-id-encoding')
-const { readPreview, prefetchTop } = require('../scripts/preview')
-const { openClient, timed, tilesPresent, labelText, connectLine, prefetchLine, previewLine } = require('../scripts/probe')
-const { decodeGzip } = require('../scripts/mvt')
-const { renderThumbnail, pinOffset } = require('../scripts/render-svg')
+const { readPreview, prefetchTop } = require('../lib/preview')
+const { openClient, timed } = require('../lib/net/client')
+const { tilesPresent, labelText, connectLine, prefetchLine, previewLine } = require('../lib/net/report')
+const { decodeGzip } = require('../lib/mvt')
+const { renderThumbnail, pinOffset } = require('../lib/render-svg')
 
 // One level, not two. On the planet atlas level 1 is free to the byte — its 17 blocks are the root
 // the first preview fetches anyway — and only moves ~200 ms off that first read. Level 2 costs

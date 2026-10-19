@@ -11,7 +11,7 @@
 // usage: village-gap.js
 const fs = require('bare-fs')
 const path = require('bare-path')
-const { origin, VILLAGE_M } = require('../address')
+const { origin, VILLAGE_M } = require('../../lib/address')
 
 const DATA = path.join(__dirname, '..', '..', 'data')
 const FIXTURES = path.join(__dirname, '..', '..', 'test', 'fixtures')
