@@ -1,5 +1,0 @@
-# tests = 30/30 pass
-# asserts = 213/213 pass
-# time = 21587ms
-
-# ok
