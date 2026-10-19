@@ -240,6 +240,8 @@ function parseArgs (argv) {
   if (!storeDir || !keysDir || !name || !zoom || archives.length === 0) {
     throw new Error('usage: planet-build.js [--resume] [--sorted] [--inline-value-size=N] [--flush-puts=N] [--flush-bytes=N] <storeDir> <keysDir> <draftName> <expandRunsUpToZoom> <archive.pmtiles>...')
   }
+  // checked here rather than in buildPlanet, which only sees it after withDraft has opened the store
+  if (!/^\d+$/.test(zoom)) throw new Error(`expandRunsUpToZoom must be a non-negative integer, got ${zoom}`)
   return {
     storeDir,
     keysDir,

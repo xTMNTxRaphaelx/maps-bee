@@ -217,7 +217,7 @@ async function main () {
   // the sources are read four at a time, so a missing or misspelt one shifts every later argument
   // into the wrong slot; unchecked, that once left minz/maxz NaN and reported a successful empty run
   if (!out || rest.length === 0 || rest.length % 4 !== 0) {
-    throw new Error('usage: gazetteer.js [--kinds=a,b] <out.json> (<archive.pmtiles> <minLon,minLat,maxLon,maxLat> <minz> <maxz>)...')
+    throw new Error('usage: gazetteer.js [--kinds=a,b] [--areas] <out.json> (<archive.pmtiles> <minLon,minLat,maxLon,maxLat> <minz> <maxz>)...')
   }
   const byName = new Map()
   const counts = { regionFeatures: 0, entries: [] }

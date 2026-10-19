@@ -4,6 +4,7 @@ const fs = require('bare-fs')
 const path = require('bare-path')
 const crypto = require('hypercore-crypto')
 const b4a = require('b4a')
+const { parseFlags } = require('./flags')
 
 const NAMES = ['a', 'b', 'c']
 
@@ -31,6 +32,20 @@ function load (dir) {
   })
 }
 
-module.exports = { load }
+function main () {
+  const { args } = parseFlags(Bare.argv.slice(2), [])
+  const [dir] = args
+  if (!dir) throw new Error('usage: keys.js <keysDir>')
+  generate(dir)
+}
 
-if (require.main === module) generate(Bare.argv[2])
+module.exports = { generate, load }
+
+if (require.main === module) {
+  try {
+    main()
+  } catch (err) {
+    console.error(err)
+    Bare.exitCode = 1
+  }
+}

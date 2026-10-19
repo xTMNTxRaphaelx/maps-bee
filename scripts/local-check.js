@@ -13,6 +13,7 @@
 const Corestore = require('corestore')
 const Hyperbee = require('hyperbee2')
 const HypercoreId = require('hypercore-id-encoding')
+const crypto = require('hypercore-crypto')
 const { readPreview } = require('./preview')
 const { tilesPresent, labelText, parsePoints } = require('./probe')
 const { parseFlags } = require('./flags')
@@ -29,10 +30,14 @@ async function main () {
   // read-only, so this runs against a store a seeder already holds open
   const store = new Corestore(storeDir, { readOnly: true })
   try {
-    const core = store.get({ key: HypercoreId.decode(id), writable: false })
+    const key = HypercoreId.decode(id)
+    // before get(), not after: a key the store does not hold is one corestore would create, and
+    // creating needs a write the read-only open forbids, so ready() dies inside RocksDB instead
+    await store.ready()
+    if (!await store.storage.hasCore(crypto.discoveryKey(key))) throw new Error(`${storeDir} holds no core ${id}`)
+    const core = store.get({ key, writable: false })
     await core.ready()
     console.log(`core.length ${core.length} byteLength ${core.byteLength}`)
-    // an empty core here is the store and the key disagreeing, not an empty atlas
     if (core.length === 0) throw new Error(`${storeDir} holds no blocks for ${id}`)
     const bee = new Hyperbee(store, { core, writable: false })
     await bee.ready()

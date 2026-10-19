@@ -3,11 +3,19 @@ const Corestore = require('corestore')
 const Hyperswarm = require('hyperswarm')
 const HypercoreId = require('hypercore-id-encoding')
 const b4a = require('b4a')
+const crypto = require('hypercore-crypto')
 const { parseFlags, bootstrapFlag } = require('./flags')
 
 // Serves one published core from a store opened read-only, as a seeder would.
 async function seed ({ storeDir, key, bootstrap, interval = 10000, log = console.log }) {
   const store = new Corestore(storeDir, { readOnly: true })
+  // before get(): a key the store does not hold is one corestore would create, and creating needs
+  // a write the read-only open forbids, so ready() dies inside RocksDB instead of naming the key
+  await store.ready()
+  if (!await store.storage.hasCore(crypto.discoveryKey(key))) {
+    await store.close()
+    throw new Error(`${storeDir} holds no core ${HypercoreId.encode(key)}`)
+  }
   const core = store.get({ key, writable: false })
   await core.ready()
   const stats = { peers: 0, uploads: 0, uploadBytes: 0 }

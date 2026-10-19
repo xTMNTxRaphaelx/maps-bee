@@ -5,6 +5,7 @@ const HypercoreId = require('hypercore-id-encoding')
 const { buildBee } = require('./bee-build')
 const { load } = require('./keys')
 const { manifestFor, publishDraft } = require('./sign')
+const { parseFlags } = require('./flags')
 
 // the multisig core of the key set, its named draft session and a writable bee over the draft;
 // a named session resumes from storage, so a draft survives a process restart (hypercore session-state.js:1224)
@@ -57,7 +58,11 @@ function mapsLine (m) {
 }
 
 async function main () {
-  const [storeDir, keysDir, ...archives] = Bare.argv.slice(2)
+  const { args } = parseFlags(Bare.argv.slice(2), [])
+  const [storeDir, keysDir, ...archives] = args
+  if (!storeDir || !keysDir || archives.length === 0) {
+    throw new Error('usage: publish.js <storeDir> <keysDir> <archive.pmtiles>...')
+  }
   // the "already has N blocks" throw lands after openDraft has opened the store and the draft
   await withDraft({ storeDir, keysDir }, async ({ m, draft, bee, keyPairs }) => {
     if (m.length > 0) throw new Error(`core already has ${m.length} blocks; use an empty store dir`)
@@ -68,7 +73,7 @@ async function main () {
   })
 }
 
-module.exports = { openDraft, withDraft, commitDraft, mapsLine }
+module.exports = { withDraft, commitDraft, mapsLine }
 
 if (require.main === module) {
   main().catch((err) => {
