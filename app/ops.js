@@ -1,7 +1,7 @@
 'use strict'
 const HypercoreId = require('hypercore-id-encoding')
 const { readPreview, prefetchTop } = require('../lib/preview')
-const { openClient, timed } = require('../lib/net/client')
+const { openClient, timed, TIMEOUT, DEADLINE } = require('../lib/net/client')
 const { tilesPresent, labelText, connectLine, prefetchLine, previewLine } = require('../lib/net/report')
 const { decodeGzip } = require('../lib/mvt')
 const { renderThumbnail, pinOffset } = require('../lib/render-svg')
@@ -11,8 +11,6 @@ const { renderThumbnail, pinOffset } = require('../lib/render-svg')
 // 2.77 MB up front to save ~83 KB per preview after the first, so it does not break even until
 // about 18 previews in one session (results/planet-probe-quadrants.txt).
 const PREFETCH_LEVELS = 1
-const TIMEOUT = 10000
-const DEADLINE = 30000
 
 // One cold client per key, kept open across runs so a second run shows the repeat cost.
 function createOps ({ bootstrap } = {}) {

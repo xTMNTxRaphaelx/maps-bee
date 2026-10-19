@@ -10,14 +10,15 @@
 // out of the string, so a pin that is not on a street shows the city alone and looks empty.
 //
 // usage: local-check.js [--json] <storeDir> <coreKey> <lat,lon>...
-const Corestore = require('corestore')
 const Hyperbee = require('hyperbee2')
 const HypercoreId = require('hypercore-id-encoding')
-const crypto = require('hypercore-crypto')
 const { readPreview } = require('../lib/preview')
+const { openPublished } = require('../lib/net/published')
 const { tilesPresent, labelText } = require('../lib/net/report')
 const { parseFlags, parsePoints } = require('./flags')
 
+// lower than the client's 10 s on purpose: every read here is off local disk, so anything slower
+// than this is a broken store rather than a slow link
 const TIMEOUT = 5000
 
 async function main () {
@@ -28,15 +29,8 @@ async function main () {
   }
   const points = parsePoints(rest)
   // read-only, so this runs against a store a seeder already holds open
-  const store = new Corestore(storeDir, { readOnly: true })
+  const { store, core } = await openPublished(storeDir, HypercoreId.decode(id))
   try {
-    const key = HypercoreId.decode(id)
-    // before get(), not after: a key the store does not hold is one corestore would create, and
-    // creating needs a write the read-only open forbids, so ready() dies inside RocksDB instead
-    await store.ready()
-    if (!await store.storage.hasCore(crypto.discoveryKey(key))) throw new Error(`${storeDir} holds no core ${id}`)
-    const core = store.get({ key, writable: false })
-    await core.ready()
     console.log(`core.length ${core.length} byteLength ${core.byteLength}`)
     if (core.length === 0) throw new Error(`${storeDir} holds no blocks for ${id}`)
     const bee = new Hyperbee(store, { core, writable: false })
