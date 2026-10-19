@@ -61,7 +61,7 @@ are not optional on a home link.
 
 # then once per quadrant, bboxes from step 2
 until ./tools/pmtiles extract $S data/planet-z14-nw.pmtiles \
-  --bbox=-180,0.005,-0.005,85.0511 --minzoom=14 --maxzoom=14 \
+  --bbox=-179.995,0.005,-0.005,85.0511 --minzoom=14 --maxzoom=14 \
   --download-threads=8 --overfetch=0.2; do echo "reset — retrying in 30s"; sleep 30; done
 
 $B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
@@ -122,10 +122,18 @@ sits 0.45% inside the edge tile and `extract` rounds across the boundary anyway.
 268,435,456 — one whole tile line, 16,384, duplicated, plus 2. 0.005° lands 23% inside a z14 tile
 and 45% inside a z15 one, clear of both edges at either zoom.
 
+**The antimeridian is an edge too: offset ±180 as well, to ∓179.995.** A bbox ending at exactly
+180 gives `x = floor((180 + 180) / 360 * 32768) = 32768`, one past the last column at z15, so the
+region is 16,385 columns wide and the surplus is whatever lies at x = 0 — the other quadrant's.
+**Measured 2026-10-19** on the z15 cuts, which used ±180: NE and SE each addressed 268,451,840
+tiles, exactly 16385 x 16384, and NW and SW 268,435,457, a single tile over. Re-cutting NE at
+179.995 brought the region to 268,435,456 and dropped 5,660 entries; NW at -179.995 dropped 1.
+A quadrant is right when `addressed tiles count` is exactly 268,435,456 = 2^28.
+
 ```sh
-until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-180,0.005,-0.005,85.0511 \
+until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-179.995,0.005,-0.005,85.0511 \
   --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2; do echo "reset — retrying in 30s"; sleep 30; done
-./tools/pmtiles show data/planet-z15-nw.pmtiles | grep 'tile entries count'
+./tools/pmtiles show data/planet-z15-nw.pmtiles | grep -E 'addressed tiles count|tile entries count'
 ```
 
 **After building the quadrants, check coverage by conservation, not by summing entries.** Every
@@ -157,10 +165,10 @@ The four bboxes:
 
 | quadrant | bbox | order |
 | --- | --- | ---: |
-| NW | `-180,0.005,-0.005,85.0511` | 1 |
-| NE | `0.005,0.005,180,85.0511` | 2 |
-| SW | `-180,-85.0511,-0.005,-0.005` | 3 |
-| SE | `0.005,-85.0511,180,-0.005` | 4 |
+| NW | `-179.995,0.005,-0.005,85.0511` | 1 |
+| NE | `0.005,0.005,179.995,85.0511` | 2 |
+| SW | `-179.995,-85.0511,-0.005,-0.005` | 3 |
+| SE | `0.005,-85.0511,179.995,-0.005` | 4 |
 
 ## 3. Build each quadrant, in that order
 

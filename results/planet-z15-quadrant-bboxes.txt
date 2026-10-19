@@ -1,0 +1,52 @@
+# 2026-10-19. The four z15 planet quadrants downloaded on the Mac, cut with the bbox table as it
+# stood that day: equator and meridian offset by 0.005 degrees, but the antimeridian left at
+# exactly +/-180. `pmtiles show` on each, then two local --dry-run probes with the antimeridian
+# edge pulled inside. This is what put the +/-179.995 edges into docs/PLANET.md step 2.
+
+$ for f in data/planet-z15*.pmtiles; do ./tools/pmtiles show $f; done
+
+                 addressed tiles count   tile entries count   bbox
+planet-z15-nw        268,435,457             43,171,733       -180,0.005,-0.005,85.0511
+planet-z15-ne        268,451,840             52,204,992       0.005,0.005,180,85.0511
+planet-z15-sw        268,435,457             11,697,825       -180,-85.0511,-0.005,-0.005
+planet-z15-se        268,451,840             12,367,396       0.005,-85.0511,180,-0.005
+
+sum of addressed tiles   1,073,774,594
+4^15                     1,073,741,824
+excess                          32,770
+
+A z15 quadrant is 2^28 = 268,435,456 tiles, 16384 x 16384. The two quadrants whose east edge is
+exactly 180 are 16385 x 16384 = 268,451,840 — one column too wide, because
+x = floor((180 + 180) / 360 * 32768) = 32768, one past the last column, 32767. The two whose west
+edge is exactly -180 are one single tile over. 16,384 x 2 + 1 x 2 = 32,770, the whole excess.
+
+The 0.005 degree offsets did their job: NW and SW are exactly 16384 columns wide, so the meridian
+and equator seams are clean. Only the antimeridian edge was never offset by that rule.
+
+Not new. The z14 defect recorded at docs/PLANET.md step 2 was "268,451,842 against 268,435,456 —
+one whole tile line, 16,384, duplicated, plus 2". That plus 2 is this same west-edge tile, and it
+survived the 0.005 degree fix because that fix never touched +/-180. It is in the z14 tier of the
+committed atlas.
+
+$ ./tools/pmtiles extract data/planet-z15-ne.pmtiles /tmp/probe-ne.pmtiles \
+    --bbox=0.005,0.005,179.995,85.0511 --minzoom=15 --maxzoom=15 --dry-run
+  Region tiles 268435456, result tile entries 52199332        (-16,384 tiles, -5,660 entries)
+
+$ ./tools/pmtiles extract data/planet-z15-nw.pmtiles /tmp/probe-nw.pmtiles \
+    --bbox=-179.995,0.005,-0.005,85.0511 --minzoom=15 --maxzoom=15 --dry-run
+  Region tiles 268435456, result tile entries 43171732        (-1 tile, -1 entry)
+
+Both land on 2^28 exactly, and both drop entries, so the surplus addressed real tiles rather than
+being an artifact of the region arithmetic. 179.995 sits 54% inside the last column, which spans
+179.989014 to 180.0, and -179.995 sits 46% inside column 0 — clear of a boundary the way 0.005
+degrees is at the meridian.
+
+All four entry counts are under MAX_SORTED_ENTRIES = 67,108,864. NE is the largest at 52.2M, so
+the longitude split docs/PLANET.md step 2 holds in reserve for NE is not needed. The four sum to
+119.4M entries, against the ~125M estimated for z15 at docs/PLANET.md step "the constraint that
+shapes all of this".
+
+Watch out: --dry-run is documented as "Calculate tiles to extract, but don't download them", but
+both probes went on to log "fetching N tiles" and "Extract transferred 40 GB / 23 GB for an
+archive size of 38 GB / 23 GB" against a local input. Check for and remove the output file after
+a dry run rather than assuming the flag left nothing behind.
