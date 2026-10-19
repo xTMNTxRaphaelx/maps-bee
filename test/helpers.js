@@ -11,7 +11,7 @@ const JAIPUR_Z15_ARCHIVE = path.join(DATA, 'extract', 'jaipur-z15.pmtiles')
 const LUGANO_ARCHIVE = path.join(DATA, 'extract', 'lugano-z11-14.pmtiles')
 const LUGANO_Z15_ARCHIVE = path.join(DATA, 'extract', 'lugano-z15.pmtiles')
 const ATLANTIC_ARCHIVE = path.join(DATA, 'extract', 'atlantic-z10.pmtiles')
-// gazetteer.js output, not an extract: docs/TESTING.md stage 2 builds these two from the archives above
+// gazetteer.js output, not an extract: README "Fixtures" builds these two from the archives above
 const GAZETTEER_JSON = path.join(DATA, 'gazetteer.json')
 const GAZETTEER_LUGANO_JSON = path.join(DATA, 'gazetteer-lugano.json')
 // gazetteer.js --areas output: the a/ keys the client reads area parts from

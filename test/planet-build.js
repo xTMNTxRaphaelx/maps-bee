@@ -199,7 +199,7 @@ test('sorted build rejects --resume and archives out of zoom order', async (t) =
 })
 
 // why a dead sorted run is re-run rather than restarted: the second pass writes the same bytes, and
-// a put that matches what is stored is not applied, so the batch appends nothing (PLANET.md step 3)
+// a put that matches what is stored is not applied, so the batch appends nothing (README, planet build)
 test('re-running a sorted build over its own output appends no block', async (t) => {
   const bee = await newBee(t, 'planet-sorted-again')
   const opts = { expandRunsUpToZoom: 10, sorted: true, inlineValueSize: 0, flushPuts: 200, log: () => {} }

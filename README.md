@@ -1,21 +1,139 @@
 # maps-bee
 
-**A signed, peer-to-peer map tile store for Keet location previews.**
+**Put OpenStreetMap tiles in a signed hyperbee, and read a location preview back out of it.**
 
-A Keet location message carries only latitude and longitude. This prototype turns that into a pinned map thumbnail on the viewer's device by fetching a few hundred kilobytes from peers: no map server, no trust in the peer that serves the bytes, nothing fetched on a second open.
+The publisher half turns Protomaps basemap archives into one signed hyperbee — tiles under
+`<zoom>/<quadkey>`, place labels alongside them — at anything from a city extract to the whole
+planet. The client half is `readPreview(bee, point, opts)`: give it a replicated bee and a lat/lon,
+get back the tiles covering a thumbnail, the nearest city, and a derived street address, having
+fetched a few hundred kilobytes from peers. No map server, no trust in the peer serving the bytes,
+nothing fetched on a second open.
+
+**It runs under bare, by design** — the target is keet-core, so the client path takes `bare-zlib`
+and does not try to be portable. Runtime: bare 1.34, hypercore 11, hyperbee2 2.18.
+
+[`app/`](app/) is an example consumer, not part of the library — see [`app/README.md`](app/README.md).
+
+```
+Protomaps planet build (OpenStreetMap, ODbL)
+        │  pmtiles extract
+        ▼
+scripts/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
+scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
+                         ──▶  a/14/<quadkey>/<n> → neighbourhood, suburb, village
+        │  2-of-3 multisig, committed in signed chunks
+        ▼
+scripts/seed.js on any peer  ◀──── DHT ────▶  readPreview → 640 × 360 thumbnail with a pin
+```
+
+## Reading from a bee
+
+`index.js` is the whole client surface. Everything else under `scripts/` is publisher-side or a CLI,
+and is required by path.
+
+```js
+const { readPreview, prefetchTop, renderThumbnail, pinOffset } = require('maps-bee')
+const { decodeGzip } = require('maps-bee/scripts/mvt')   // not on the surface yet; see below
+
+const point = { lat: 26.9, lon: 75.8 }
+const { zoom, origin, tiles, label, address } =
+  await readPreview(bee, point, { timeout: 10000, deadline: 30000 })
+
+const svg = renderThumbnail(tiles.map((gz) => gz && decodeGzip(gz)), pinOffset(point, origin, zoom))
+```
+
+**`readPreview(bee, point, opts)`** is one call per shared location. It reads the 2x2, the nearest
+city and the area labels in parallel, then derives the address from what they return.
 
 | | |
 | --- | --- |
-| Setup, commands and test stages | [docs/TESTING.md](docs/TESTING.md) |
-| Planet build runbook | [docs/PLANET.md](docs/PLANET.md) |
-| Measurements | [`results/`](results/) |
-| Test app | [`app/`](app/), run with `npm start` |
-| Runtime | bare 1.34, hypercore 11, hyperbee2 2.18 |
+| `point` | `{ lat, lon }`; off the globe rejects with `RangeError` rather than reading a real key for the wrong place |
+| `opts.timeout` | **required**, ms per block read; a `TypeError` without it |
+| `opts.deadline` | optional, ms for the whole call |
+| `zoom` | 15, 14 or 10 — whichever tier answered — or `null` outside the atlas |
+| `origin` | `{ x, y }`, the tile coordinate of the 2x2's top-left at that zoom |
+| `tiles` | four gzipped MVT buffers, row-major from `origin`; a missing one is `null` and drawn blank, all four missing makes the result `null` |
+| `label` | `{ name, kind, km }`, the nearest city or town, or `null` |
+| `address` | see below, or `null` outside the atlas |
+
+On either timeout it rejects with hypercore's `REQUEST_TIMEOUT` and destroys the requests it
+started, so a failed call leaves nothing in flight. The label is best effort — its failure gives
+`label: null` rather than rejecting.
+
+`tiles` comes back gzipped and `renderThumbnail` takes decoded tiles, so rendering currently needs
+`decodeGzip` from `scripts/mvt.js`, which `index.js` does not export. That is a gap in the surface:
+`app/ops.js` reaches past `index.js` for the same reason.
+
+| rest of the surface | |
+| --- | --- |
+| `prefetchTop(bee, levels, opts)` | inflates the top `levels` tree levels so later reads walk them locally; returns `{ nodes }` per level |
+| `deriveAddress({ point, tiles, label, areas })`, `display(address)` | the address derivation alone, for tiles already in hand |
+| `renderThumbnail(tiles, offset)`, `pinOffset(point, origin, zoom)` | the 640 by 360 SVG thumbnail |
+| `DETAIL_ZOOM`, `FALLBACK_ZOOM`, `LABEL_ZOOM` | 15, 10 and 8 |
+
+### address
+
+Each part is the nearest matching feature within a threshold, across the one 2x2 the walk returned,
+plus the `a/` labels, which are read by radius and so reach past the tiles. Thresholds are named
+constants at the top of `scripts/address.js`, which is the source for their values.
+
+```
+address: {
+  housenumber:   { value, metres } | null,       // buildings kind=address within HOUSE_M, z15 only
+  road:          { name, kind, metres } | null,  // named road within ROAD_M
+  neighbourhood: { name, metres } | null,        // within NEIGHBOURHOOD_M
+  suburb:        { name, metres } | null,        // places neighbourhood/suburb or macrohood within SUBURB_M
+  village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M
+  city:          { name, kind, km } | null,      // the g/ gazetteer label
+  region:        null,                           // not in the bee: these sit in tiles below z10
+  country:       null,
+  near:          { name, kind, metres } | null,  // named poi within NEAR_M
+  display:       string                          // at most three parts, small to large
+}
+```
+
+The Protomaps schema has no postcode anywhere and no named admin polygons, so detail stops at the
+road. **Village is the weak part:** Nominatim names the municipality a point lies inside, we take
+the nearest village *point*, often a neighbour's, and no distance cut separates the two — a real fix
+needs village extent, which the `a/` pass does not keep.
+
+## Design
+
+- **One hyperbee holds the tiles.** Values are the gzipped MVT bytes exactly as Protomaps publishes
+  them. The planet bee holds zoom 10 complete, plus higher zooms without the repeated ocean and
+  empty tiles.
+- **Signed by a 2-of-3 multisig,** committed in chunks because hypercore loads every block of a
+  commit into memory. A republish on the same key keeps warm clients' blocks valid.
+- **Read sparsely, never downloaded.** One 2x2 per point, chosen from the pin's fractional position
+  so a 640 by 360 crop centred on it is always covered. It tries z15, then z14, then z10 and stops
+  at the first with any of the four — z15 has the complete road network and the address points, z10
+  is the floor. Every block read has a timeout, the whole call a deadline, and a failed call cancels
+  its own requests.
+- **Layout decides the cost.** hyperbee2 inflates a tree node by fetching the origin block of every
+  key it references, inlines small values into key blocks, and cuts blocks far above its 4 KiB
+  target. Writing tiles in key order in large batches and disabling value inlining are worth an
+  order of magnitude on a cold open; a repeat open costs no blocks on any layout.
+- **Prefetch one level, not two.** Level 1 is effectively free — its nodes are the root a first
+  preview fetches anyway. Level 2 costs megabytes up front and only pays back after many previews in
+  one session, so `app/ops.js` ships `PREFETCH_LEVELS = 1`.
+
+What a serving peer learns is the cell two zooms above the tiles it served: with a z14 2x2, about
+9 km across; with z15, about 4.9 km.
+
+## Layout
+
+| | |
+| --- | --- |
+| `index.js` | the client surface, and the only entry point a consumer needs |
+| `scripts/` | the library: tiles and quadkeys, pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer, `preview.js`, the SVG renderer, and the seed and probe CLIs |
+| `scripts/study/` | research tooling, not part of the library |
+| `test/` | brittle tests, registered in `test/index.js`, run under bare |
+| `app/` | an example consumer — [`app/README.md`](app/README.md) |
+| `results/` | benchmark and probe output, as the scripts printed it; regenerated, not maintained |
 
 ## Quick start
 
-About two minutes, two small downloads, and no seeder or planet build. It builds a signed atlas
-over one Indian state and reads an address out of it.
+Two minutes and two small downloads: a signed atlas over one Indian state, read back with no network.
 
 ```sh
 npm install
@@ -30,179 +148,177 @@ for i in $(seq 0 25); do D=$(date -v-${i}d +%Y%m%d 2>/dev/null || date -d "-$i d
   case $C in 200|206) S=https://build.protomaps.com/$D.pmtiles; echo "using $D"; break;; esac; done
 
 ./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
-./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles \
+  --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
 
 $B scripts/keys.js keys                              # test-only keys, never committed
-$B scripts/publish.js store/quickstart keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
-
-# the nearest city or town, under g/ keys in the same bee
+$B scripts/publish.js store/quickstart keys \
+  data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
 $B scripts/gazetteer.js data/gazetteer-quickstart.json --kinds=city,town \
   data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10
 $B scripts/gazetteer-put.js store/quickstart keys draft data/gazetteer-quickstart.json
-$B scripts/planet-commit.js store/quickstart keys draft
+$B scripts/planet-commit.js store/quickstart keys draft    # commits any draft, not just a planet one
 ```
 
-Each commit ends with a `maps:` line holding the key and the signed length. Read a point out of
-the atlas with it:
+Every publish and commit ends with a `maps:` line holding the key and the signed length — that is
+the only place a usable key comes from. Read a point out of the atlas with it:
 
 ```sh
 $B scripts/local-check.js store/quickstart <key from the maps line> 26.9,75.8
 ```
 
 ```
-core.length 1083 byteLength 18333759
 26.9,75.8	zoom 14	tiles 4/4	label Jaipur (city, 2.6 km)	address Kachi Basti, Sudarshanpura, Jaipur
 ```
 
-That is the whole read path — the 2x2 of tiles, the city label, the derived address — off disk,
-with no network. [docs/TESTING.md](docs/TESTING.md) has the full staged procedure, the remaining
-fixtures the test suite needs, and the Electron app.
+## Testing
 
-## How it fits together
-
-```
-Protomaps planet build (OpenStreetMap, ODbL)
-        │  pmtiles extract: zoom 10 complete, zoom 14 without filler
-        │  (the planet bee predates the z15 tier; the test atlas has it)
-        ▼
-scripts/planet-build.js  ──▶  one hyperbee: <zoom>/<quadkey> → gzip MVT tile
-scripts/gazetteer-put.js ──▶  g/10/<quadkey>/<n> → nearest city or town
-                         ──▶  a/14/<quadkey>/<n> → neighbourhood, suburb, village
-        │  2-of-3 multisig, committed in signed chunks
-        ▼
-scripts/seed.js on any peer  ◀──── public DHT ────▶  the viewer
-                                                       │  readPreview(lat, lon): one 2x2 at the first of
-                                                       │  z15, z14, z10 that has tiles, + city and area
-                                                       │  labels → address; sparse reads, timeout,
-                                                       │  deadline, cancel
-                                                       ▼
-                                              640 × 360 thumbnail with a pin
+```sh
+npm test        # the whole suite under bare
+npm run lint    # lunte, silent when it passes
 ```
 
-## Problem
+The suite runs two ways on purpose. With `data/` absent — what a clean clone and CI see —
+`test/index.js` preflights the fixture paths and skips the data-dependent modules, ending with one
+`data fixtures are present # SKIP` line and the missing paths on stderr. With the fixtures present
+the whole suite runs. Either way the gate is a zero exit, zero `not ok`, and a summary line that is
+actually printed; a `SIGABRT` or no summary at all means the preflight does not hold.
 
-Keet has no server. Whatever the viewer of a shared location sees must come from the message, the viewer's own device, or other peers. Today the viewer gets a deep link to an external map. The target is a static map preview with a pin: a small fetch on first open, free on every later open, from data the viewer can verify.
+The fixtures are seven `pmtiles extract` cuts (~28 MB) plus a publish and four gazetteer passes —
+the commands are in `test/helpers.js`'s path list order, and `$S` is a live build found as in the
+quick start:
 
-## Design
+```sh
+./tools/pmtiles extract $S data/extract/rajasthan-z10.pmtiles --bbox=69.5,23.0,78.3,30.2 --maxzoom=10
+./tools/pmtiles extract $S data/extract/jaipur-z11-14.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract $S data/extract/jaipur-z15.pmtiles --bbox=75.65,26.75,75.95,27.05 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract $S data/extract/lugano-z11-14.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=11 --maxzoom=14
+./tools/pmtiles extract $S data/extract/lugano-z15.pmtiles --bbox=8.85,45.95,9.05,46.06 --minzoom=15 --maxzoom=15
+./tools/pmtiles extract $S data/extract/lugano-z10.pmtiles --bbox=8.85,45.95,9.05,46.06 --maxzoom=10
+./tools/pmtiles extract $S data/extract/atlantic-z10.pmtiles --bbox=-30,27,-13,30 --minzoom=10 --maxzoom=10
 
-- **One hyperbee holds the tiles.** Keys are `<zoom>/<quadkey>`, values are the gzipped Mapbox Vector Tile bytes exactly as Protomaps publishes them. The planet bee holds zoom 10 complete plus zoom 14 without the repeated ocean and empty tiles: 32,888,213 tiles, 36.4 GB on the core (`results/planet-c12-sorted-noinline.txt`).
-- **Signed by a 2-of-3 multisig.** The publisher fills a draft session and commits it in signed chunks of 20,000 blocks, because hypercore loads every block of a commit into memory. A republish on the same key keeps warm clients' blocks valid. Clients receive the key and the signed length the way they receive other shared indexes.
-- **Read sparsely, never downloaded.** For one point the client fetches one 2x2 of tiles, the ones the pin leans into, chosen from the pin's fractional position inside its tile so a 640 by 360 crop centred on the pin is always covered. It tries zoom 15 first, then 14, then 10, and stops at the first zoom with any of the four: zoom 15 carries the complete road network and the address points, zoom 14 is the tier between — a zoom 15 run is filler in open country, and without 14 such a pin would fall straight to a 35 km view — and zoom 10 is the floor, with no minor roads or buildings layer to overzoom from (`results/z10-vs-z14-content.txt`). The walk costs the client nothing beyond the zoom that answers; the tiers below only cost the publisher storage. Every block read has a timeout, the whole call a deadline, and a failed call cancels its own requests.
-- **A gazetteer in the same bee** gives the nearest city or town: 111,548 localities from the zoom 10 places layer, under `g/` keys. A second set under `a/` holds the neighbourhood, suburb and village labels, harvested at zoom 13 from a city extract and at zoom 14 on the planet, and read over a tighter window. Area parts come from that radius query rather than from whatever fell inside the fetched tiles: measured over 225 points in four cities, it is worth 20 hits, nearly all suburb (`results/address-shapes.txt`).
-- **An optional one-time prefetch** of the top tree level, 17 blocks and 160 KB — the root a first preview fetches anyway, moved ~200 ms earlier. Level 2 costs 315 blocks and 2.77 MB up front and does not break even until about 18 previews in one session, so `app/ops.js` ships one level ([`results/planet-probe-quadrants.txt`](results/planet-probe-quadrants.txt)).
-- **Layout decides the cost.** hyperbee2 inflates a tree node by fetching the origin block of every key the node references, inlines values of 1 KB or less into key blocks, and cuts blocks far above its 4 KiB target. Writing tiles in key order in large batches and turning off value inlining are the two publisher flags that make a cold read cheap.
+B=node_modules/bare-runtime/bin/bare
+$B scripts/keys.js keys
+$B scripts/publish.js store/signed keys data/extract/rajasthan-z10.pmtiles data/extract/jaipur-z11-14.pmtiles
+$B scripts/gazetteer.js data/gazetteer.json data/extract/rajasthan-z10.pmtiles 69.5,23.0,78.3,30.2 0 10 \
+  data/extract/jaipur-z11-14.pmtiles 75.65,26.75,75.95,27.05 11 14
+$B scripts/gazetteer.js data/gazetteer-lugano.json --kinds=city,town data/extract/lugano-z10.pmtiles 8.85,45.95,9.05,46.06 0 10
+$B scripts/gazetteer.js data/areas.json --areas data/extract/jaipur-z11-14.pmtiles 75.55,26.65,76.05,27.15 13 13
+$B scripts/gazetteer.js data/areas-lugano.json --areas data/extract/lugano-z11-14.pmtiles 8.75,45.85,9.15,46.16 13 13
+```
 
-What the serving peer learns is the cell two zooms above the tiles it served: with the zoom 14 2x2 of the signed test store, the zoom 12 cell, about 9 km across (`results/seeder-sees.txt`). A zoom 15 2x2 would narrow that to the zoom 13 cell, about 4.9 km; no signed store with zoom 15 has been measured.
+**The `--areas` passes harvest with a wider bbox than the extract on purpose:** an area gazetteer
+must cover a margin around the region it serves, or a pin near the edge takes the nearest label that
+survived the clip rather than the true nearest.
 
-## Measured
+`test/address-accuracy.js` and `test/address-accuracy-lugano.js` print a rate per address part. Note
+the Protomaps build alongside any rate you keep — the fixture is fixed but the tiles come from a
+build that rotates weekly, so a rate change across builds says nothing about the code.
 
-Cold first open from a fresh client over the public DHT, 2x2 plus label, as blocks / bytes. Repeat opens cost 0 blocks on every layout.
+`keys/`, `store/`, `data/` and `tools/` are gitignored and populated only locally.
 
-| Point | Baseline layout | Key order, no inlining | After the level-2 prefetch |
-| --- | ---: | ---: | ---: |
-| Jaipur | 266 / 10.16 MB | 60 / 0.69 MB | 13 / 0.18 MB |
-| London | 132 / 4.40 MB | 29 / 0.54 MB | 18 / 0.44 MB |
-| New York | 19 / 0.44 MB | 16 / 0.41 MB | 16 / 0.41 MB |
-| Open ocean, zoom 10 | 264 / 9.41 MB | 26 / 0.16 MB | 13 / 0.07 MB |
+### Seed and probe
 
-| Measurement | File |
-| --- | --- |
-| Baseline layout, 2x2 unit | `results/planet-probe-2x2.txt` |
-| Key order only, no inlining only | `results/planet-c1-sorted.txt`, `results/planet-c2-noinline.txt` |
-| Both flags, the publisher path | `results/planet-c12-sorted-noinline.txt` |
-| Test app on the seeding host | `results/pear-smoke.txt` |
-| Fetch unit, second publish, what a seeder sees, filler tiles | `results/cell-2x2.txt`, `results/second-publish.txt`, `results/seeder-sees.txt`, `results/planet-filler.txt` |
+```sh
+$B scripts/seed.js store/planet <key>                 # terminal A
+$B scripts/probe.js <key> 26.9,75.8 51.5,-0.12        # terminal B
+```
 
-## Layout
+`scripts/local-check.js` runs the same read path with no swarm at all, so run it first whenever a
+probe comes back empty — a sound atlas behind a blocked DHT stops looking like a broken build.
+`scripts/testnet.js` prints a `--bootstrap=` line that puts both commands on a private DHT. If a
+seeder survives Ctrl-C, the launcher did not forward SIGINT: `pkill -INT -f scripts/seed.js`.
 
-| Directory | Holds |
-| --- | --- |
-| `scripts/` | The prototype: tiles and quadkeys, pmtiles reading, bee building, signing and chunked publish, the planet builder, the gazetteer, `preview.js` (the client read), seed and probe, the SVG thumbnail renderer. |
-| `test/` | brittle tests, registered in `test/index.js`, run under bare. |
-| `app/` | The Electron test app: a bare worker over pear-runtime calls the real `readPreview`; the window shows the thumbnail and logs probe-format lines. |
-| `results/` | Every measurement quoted anywhere, as the scripts printed it. |
-| `docs/` | Setup and the test stages, and the planet build runbook. |
+**A probe over the swarm may serve nothing, and it is not known to be this repo's fault.** On a
+clean run the seeder has served none of three sequential probes and logged no peer, while the client
+reported `connections 1` naming that seeder's own key. A plain hyperswarm server on the same
+discovery key does fire its handler, and `test/seed-probe.js` — testnet, seeder and client in one
+process — passes on every suite run. A client holding a connection the server does not have points
+at the transport, and this has only ever run in a sandboxed Linux ARM64 container where UDX
+holepunching is the likeliest thing to break. **Next step is real hardware**, not more debugging
+here; until then do not read a failing probe as a broken atlas.
+
+## Building the planet bee
+
+Zoom 10 complete, zoom 14 without filler, zoom 15 in quadrants, plus the `g/` and `a/` gazetteers.
+Budget a day and a couple of hundred gigabytes, nearly all of it `pmtiles extract`. A z14-topped
+atlas works — `preview.js` stops at the first tier that answers — it just cannot serve house numbers.
+
+**The constraint that shapes all of this:** `--sorted` packs each tile into one 64-bit slot with 26
+bits for the entry index, so one archive must hold fewer than `MAX_SORTED_ENTRIES` = 2^26 =
+67,108,864 entries. Planet z15 is far above that, hence quadrants — and two things follow, both
+silent failures rather than loud ones:
+
+1. **One `--sorted` invocation per quadrant.** `checkZoomOrder` rejects two archives sharing a zoom,
+   so all four in one command throws on the second. Separate runs append to the same named draft.
+2. **Feed them in ascending key order: NW, NE, SW, SE** (quadkey digits `0123`, and
+   `10/ < 14/ < 15/ < a/ < g/` as strings). Out-of-order puts still build a correct bee, but cost
+   the layout that makes a cold read cheap — the whole point of `--sorted`.
+
+| quadrant | bbox | order |
+| --- | --- | ---: |
+| NW | `-179.995,0.005,-0.005,85.0511` | 1 |
+| NE | `0.005,0.005,179.995,85.0511` | 2 |
+| SW | `-179.995,-85.0511,-0.005,-0.005` | 3 |
+| SE | `0.005,-85.0511,179.995,-0.005` | 4 |
+
+Cut inside the meridian, equator and antimeridian so two quadrants never share a tile column or row:
+`pmtiles extract` rounds a bbox out to whole tiles, and an overlap puts the same keys twice and
+breaks the ascending order. **0.005°, not 0.0001°** — 0.0001° sits 0.45% inside the edge tile and
+rounds across anyway, which once duplicated a whole tile line. A quadrant is right when
+`addressed tiles count` is exactly 268,435,456 = 2^28.
+
+```sh
+./tools/pmtiles extract $S data/planet-z10.pmtiles --minzoom=10 --maxzoom=10
+
+# once per quadrant, at z14 and z15; the retry loop is not optional on a home link
+until ./tools/pmtiles extract $S data/planet-z15-nw.pmtiles --bbox=-179.995,0.005,-0.005,85.0511 \
+  --minzoom=15 --maxzoom=15 --download-threads=8 --overfetch=0.2; do echo "retrying in 30s"; sleep 30; done
+
+$B scripts/planet-build.js --sorted --flush-puts=200000 --flush-bytes=536870912 \
+  --inline-value-size=0 store/planet keys atlas 10 data/planet-z10.pmtiles
+# then one run per quadrant, NW NE SW SE, same store and same draft name
+
+# a/ before g/, because a/ sorts first
+$B scripts/gazetteer.js data/planet-areas.json --areas data/planet-z14.pmtiles -180,-85.05,180,85.05 14 14
+$B scripts/gazetteer-put.js --inline-value-size=0 --areas store/planet keys atlas data/planet-areas.json
+$B scripts/gazetteer.js data/planet-gazetteer.json --kinds=city,town data/planet-z10.pmtiles -180,-85.05,180,85.05 10 10
+$B scripts/gazetteer-put.js --inline-value-size=0 store/planet keys atlas data/planet-gazetteer.json
+
+$B scripts/planet-commit.js store/planet keys atlas 20000   # chunk size: an unchunked planet commit
+                                                            # dies at the 4 GB V8 heap
+$B scripts/local-check.js store/planet <key> 26.9,75.8 46.0037,8.9511 40.7128,-74.006 -33.8688,151.2093
+```
+
+`--download-threads=8` is the setting that finished: 4 never gets reset but its tail does not
+converge, 16 gets reset. `pmtiles extract` neither resumes nor retries, so one reset discards the
+whole transfer. **A diverging tail shows as the ETA growing**, not as the rate collapsing — the rate
+collapses near the end of every healthy run. Give a tail 20 minutes, then kill it and let the loop
+restart; a sorted run cannot `--resume`, but re-running its command unchanged is safe, since a put
+matching what is stored appends no block.
+
+**Check coverage by conservation, not by summing entries.** Every tile of a zoom is either put or
+counted as filler, so `puts + fillerTiles` summed across the quadrant runs must equal `4^zoom` —
+268,435,456 at z14, 1,073,741,824 at z15. Summing `tile entries count` does *not* work: splitting by
+bbox cuts run-length entries in two, so quadrants legitimately report more entries than the whole
+zoom, and that surplus masks a real overlap.
+
+Each run prints `draft atlas length N` — N must grow each time, or the earlier work is not in this
+draft. A probe at a dense point should come back at zoom 15 once z15 is in; if it says 14, that
+quadrant did not make it into the draft.
+
+This build is also the only exercise of the production flush defaults (every test overrides
+`FLUSH_PUTS` and `FLUSH_BYTES`, so run one archive without the flags), of short-read detection
+(`readValues` throws rather than writing blank tiles under a signature, and must never fire on a
+good archive), and of handle cleanup (Ctrl-C partway through should not leave the store locked).
 
 ## Status
 
-Done and measured: the read path, the signed publish, the planet-scale layout, the test app.
+Done: the read path, the signed publish, the planet-scale layout, the example app. Open: where the
+street address comes from, the production renderer, who seeds the core, the republish cadence
+against Protomaps builds, and the zoom 15 tier of the planet build. Integration into Keet is a
+separate spec.
 
-Open: where the street address comes from (the tiles give road, neighbourhood, suburb and city with the rates in the Address section, a house number only at zoom 15 within 30 m, no postcode), the production renderer, who seeds the core, and the republish cadence against Protomaps builds. Integration into Keet is a separate spec.
-
-## Data
-
-Tile data comes from Protomaps basemap builds (build.protomaps.com), distributed as an Open Database License produced work of OpenStreetMap: map data © OpenStreetMap contributors, ODbL. No tile data is in this repository.
-
-## Address
-
-`readPreview` derives `address` from the tiles it already reads (`scripts/address.js`); no extra fetch. What the data can and cannot give:
-
-| Address part | Source in the bee | Verified |
-| --- | --- | --- |
-| house number | z15 buildings layer, `kind=address`, property `addr_housenumber` only; the schema has no street, postcode or unit property | Jaipur z15: 468 points in 928 tiles, 0 to 4 per tile |
-| road | roads layer `name` (and `ref`), z15 pin tile has the complete network | pin 26.879464,75.796516: nearest road 11 m is unnamed, nearest named road "Market Road" at 215 m; 11 of 31 roads in the tile are named |
-| neighbourhood, suburb, quarter | the `a/` gazetteer, which reaches past the 2x2; failing that, places layer points in the 2x2 itself, kind `neighbourhood` (kind_detail neighbourhood, suburb) and `macrohood` (quarter) | Tonk Phatak 322 m, Barkat Nagar 470 m, Pratap Nagar 479 m, Bapu Nagar 764 m |
-| village | places layer kind `locality` with kind_detail village, in the tiles already fetched; hamlets (population 200) were the wrong label at every distance | Amber 586 m from 26.9855,75.8513; Paradiso 154 m and Massagno 263 m in Lugano |
-| city or town | gazetteer, already in the bee | Jaipur (city, 4.6 km) |
-| state, country | places layer kinds `region` and `country`, which sit in low-zoom tiles the bee does not hold; z10 tiles near Jaipur carry only locality and macrohood points | z10 scan: locality/city, town, village, macrohood/quarter |
-| postcode | nowhere in the Protomaps schema | |
-| tehsil, municipal corporation, district | boundaries layer has lines by kind with no names; no admin polygons with names | |
-
-Each part is the nearest matching feature within a threshold, across the one 2x2 the walk returned — zoom 15, 14 or 10 — together with the `a/` area labels, which are read by radius and so reach past the tiles; roads by point-to-segment distance, places and pois by distance to their label point. Both are measured with one `cheap-ruler` built at the pin's latitude, so every part is on the same ruler: its scale factors are the exact WGS84 degree lengths there, within 0.5 m of a Vincenty geodesic at 3 km.
-
-```
-address: {
-  housenumber:   { value, metres } | null,       // buildings kind=address within HOUSE_M (30 m)
-  road:          { name, kind, metres } | null,  // named road within ROAD_M (300 m)
-  neighbourhood: { name, metres } | null,        // places neighbourhood/neighbourhood within NEIGHBOURHOOD_M (800 m)
-  suburb:        { name, metres } | null,        // places neighbourhood/suburb or macrohood within SUBURB_M (3000 m)
-  village:       { name, kind, metres } | null,  // places locality/village within VILLAGE_M (700 m); hamlet labels were wrong at every distance
-  city:          { name, kind, km } | null,      // the gazetteer label
-  region:        null,                           // not in the bee
-  country:       null,                           // not in the bee
-  near:          { name, kind, metres } | null,  // named poi within NEAR_M (150 m)
-  display:       string                          // at most three parts: the house number within HOUSE_M and/or a road within ROAD_ON_M (50 m), else "near <poi>" within NEAR_M; the nearest area label, or the two nearest small-to-large; the city
-}
-```
-
-`address` is null only outside the atlas, where there is no tile and no label.
-
-Measured on 60 Jaipur points against Nominatim reverse results (`test/fixtures/jaipur-nominatim-wide.json`, scored by `test/address-accuracy.js`; a neighbourhood or suburb counts as a hit when it equals any of Nominatim's neighbourhood, suburb or quarter; the city when it equals Nominatim's city, town or village, or starts Nominatim's city, or when our village is that locality). Rows, rates and distances: [`results/address-accuracy-jaipur.txt`](results/address-accuracy-jaipur.txt).
-
-| Part | Hits/n | Chosen-part distance range |
-| --- | --- | --- |
-| road | 28/36 | 0 m to 258 m (41 points) |
-| neighbourhood | 21/21 | 80 m to 779 m (25 points) |
-| suburb | 32/36 | 84 m to 2.6 km (38 points) |
-| village | 2/10 | 572 m to 669 m (2 points) |
-| city | 48/56 | 876 m to 18.2 km (60 points) |
-| house number | 14/16 | 1 m to 25 m (21 points) |
-
-Hits/n counts only the points where Nominatim gave that part to compare against; the distance range covers every point where we produced one, which is why n and the point count differ.
-
-**Village is the weak part, and not for want of recall.** Nominatim names the municipality a point lies inside; we take the nearest village *point*, which is often a neighbour's. No distance cut separates the two — the villages picked right reach 691 m and the ones picked wrong start at 138 m — so `VILLAGE_M` buys hits and errors together. A real fix needs village extent, which the `a/` pass does not keep. Measured over 105 points in [`results/village-gap.txt`](results/village-gap.txt).
-
-### Lugano, where the data is dense
-
-Swiss OpenStreetMap carries house numbers and street names on most buildings. At 46.006005,8.952766, six metres off Corso Enrico Pestalozzi, the same rules give `9 Corso Enrico Pestalozzi, Quartiere Maghetti, Lugano`: house number 9 at 16 m, the road at 5 m, the neighbourhood label at 121 m. The next municipality, Massagno, has its village label 987 m away and loses to the nearer neighbourhood, which is why the display takes the nearest area label rather than a fixed order (test/address.js, Lugano test on data/extract/lugano-z11-14.pmtiles and lugano-z15.pmtiles). Scored on 45 Lugano points against Nominatim (`test/fixtures/lugano-nominatim-wide.json`, `test/address-accuracy-lugano.js`, [`results/address-accuracy-lugano.txt`](results/address-accuracy-lugano.txt)):
-
-| Part | Hits/n | Chosen-part distance range |
-| --- | --- | --- |
-| road | 36/43 | 1 m to 213 m (42 points) |
-| neighbourhood | 3/3 | 85 m to 551 m (4 points) |
-| suburb | 4/7 | 330 m to 1.4 km (7 points) |
-| village | 22/37 | 56 m to 692 m (28 points) |
-| city | 29/44 | 353 m to 9.3 km (45 points) |
-| house number | 19/24 | 2 m to 28 m (26 points) |
-
-Dense addressing moves the parts a sparse region cannot exercise: house numbers go from 14/16 on a handful of Jaipur points to 19/24, and the road rate rises with them. The city rate falls instead, because the Lugano box reaches municipalities OpenStreetMap tags as villages — Paradiso, Massagno, Breganzona — where the city gazetteer, holding cities and towns only, answers Lugano. That is the same village-extent limit as above, seen from the city part.
-
-### Zoom 15 on the Jaipur region
-
-`data/extract/jaipur-z15.pmtiles` (docs/TESTING.md) holds zoom 15 over the Jaipur box: 928 entries, 926 distinct contents, every entry runLength 1. So `scripts/planet-build.js`'s run skipping has nothing to skip inside this all-land box; how much filler a planet z15 build would skip is unmeasured.
-
-Address points: in the `buildings` layer, geometry type point, `kind: 'address'`, with `addr_housenumber` as the only address key (no street or postcode in any layer). A central z15 tile holds 0 to 2 of them, and none lies within HOUSE_M of any scored point (results/address-accuracy-jaipur.txt, `rate housenumber 0/0`).
-
-Zoom 15 is the first zoom of the 2x2 walk, so one cell serves the thumbnail and the near address together. It replaced an earlier shape that read a z14 2x2 plus a separate z15 pin tile, measured over 225 points in four cities in [`results/address-shapes.txt`](results/address-shapes.txt): the two are a wash on accuracy, and the z15 cell costs one fewer tile per preview.
-
-The payload table there shows 8 to 42% fewer bytes, and the dated correction at the end of that file says what a real bee did instead — blocks 0.93 to 1.00x, bytes 0.95 to 1.09x over three Jaipur points at two latencies. **The case for zoom 15 is house numbers and the complete road network, not bandwidth.** [`results/z15-jaipur.txt`](results/z15-jaipur.txt) measures the earlier shape, where the z15 pin tile was an addition to a z14 2x2 and cost +2 blocks and about +50 KB.
+Tile data comes from Protomaps basemap builds (build.protomaps.com), an Open Database License
+produced work of OpenStreetMap: map data © OpenStreetMap contributors, ODbL. No tile data is in this
+repository.

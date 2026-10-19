@@ -16,7 +16,7 @@ const {
   KEYS_FILE
 } = require('./helpers')
 
-// A clean clone has no data/ (docs/TESTING.md stage 2). Without this preflight the first data-dependent
+// A clean clone has no data/ (README "Fixtures"). Without this preflight the first data-dependent
 // test opens a missing archive and the ENOENT aborts the runtime mid-suite rather than failing one
 // test, so: data-free modules first, then the rest only if every fixture is on disk. A partial
 // setup run is the likely case, so a missing gazetteer JSON counts as much as a missing extract.
@@ -52,7 +52,7 @@ const missing = FIXTURES.filter((p) => !fs.existsSync(p))
 if (missing.length > 0) {
   test('data fixtures are present', { skip: true }, () => {})
   console.error(
-    'skipping the data-dependent suite: run docs/TESTING.md stage 2 first\nmissing:\n  ' + missing.join('\n  ')
+    'skipping the data-dependent suite: build the fixtures in README "Fixtures" first\nmissing:\n  ' + missing.join('\n  ')
   )
 } else {
   require('./archive')

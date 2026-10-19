@@ -1,8 +1,8 @@
 name: test
 
-# Stage 1 of docs/TESTING.md: the suite with no fixtures. It needs no pmtiles binary and no
-# downloads from build.protomaps.com, so a Protomaps build rotating under us cannot turn CI red.
-# Stage 2 onward needs ~28 MB of extracts from a build that rotates, and is run by hand.
+# The suite with no fixtures. It needs no pmtiles binary and no downloads from build.protomaps.com,
+# so a Protomaps build rotating under us cannot turn CI red. The data-dependent half needs ~28 MB of
+# extracts from a build that rotates (README "Fixtures"), and is run by hand.
 on:
   push:
     branches: [main]
