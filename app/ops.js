@@ -70,7 +70,10 @@ function serve (pipe, ops) {
         const result = await ops[op](req)
         pipe.write(JSON.stringify({ id, ok: true, result }))
       } catch (err) {
-        pipe.write(JSON.stringify({ id, ok: false, error: err.message }))
+        // String(err), not err.message: a non-Error throw would make this line throw too, which
+        // rejects the queue and makes every later frame skip its handler — the worker would stop
+        // answering for the rest of the session, silently.
+        pipe.write(JSON.stringify({ id, ok: false, error: err instanceof Error ? err.message : String(err) }))
       }
     })
     return queue

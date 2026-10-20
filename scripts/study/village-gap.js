@@ -12,6 +12,7 @@
 const fs = require('bare-fs')
 const path = require('bare-path')
 const { origin, VILLAGE_M } = require('../../lib/address')
+const { readGazetteer } = require('../../lib/gazetteer-lib')
 
 const DATA = path.join(__dirname, '..', '..', 'data')
 const FIXTURES = path.join(__dirname, '..', '..', 'test', 'fixtures')
@@ -34,7 +35,9 @@ function ranked (point, villages) {
 
 function load (city) {
   const points = JSON.parse(fs.readFileSync(path.join(FIXTURES, city.fixture), 'utf8'))
-  const villages = JSON.parse(fs.readFileSync(path.join(DATA, city.areas), 'utf8'))
+  // the fixture above is a plain Nominatim array; this one is a harvest, so it goes through
+  // readGazetteer, which takes both the marked shape and a pre-marker bare array
+  const villages = readGazetteer(JSON.parse(fs.readFileSync(path.join(DATA, city.areas), 'utf8'))).entries
     .filter((e) => e.kind_detail === 'village')
   return points.map((p) => ({
     at: `${p.lat},${p.lon}`,

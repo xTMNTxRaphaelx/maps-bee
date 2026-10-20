@@ -5,8 +5,8 @@ const path = require('bare-path')
 const zlib = require('bare-zlib')
 const b4a = require('b4a')
 const Hyperbee = require('hyperbee2')
-const { tileIdToZxy } = require('pmtiles')
-const { buildPlanet, stallWatch } = require('../../lib/build/planet-build')
+const { tileIdToZxy, zxyToTileId } = require('pmtiles')
+const { buildPlanet, stallWatch, collectSorted } = require('../../lib/build/planet-build')
 const { buildBee } = require('../../lib/build/bee-build')
 const { openArchive, directories } = require('../../lib/build/pmtiles-file')
 const { tileKey, parseTileKey } = require('../../lib/tiles')
@@ -231,4 +231,28 @@ test('stallWatch logs a phase that has not changed since the last tick', async (
   await wait(70)
   stopMoving()
   t.is(moving.length, 0, 'no log while the phase changes')
+})
+
+// pmtiles tile ids run contiguously across zoom boundaries, so a run of identical tiles can begin
+// at the end of one zoom and continue into the next. Classifying the whole run by its first tile
+// wrote real keys at a zoom meant to stay filler, and drifted the puts + fillerTiles == 4^zoom
+// conservation check that is the build's only coverage proof. No fixture archive has such a run —
+// measured across all fourteen, only the single-zoom ocean extract has runs at all — so the case
+// is constructed here rather than left to a hypothetical.
+test('collectSorted splits a run that crosses a zoom boundary', async (t) => {
+  const firstZ11 = zxyToTileId(11, 0, 0)
+  t.is(tileIdToZxy(firstZ11 - 1)[0], 10, 'the id before it is the last tile of z10')
+
+  // four identical tiles starting two before z11: two at z10, two at z11
+  const entries = [{ tileId: firstZ11 - 2, runLength: 4, offset: 0, length: 1 }]
+  const archive = { source: null, cache: { getDirectory: () => Promise.resolve(entries) } }
+  const header = { numTileEntries: 1, rootDirectoryOffset: 0, rootDirectoryLength: 0, leafDirectoryOffset: 0, maxZoom: 11 }
+
+  const { packed, stats } = await collectSorted(archive, header, 10)
+  t.is(stats.tiles, 2, 'the two tiles at or above the expand zoom are expanded')
+  t.is(stats.fillerTiles, 2, 'the two past it are filler')
+  t.is(stats.fillerRuns, 1, 'a partly expanded run counts once as a filler run')
+  t.is(packed.length, 2, 'and only the expanded tiles take a slot')
+  t.is(stats.tiles + stats.fillerTiles, 4, 'conservation holds across the boundary')
+  for (const v of packed) t.is(Number(v >> 58n), 10, 'every packed tile is at z10')
 })

@@ -220,6 +220,11 @@ test('prune removes the places a republish no longer has, and only those', async
   const again = await putGazetteer(bee, fewer, { flushPuts: 200, prune: true })
   t.is(again.pruned, 0)
   t.is(core.length, atRest, 'an unchanged republish with prune on still appends no block')
+
+  // an empty harvest names no key range, so it cannot prune anything — it must say so rather
+  // than report a successful no-op over a gazetteer the operator asked to clean
+  await t.exception(putGazetteer(bee, [], { flushPuts: 200, prune: true }), /empty harvest names no key range/)
+  t.is(core.length, atRest, 'and the refusal costs nothing either')
 })
 
 // The marker exists because the entries cannot be made to say which pass wrote them: kind_detail
@@ -232,6 +237,11 @@ test('readGazetteer reads both harvest shapes and rejects anything else', (t) =>
   // a bare array is readable, but areas is unknown rather than false — the caller must not read
   // a missing marker as "this was a locality harvest"
   t.alike(readGazetteer(entries), { areas: null, kinds: null, entries })
+  // and neither may a marker that is present but not a boolean: both of these once read as
+  // areas:false, which is the exact claim the marker exists to verify
+  t.alike(readGazetteer({ entries }), { areas: null, kinds: null, entries }, 'no marker is unknown, not false')
+  t.exception.all(() => readGazetteer({ areas: 'yes', entries }), /areas must be true or false/)
+  t.exception.all(() => readGazetteer({ areas: true, kinds: 'city', entries }), /kinds must be an array/)
   // .all, not plain exception: this throws a TypeError, and brittle re-throws natives otherwise
   for (const bad of [null, {}, { entries: 'no' }, 42]) {
     t.exception.all(() => readGazetteer(bad), /not a gazetteer file/, `rejects ${JSON.stringify(bad)}`)

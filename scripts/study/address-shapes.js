@@ -13,7 +13,7 @@ const { openArchive, readTile } = require('../../lib/build/pmtiles-file')
 const { decode, project } = require('../../lib/mvt')
 const { lonLatToTile, parseBbox, pinTiles } = require('../../lib/tiles')
 const { parseFlags } = require('../../bin/flags')
-const { areaClass } = require('../../lib/gazetteer-lib')
+const { areaClass, readGazetteer } = require('../../lib/gazetteer-lib')
 const { DETAIL_ZOOM } = require('../../lib/preview')
 const { deriveAddress, origin, nearestLabel, display, NEIGHBOURHOOD_M, SUBURB_M, VILLAGE_M } = require('../../lib/address')
 
@@ -107,7 +107,10 @@ async function main () {
   const bbox = parseBbox(bboxArg)
 
   const entries = JSON.parse(fs.readFileSync(fixture, 'utf8'))
-  const cities = JSON.parse(fs.readFileSync(gazFile, 'utf8')).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
+  // through readGazetteer: a harvest is { areas, kinds, entries } now, and a bare array only for
+  // files written before that marker existed
+  const gaz = readGazetteer(JSON.parse(fs.readFileSync(gazFile, 'utf8'))).entries
+  const cities = gaz.filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
   const index = await areaIndex(midFile, bbox)
   const z15 = openArchive(z15File)
   const acc = { B: blank(), C: blank() }

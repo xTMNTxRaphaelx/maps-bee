@@ -59,6 +59,17 @@ test('app ops: run opens a cold client once per key, prefetches once, renders, c
   t.is(replies[1].ok, false)
   t.is(typeof replies[1].error, 'string')
 
+  // A non-Error throw used to make the catch itself throw on err.message, which rejects the
+  // frame queue — every later frame would then skip its handler and the worker would go silent
+  // for the rest of the session. The frame after it is the real assertion.
+  const poisoned = { ...ops, boom () { throw null } }
+  const p = []
+  serve({ on (ev, fn) { if (ev === 'data') p.push(fn) }, write (s) { replies.push(JSON.parse(s)) } }, poisoned)
+  await p[0](Buffer.from(JSON.stringify({ id: 9, op: 'boom' })))
+  t.is(replies[2].ok, false, 'a non-Error throw is still answered')
+  await p[0](Buffer.from(JSON.stringify({ id: 10, op: 'nope' })))
+  t.is(replies[3].id, 10, 'and the next frame is still served')
+
   await ops.close()
   t.is(fs.readdirSync(TMP).length, before, 'close removes the client store')
 })

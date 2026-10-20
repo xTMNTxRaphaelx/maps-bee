@@ -14,7 +14,7 @@ const path = require('bare-path')
 const { openArchive, readTile } = require('../../lib/build/pmtiles-file')
 const { decode, project } = require('../../lib/mvt')
 const { pinTiles } = require('../../lib/tiles')
-const { haversineKm } = require('../../lib/gazetteer-lib')
+const { haversineKm, readGazetteer } = require('../../lib/gazetteer-lib')
 const { deriveAddress, origin, nearestLabel, ROAD_ON_M, NEARBY_M } = require('../../lib/address')
 
 // nearest named poi in the fetched cell at any distance, so a city-only point can be asked what a
@@ -53,6 +53,9 @@ const CITIES = [
 ]
 
 const read = (...p) => JSON.parse(fs.readFileSync(path.join(ROOT, ...p), 'utf8'))
+// read() also loads Nominatim fixtures, which are plain arrays by nature; only a harvest goes
+// through readGazetteer, which takes the marked shape and a pre-marker bare array alike
+const readGaz = (...p) => readGazetteer(read(...p)).entries
 
 // the 2x2 readPreview would fetch at zoom, decoded and placed
 async function cell (archive, point, zoom) {
@@ -76,8 +79,8 @@ function nearestCity (point, cities) {
 
 async function run (city, zoom) {
   const points = read('test', 'fixtures', city.fixture)
-  const areas = read('data', city.areas)
-  const cities = read('data', city.gaz).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
+  const areas = readGaz('data', city.areas)
+  const cities = readGaz('data', city.gaz).filter((e) => e.kind_detail === 'city' || e.kind_detail === 'town')
   const archive = openArchive(path.join(ROOT, 'data', city.archives[zoom]))
   const tally = { points: 0, noTiles: 0, specific: 0, areaOnly: 0, cityOnly: 0, rescuable: 0, nothing: 0, poiInReach: 0, areaInReach: 0 }
   const detail = []
